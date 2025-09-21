@@ -1,0 +1,81 @@
+.responsive-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: var(--table-scroll-bar-color) transparent;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+.responsive-table-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+.responsive-table-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--table-scroll-bar-color-d);
+    border-radius: 9999px;
+}
+
+/* Table */
+.responsive-table-wrapper .responsive-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 640px;
+
+    thead th {
+        position: sticky;
+        top: 0;
+        background: var(--gray-bg-l);
+        z-index: 1;
+        font-weight: 600;
+        color: var(--gray-c-d);
+        white-space: nowrap;
+        text-align: center;
+        background-clip: padding-box;
+    }
+
+    thead th:first-child {
+        border-top-left-radius: 12px;
+    }
+    thead th:last-child {
+        border-top-right-radius: 12px;
+    }
+
+    /* Row divider on tr using inset shadow for cross-browser support */
+    tbody tr {
+        box-shadow: inset 0 -1px 0 0 var(--gray-bg-l);
+    }
+    tbody tr:last-child {
+        box-shadow: none;
+    }
+
+    /* Remove borders from cells */
+    td {
+        border-bottom: none;
+    }
+
+    tbody td {
+        color: var(--table-td-color);
+        text-align: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .responsive-table-wrapper {
+        .responsive-table {
+            min-width: 520px;
+        }
+    }
+}
+
+@media screen and (min-width: 1024px) {
+    .responsive-table-wrapper {
+        .responsive-table {
+            thead th:not(:first-child, :last-child) {
+                min-width: 170px;
+            }
+        }
+    }
+}

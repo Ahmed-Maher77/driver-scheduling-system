@@ -1,7 +1,7 @@
 /* ===================================== Footer Bottom Styles =====================================*/
 
 .footer-bottom {
-    border-top: 1px solid #e9ecef;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     padding-top: 1rem;
 }
 
@@ -15,25 +15,25 @@
     p {
         margin: 0;
         font-size: 0.85rem;
-        color: #6c757d;
+        color: rgba(255, 255, 255, 0.75);
     }
 
     .copyright {
         strong {
-            color: #2c3e50;
+            color: var(--fixed-white-c);
             font-weight: 600;
         }
     }
 
     .developer-credit {
         .developer-link {
-            color: #007bff;
+            color: var(--blue-c);
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s ease;
 
             &:hover {
-                color: #0056b3;
+                color: var(--blue-c-d);
             }
         }
     }

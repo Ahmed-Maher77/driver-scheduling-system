@@ -1,10 +1,11 @@
 /* ===================================== Footer Layout Styles =====================================*/
 
 .main-footer {
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
+    background: #0b0b0b; /* slightly darker than var(--black-c) */
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
     padding: 2rem 0 1rem;
     margin-top: auto;
+    color: var(--fixed-white-c);
 
     .footer-content {
         display: flex;

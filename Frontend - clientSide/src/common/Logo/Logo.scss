@@ -1,0 +1,16 @@
+.logo-wraper {
+    .logo {
+        a {
+            background-color: var(--green-bg) !important;
+            color: var(--fixed-white-c) !important;
+            letter-spacing: 1px;
+            html.dark & {
+                background-color: var(--green-color) !important;
+                color: var(--fixed-white-c) !important;
+            }
+        }
+    }
+    // html.dark & h4 {
+    // 	color: #fff;
+    // }
+}

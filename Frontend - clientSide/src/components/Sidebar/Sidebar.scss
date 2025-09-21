@@ -1,0 +1,36 @@
+.sidebar {
+	z-index: 100;
+	// box-shadow: 1px 0 10px 5px #00000014;
+	border-right: 2px solid #00000014;
+	html.dark & {
+		box-shadow: 0px -1px 10px 0px rgb(0 0 0 / 92%);
+	}
+	z-index: 100;
+    // Sidebar Lis
+	li {
+		color: var(--gray-c);
+		.arrow-trigger:hover {
+			background-color: var(--gray-c);
+			transition: var(--trans-3);
+			html.dark & {
+				background-color: #5a5858;
+			}
+		}
+		a {
+			border-radius: 5px;
+			&.active,
+			&:hover {
+				background-color: var(--green-bg-light);
+				color: var(--green-color);
+				transition: var(--trans-3);
+			}
+			html.dark &.active:not(.logo a),
+			html.dark &:hover {
+				background-color: var(--green-bg-light);
+			}
+		}
+	}
+	&::-webkit-scrollbar {
+		width: 4px;
+	}
+}

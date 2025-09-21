@@ -4,13 +4,13 @@
     .footer-title {
         font-size: 1.25rem;
         font-weight: 600;
-        color: #2c3e50;
+        color: var(--fixed-white-c);
         margin: 0 0 0.5rem 0;
     }
 
     .footer-description {
         font-size: 0.9rem;
-        color: #6c757d;
+        color: rgba(255, 255, 255, 0.75);
         margin: 0;
     }
 }

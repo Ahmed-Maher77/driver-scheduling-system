@@ -1,0 +1,64 @@
+.routes-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: var(--table-scroll-bar-color) transparent;
+}
+
+/* WebKit-based browsers */
+.routes-table-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+.routes-table-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+.routes-table-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--table-scroll-bar-color-d);
+    border-radius: 9999px;
+}
+
+.routes-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    min-width: 640px;
+
+    thead th {
+        position: sticky;
+        top: 0;
+        background: var(--gray-bg-l);
+        z-index: 1;
+        font-weight: 600;
+        color: var(--gray-c-d);
+        white-space: nowrap;
+        text-align: center;
+        /* ensure the rounded corners render correctly on sticky */
+        background-clip: padding-box;
+    }
+
+    /* rounded corners on header */
+    thead th:first-child {
+        border-top-left-radius: 12px;
+    }
+    thead th:last-child {
+        border-top-right-radius: 12px;
+    }
+
+    td {
+        border-bottom: 1px solid var(--gray-bg-l);
+    }
+
+    tbody td {
+        color: var(--table-td-color);
+        text-align: center;
+    }
+}
+
+/* Mobile: stack cells using data-label (optional) */
+@media (max-width: 640px) {
+    .routes-table {
+        min-width: 520px; /* keep some scroll but narrower */
+    }
+}

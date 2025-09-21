@@ -1,0 +1,13 @@
+nav.navbar {
+	z-index: 9;
+	// html.dark & h4 {
+	// 	color: #fff;
+	// }
+	a {
+		border-radius: 5px;
+		background-color: var(--green-bg);
+	}
+	.bx-menu-burger-icon:hover {
+		color: var(--green-color);
+	}
+}
