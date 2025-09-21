@@ -1,0 +1,36 @@
+/* ===================================== Footer Layout Styles =====================================*/
+
+.main-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    padding: 2rem 0 1rem;
+    margin-top: auto;
+
+    .footer-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-footer {
+        padding: 1.5rem 0 1rem;
+
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+            gap: 1.5rem;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .main-footer {
+        padding: 1rem 0;
+    }
+}

@@ -1,0 +1,26 @@
+/* ===================================== Social Links Styles =====================================*/
+
+.footer-right {
+    .social-links {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .footer-right {
+        .social-links {
+            justify-content: center;
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-right {
+        .social-links {
+            gap: 0.75rem;
+        }
+    }
+}

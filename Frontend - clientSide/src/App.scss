@@ -1,0 +1,93 @@
+/* ===================================== CSS Variables =====================================*/
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+:root {
+    // Social Links Colors
+    --linkedin-color: #0a6ab9;
+    --github-color: #333;
+    --facebook-color: #1479e5;
+    --whatsapp-color: #25d366;
+}
+
+/* ===================================== Global styles =====================================*/
+body {
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+/* ===================================== Reusable Classes =====================================*/
+.main-page {
+    min-height: 100vh;
+}
+.main-section {
+    padding-block: 60px;
+}
+
+// icons
+.social-link-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    transition: all 0.5s ease;
+    padding: 0.5rem;
+    color: #ffffff;
+    i {
+        font-size: 1.2rem;
+    }
+    &:hover {
+        transform: rotate(360deg);
+        background-color: transparent !important;
+    }
+    &.linkedin {
+        background-color: var(--linkedin-color);
+        border: 2px solid var(--linkedin-color);
+        &:hover {
+            color: var(--linkedin-color);
+        }
+    }
+    &.github {
+        background-color: var(--github-color);
+        border: 2px solid var(--github-color);
+        &:hover {
+            color: var(--github-color);
+        }
+    }
+    &.facebook {
+        background-color: var(--facebook-color);
+        border: 2px solid var(--facebook-color);
+        &:hover {
+            color: var(--facebook-color);
+        }
+    }
+    &.whatsapp {
+        background-color: var(--whatsapp-color);
+        border: 2px solid var(--whatsapp-color);
+        &:hover {
+            color: var(--whatsapp-color);
+        }
+    }
+}
+
+// underline-hover {
+.underline-hover {
+    position: relative;
+    &::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background-color: var(--primary-color);
+        transition: width 0.3s ease;
+    }
+    &:hover {
+        &::after {
+            width: 100%;
+        }
+    }
+}

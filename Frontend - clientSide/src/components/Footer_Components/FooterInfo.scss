@@ -1,0 +1,29 @@
+/* ===================================== Footer Info Styles =====================================*/
+
+.footer-left {
+    .footer-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0 0 0.5rem 0;
+    }
+
+    .footer-description {
+        font-size: 0.9rem;
+        color: #6c757d;
+        margin: 0;
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .footer-left {
+        .footer-title {
+            font-size: 1.1rem;
+        }
+
+        .footer-description {
+            font-size: 0.85rem;
+        }
+    }
+}
