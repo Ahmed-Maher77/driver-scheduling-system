@@ -18,6 +18,7 @@ import LocationSection from "./AddRouteModal_Components/LocationSection";
 import DriverSection from "./EditRouteModal_Components/DriverSection";
 import DistanceDurationSection from "./AddRouteModal_Components/DistanceDurationSection";
 import CostSpeedSection from "./AddRouteModal_Components/CostSpeedSection";
+import NotesSection from "./EditRouteModal_Components/NotesSection";
 import DatesSection from "./EditRouteModal_Components/DatesSection";
 
 const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
@@ -39,6 +40,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
         currency: "EGP",
         maxSpeed: 0,
         speedUnit: "km/h",
+        notes: "",
     });
 
     const [validationErrors, setValidationErrors] =
@@ -238,6 +240,19 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         }
                         costError={validationErrors.cost}
                         maxSpeedError={validationErrors.maxSpeed}
+                    />
+
+                    {/* Notes Section */}
+                    <NotesSection
+                        notes={formData.notes || ""}
+                        onNotesChange={(value) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                notes: value,
+                            }));
+                            clearFieldError("notes");
+                        }}
+                        notesError={validationErrors.notes}
                     />
 
                     {/* Dates Section */}

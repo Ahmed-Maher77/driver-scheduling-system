@@ -10,11 +10,12 @@ import LocationSection from "./AddRouteModal_Components/LocationSection";
 import DriverSection from "./AddRouteModal_Components/DriverSection";
 import DistanceDurationSection from "./AddRouteModal_Components/DistanceDurationSection";
 import CostSpeedSection from "./AddRouteModal_Components/CostSpeedSection";
+import NotesSection from "./AddRouteModal_Components/NotesSection";
 import {
     validateForm,
     hasValidationErrors,
-    type ValidationErrors,
 } from "./AddRouteModal_Components/validation";
+import type { ValidationErrors } from "../../common/Types/Interfaces";
 
 const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
     const [formData, setFormData] = useState({
@@ -30,6 +31,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
         currency: "EGP",
         maxSpeed: 0,
         speedUnit: "km/h",
+        notes: "",
     });
 
     const [validationErrors, setValidationErrors] = useState<ValidationErrors>(
@@ -80,6 +82,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
             currency: "EGP",
             maxSpeed: 0,
             speedUnit: "km/h",
+            notes: "",
         });
         setValidationErrors({});
         setIsSubmitting(false);
@@ -227,10 +230,22 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                         maxSpeedError={validationErrors.maxSpeed}
                     />
 
+                    {/* Notes Section */}
+                    <NotesSection
+                        notes={formData.notes}
+                        onNotesChange={(value) => {
+                            setFormData((prev) => ({
+                                ...prev,
+                                notes: value,
+                            }));
+                            clearFieldError("notes");
+                        }}
+                        notesError={validationErrors.notes}
+                    />
+
                     {/* Modal Actions */}
                     <ModalActions
                         onCancel={handleClose}
-                        onSubmit={handleSubmit}
                         submitLabel={isSubmitting ? "Adding..." : "Add Route"}
                         isSubmitting={isSubmitting}
                     />

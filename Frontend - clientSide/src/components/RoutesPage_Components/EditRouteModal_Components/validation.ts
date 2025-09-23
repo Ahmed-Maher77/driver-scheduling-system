@@ -10,6 +10,7 @@ export interface EditValidationErrors {
     status?: string;
     assignedDriver?: string;
     lastDriver?: string;
+    notes?: string;
 }
 
 export const validateEditForm = (formData: RouteRow): EditValidationErrors => {
@@ -108,6 +109,11 @@ export const validateEditForm = (formData: RouteRow): EditValidationErrors => {
             errors.lastDriver =
                 "Last driver name must be at least 2 characters";
         }
+    }
+
+    // Notes validation (optional but if provided, must be reasonable length)
+    if (formData.notes && formData.notes.length > 1000) {
+        errors.notes = "Notes cannot exceed 1000 characters";
     }
 
     return errors;

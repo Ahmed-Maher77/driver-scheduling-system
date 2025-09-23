@@ -1,15 +1,4 @@
-import type { AddRouteItemProps } from "../../../common/Types/Interfaces";
-
-export interface ValidationErrors {
-    startLocation?: string;
-    endLocation?: string;
-    status?: string;
-    assignedDriver?: string;
-    distance?: string;
-    duration?: string;
-    cost?: string;
-    maxSpeed?: string;
-}
+import type { AddRouteItemProps, ValidationErrors } from "../../../common/Types/Interfaces";
 
 export const validateForm = (formData: AddRouteItemProps): ValidationErrors => {
     const errors: ValidationErrors = {};
@@ -48,13 +37,15 @@ export const validateForm = (formData: AddRouteItemProps): ValidationErrors => {
     // Assigned Driver validation - Optional but if provided, must be valid
     if (formData.assignedDriver?.id || formData.assignedDriver?.name) {
         if (!formData.assignedDriver.id?.trim()) {
-            errors.assignedDriver = "Driver ID is required when driver name is provided";
+            errors.assignedDriver =
+                "Driver ID is required when driver name is provided";
         } else if (formData.assignedDriver.id.trim().length < 2) {
             errors.assignedDriver = "Driver ID must be at least 2 characters";
         }
 
         if (!formData.assignedDriver.name?.trim()) {
-            errors.assignedDriver = "Driver name is required when driver ID is provided";
+            errors.assignedDriver =
+                "Driver name is required when driver ID is provided";
         } else if (formData.assignedDriver.name.trim().length < 2) {
             errors.assignedDriver = "Driver name must be at least 2 characters";
         }
@@ -87,6 +78,11 @@ export const validateForm = (formData: AddRouteItemProps): ValidationErrors => {
         errors.maxSpeed = "Max speed must be greater than 0";
     } else if (formData.maxSpeed > 500) {
         errors.maxSpeed = "Max speed cannot exceed 500 km/h";
+    }
+
+    // Notes validation (optional but if provided, must be reasonable length)
+    if (formData.notes && formData.notes.length > 1000) {
+        errors.notes = "Notes cannot exceed 1000 characters";
     }
 
     return errors;

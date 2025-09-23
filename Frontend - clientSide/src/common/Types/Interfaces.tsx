@@ -93,6 +93,7 @@ export type RouteRow = {
     currency?: string;
     maxSpeed?: number;
     speedUnit?: string;
+    notes?: string;
 };
 
 // Add Route Item Props
@@ -109,6 +110,7 @@ export interface AddRouteItemProps {
     currency?: string;
     maxSpeed?: number;
     speedUnit?: string;
+    notes?: string;
 }
 
 // Location Section Props
@@ -152,7 +154,7 @@ export interface CostSpeedSectionProps {
 // Modal Actions Props
 export interface ModalActionsProps {
     onCancel: () => void;
-    onSubmit: (e?: React.FormEvent) => void;
+    onSubmit?: (e?: React.FormEvent) => void;
     submitLabel: string;
     cancelLabel?: string;
     isSubmitting?: boolean;
@@ -281,13 +283,11 @@ export interface CostSpeedSectionProps {
     onSpeedUnitChange: (value: string) => void;
 }
 
-// Modal Actions Props
-export interface ModalActionsProps {
-    onCancel: () => void;
-    onSubmit: (e?: React.FormEvent) => void;
-    submitLabel: string;
-    cancelLabel?: string;
-    isSubmitting?: boolean;
+// Notes Section Props
+export interface NotesSectionProps {
+    notes: string;
+    onNotesChange: (value: string) => void;
+    notesError?: string;
 }
 
 // Basic Info Section Props
@@ -336,4 +336,17 @@ export interface DriverSectionProps {
     onAssignedDriverChange: (driver: DriverInfo) => void;
     assignedDriverError?: string;
     status?: string;
+}
+
+// Validation Errors
+export interface ValidationErrors {
+    startLocation?: string;
+    endLocation?: string;
+    status?: string;
+    assignedDriver?: string;
+    distance?: string;
+    duration?: string;
+    cost?: string;
+    maxSpeed?: string;
+    notes?: string;
 }

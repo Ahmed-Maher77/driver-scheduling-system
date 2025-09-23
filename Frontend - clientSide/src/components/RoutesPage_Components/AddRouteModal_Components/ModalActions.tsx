@@ -3,7 +3,6 @@ import type { ModalActionsProps } from "../../../common/Types/Interfaces";
 
 const ModalActions: React.FC<ModalActionsProps> = ({
     onCancel,
-    onSubmit,
     submitLabel,
     cancelLabel = "Cancel",
     isSubmitting = false,
@@ -25,7 +24,6 @@ const ModalActions: React.FC<ModalActionsProps> = ({
                 className={`main-btn blue-bg px-6 py-2 ${
                     isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                onClick={onSubmit}
                 disabled={isSubmitting}
             >
                 {submitLabel}
