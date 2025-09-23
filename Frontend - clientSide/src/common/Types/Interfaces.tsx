@@ -99,6 +99,8 @@ export type RouteRow = {
 export interface AddRouteItemProps {
     startLocation?: string;
     endLocation?: string;
+    status?: string;
+    assignedDriver?: DriverInfo;
     distance?: number;
     distanceUnit?: string;
     duration?: number;
@@ -254,7 +256,10 @@ export interface DriverSectionProps {
     assignedDriver?: DriverInfo;
     lastDriver?: DriverInfo;
     onAssignedDriverChange: (driver: DriverInfo) => void;
-    onLastDriverChange: (driver: DriverInfo) => void;
+    onLastDriverChange?: (driver: DriverInfo) => void;
+    assignedDriverError?: string;
+    lastDriverError?: string;
+    status?: string;
 }
 
 // Dates Section Props
@@ -262,9 +267,6 @@ export interface DatesSectionProps {
     createdAt: string;
     updatedAt: string | null;
     assignedAt: string;
-    onCreatedAtChange: (value: string) => void;
-    onUpdatedAtChange: (value: string | null) => void;
-    onAssignedAtChange: (value: string) => void;
 }
 
 // Cost Speed Section Props
@@ -293,6 +295,7 @@ export interface BasicInfoSectionProps {
     routeId: string;
     status: string;
     onStatusChange: (value: string) => void;
+    statusError?: string;
 }
 
 // Location Section Props
@@ -313,4 +316,24 @@ export interface DistanceDurationSectionProps {
     onDistanceUnitChange: (value: string) => void;
     onDurationChange: (value: number) => void;
     onTimeUnitChange: (value: string) => void;
+}
+
+// Basic Info Section Props
+export interface BasicInfoSectionProps {
+    routeId: string;
+    status: string;
+    onStatusChange: (value: string) => void;
+    statusError?: string;
+}
+
+// Driver Info
+export interface DriverInfo {
+    id?: string;
+    name?: string;
+}
+export interface DriverSectionProps {
+    assignedDriver?: DriverInfo;
+    onAssignedDriverChange: (driver: DriverInfo) => void;
+    assignedDriverError?: string;
+    status?: string;
 }

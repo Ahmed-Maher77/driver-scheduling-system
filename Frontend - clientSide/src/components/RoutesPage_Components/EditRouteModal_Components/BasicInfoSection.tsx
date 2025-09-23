@@ -6,6 +6,7 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
     routeId,
     status,
     onStatusChange,
+    statusError,
 }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -22,17 +23,22 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             </div>
 
             {/* Status */}
-            <CustomSelect
-                label="Status"
-                value={status}
-                onChange={onStatusChange}
-                options={[
-                    { label: "Unassigned", value: "unassigned" },
-                    { label: "Assigned", value: "assigned" },
-                    { label: "In Progress", value: "in progress" },
-                ]}
-                fullWidth
-            />
+            <div className="main-input-container">
+                <CustomSelect
+                    label="Status"
+                    value={status}
+                    onChange={onStatusChange}
+                    options={[
+                        { label: "Unassigned", value: "unassigned" },
+                        { label: "Assigned", value: "assigned" },
+                        { label: "In Progress", value: "in progress" },
+                    ]}
+                    fullWidth
+                />
+                {statusError && (
+                    <p className="text-red-500 text-xs mt-1">{statusError}</p>
+                )}
+            </div>
         </div>
     );
 };

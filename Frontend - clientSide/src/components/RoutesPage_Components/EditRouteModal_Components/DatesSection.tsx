@@ -5,9 +5,6 @@ const DatesSection: React.FC<DatesSectionProps> = ({
     createdAt,
     updatedAt,
     assignedAt,
-    onCreatedAtChange,
-    onUpdatedAtChange,
-    onAssignedAtChange,
 }) => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -19,8 +16,8 @@ const DatesSection: React.FC<DatesSectionProps> = ({
                 <input
                     type="date"
                     value={createdAt}
-                    onChange={(e) => onCreatedAtChange(e.target.value)}
-                    className="main-input w-full"
+                    readOnly={true}
+                    className="main-input w-full read-only-input"
                 />
             </div>
 
@@ -32,8 +29,8 @@ const DatesSection: React.FC<DatesSectionProps> = ({
                 <input
                     type="date"
                     value={updatedAt || ""}
-                    onChange={(e) => onUpdatedAtChange(e.target.value || null)}
-                    className="main-input w-full"
+                    readOnly={true}
+                    className="main-input w-full read-only-input"
                 />
             </div>
 
@@ -45,8 +42,8 @@ const DatesSection: React.FC<DatesSectionProps> = ({
                 <input
                     type="date"
                     value={assignedAt || ""}
-                    onChange={(e) => onAssignedAtChange(e.target.value || "")}
-                    className="main-input w-full"
+                    readOnly={true}
+                    className="main-input w-full read-only-input"
                 />
             </div>
         </div>

@@ -11,10 +11,10 @@ const CustomSelect = <T extends string>({
 }: CustomSelectProps<T>) => {
     return (
         <div
-            className={`custom-select flex flex-col gap-2 flex-grow-1 cursor-pointer ${fullWidth ? "w-full" : ""} ${className}`}>
+            className={`custom-select flex flex-col gap-2 flex-grow-1 ${fullWidth ? "w-full" : ""} ${className}`}>
             {/* Label */}
             {label && (
-                <label className="block gray-c-d text-sm cursor-pointer">
+                <label className="block gray-c-d text-sm">
                     {label}
                 </label>
             )}
