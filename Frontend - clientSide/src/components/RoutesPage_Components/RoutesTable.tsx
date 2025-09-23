@@ -74,19 +74,18 @@ const RoutesTable = ({
         {
             key: "status",
             label: "Status",
-            render: (row) => (
-                <span
-                    className={`status-badge ${
-                        row.status === "assigned"
+            render: (row) => {
+                const renderStatusBadge = (status: string) => {
+                    const cls =
+                        status === "assigned"
                             ? "status-assigned"
-                            : row.status === "unassigned"
-                            ? "status-unassigned"
-                            : "status-inProgress"
-                    }`}
-                >
-                    {row.status}
-                </span>
-            ),
+                            : status === "unassigned"
+                                ? "status-unassigned"
+                                : "status-inProgress";
+                    return <span className={`status-badge ${cls}`}>{status === "in progress" ? "In Progress" : status.charAt(0).toUpperCase() + status.slice(1)}</span>;
+                };
+                return renderStatusBadge(row.status);
+            },
             align: "center",
         },
         // Driver Column

@@ -139,6 +139,15 @@ body {
 }
 .green-bg {
     background-color: var(--green-bg);
+    border: 2px solid var(--green-bg) !important;
+    color: var(--fixed-white-c);
+    transition: var(--trans-3);
+    &.hover-green-bg {
+        &:hover {
+            background-color: transparent;
+            color: var(--green-bg);
+        }
+    }
 }
 .green-bg-l {
     background-color: var(--green-bg-light);
@@ -221,7 +230,7 @@ body {
 
 // Borders
 .border-timeline-icon {
-    border: 8px solid var(--white-bg);
+    border: 8px solid var(--white-bg) !important;
 }
 
 // Transition

@@ -28,7 +28,7 @@ const routesData: RouteItem[] = [
         id: "RT002",
         startLocation: "Warehouse C",
         endLocation: "Suburb North",
-        status: "inProgress",
+        status: "in progress",
         assignedDriver: {
             id: null,
             name: null
@@ -77,7 +77,7 @@ const RoutesContainer = () => {
                 : status === "unassigned"
                     ? "status-unassigned"
                     : "status-inProgress";
-        return <span className={`status-badge ${cls}`}>{status.charAt(0).toUpperCase() + status.slice(1)}</span>;
+        return <span className={`status-badge ${cls}`}>{status === "in progress" ? "In Progress" : status.charAt(0).toUpperCase() + status.slice(1)}</span>;
     };
 
     return (
