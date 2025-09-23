@@ -6,6 +6,9 @@ const DriverSection: React.FC<DriverSectionProps> = ({
     onAssignedDriverChange,
     assignedDriverError,
     status,
+    onCheckAvailability,
+    availabilityStatus = "unknown",
+    isCheckingAvailability = false,
 }) => {
     return (
         <div className="grid grid-cols-1 gap-4 w-full">
@@ -14,10 +17,11 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                 <div className="main-input-container w-full">
                     {/* Assigned Driver Label */}
                     <label className="block gray-c-d text-sm mb-2">
-                        Assigned Driver <span className="text-gray-400">(Optional)</span>
+                        Assigned Driver{" "}
+                        <span className="text-gray-400">(Optional)</span>
                     </label>
 
-                    {/* Driver ID and Name */}
+                    {/* Driver ID */}
                     <div className="flex gap-4 w-full flex-wrap">
                         {/* Driver ID */}
                         <input
@@ -27,25 +31,44 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                             onChange={(e) =>
                                 onAssignedDriverChange({
                                     id: e.target.value,
-                                    name: assignedDriver?.name || "",
+                                    name: "", // No name field in AddRouteModal
                                 })
                             }
                             className="main-input flex-1"
                         />
-                        {/* Driver Name */}
-                        <input
-                            type="text"
-                            placeholder="Driver Name"
-                            value={assignedDriver?.name || ""}
-                            onChange={(e) =>
-                                onAssignedDriverChange({
-                                    id: assignedDriver?.id || "",
-                                    name: e.target.value,
-                                })
+                        {/* Check Availability Button */}
+                        <button
+                            type="button"
+                            className="main-btn green-bg px-4 py-2"
+                            onClick={() =>
+                                onCheckAvailability?.(assignedDriver?.id)
                             }
-                            className="main-input flex-1"
-                        />
+                            disabled={
+                                isCheckingAvailability || !assignedDriver?.id
+                            }
+                        >
+                            {isCheckingAvailability
+                                ? "Checking..."
+                                : "Check Availability"}
+                        </button>
                     </div>
+                    {/* Availability Status */}
+                    {availabilityStatus !== "unknown" && (
+                        <p
+                            className={`text-xs mt-1 ${
+                                availabilityStatus === "available"
+                                    ? "green-c"
+                                    : "red-c"
+                            }`}
+                        >
+                            {availabilityStatus === "available"
+                                ? "Driver is available"
+                                : availabilityStatus === "on_route"
+                                ? "Driver is currently on a route"
+                                : "Driver is unavailable"}
+                        </p>
+                    )}
+                    {/* Error Message */}
                     {assignedDriverError && (
                         <p className="text-red-500 text-xs mt-1">
                             {assignedDriverError}

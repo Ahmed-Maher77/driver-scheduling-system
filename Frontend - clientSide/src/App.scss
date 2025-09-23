@@ -43,15 +43,31 @@
     --icon-color: #bdbdbd;
     --time-icon-color: #8a8a8a;
 
+    // Overlay
+    --overlay-bg: #00000050;
+
     // Table Colors
     --table-td-color: #222;
     --table-scroll-bar-color: #bdbdbd;
     --table-scroll-bar-color-d: #939393;
+    --scrollbar-track-bg: #ffffff;
+    --scrollbar-track-shadow: #b4b4b4;
 
     // Form
     --input-border-color: #d9d9d9;
     --input-bg-color: #f4f4f4;
     --read-only-input-color: #929292;
+
+    // Status badge colors
+    --status-assigned-bg: #e6fbef;
+    --status-assigned-color: #0f7a43;
+    --status-unassigned-bg: #fff7cc;
+    --status-unassigned-color: #a07600;
+    --status-inprogress-bg: #e6f7ff;
+    --status-inprogress-color: #0050b3;
+
+    // Focus ring
+    --focus-ring: rgba(6, 172, 172, 0.25);
 }
 
 /* ===================================== Global styles =====================================*/
@@ -322,16 +338,16 @@ body {
     font-size: 0.875rem;
 }
 .status-assigned {
-    background: #e6fbef;
-    color: #0f7a43;
+    background: var(--status-assigned-bg);
+    color: var(--status-assigned-color);
 }
 .status-unassigned {
-    background: #fff7cc;
-    color: #a07600;
+    background: var(--status-unassigned-bg);
+    color: var(--status-unassigned-color);
 }
 .status-inProgress {
-    background: #e6f7ff;
-    color: #0050b3;
+    background: var(--status-inprogress-bg);
+    color: var(--status-inprogress-color);
 }
 
 // Timeline Container
@@ -434,7 +450,7 @@ body {
     }
 
     &:focus-visible {
-        box-shadow: 0 0 0 3px rgba(6, 172, 172, 0.25);
+        box-shadow: 0 0 0 3px var(--focus-ring);
         border-color: var(--green-color);
     }
 

@@ -262,6 +262,9 @@ export interface DriverSectionProps {
     assignedDriverError?: string;
     lastDriverError?: string;
     status?: string;
+    onCheckAvailability?: (driverId?: string) => void;
+    availabilityStatus?: "unknown" | "available" | "unavailable" | "on_route";
+    isCheckingAvailability?: boolean;
 }
 
 // Dates Section Props
@@ -349,4 +352,10 @@ export interface ValidationErrors {
     cost?: string;
     maxSpeed?: string;
     notes?: string;
+}
+
+// Assigned Driver Cell Props
+export interface AssignedDriverCellProps {
+    driver?: { id?: string; name?: string };
+    cellKey: string;
 }

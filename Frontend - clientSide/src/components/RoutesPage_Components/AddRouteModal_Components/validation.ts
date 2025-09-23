@@ -35,19 +35,11 @@ export const validateForm = (formData: AddRouteItemProps): ValidationErrors => {
     }
 
     // Assigned Driver validation - Optional but if provided, must be valid
-    if (formData.assignedDriver?.id || formData.assignedDriver?.name) {
-        if (!formData.assignedDriver.id?.trim()) {
-            errors.assignedDriver =
-                "Driver ID is required when driver name is provided";
+    if (formData.assignedDriver?.id) {
+        if (!formData.assignedDriver.id.trim()) {
+            errors.assignedDriver = "Driver ID cannot be empty";
         } else if (formData.assignedDriver.id.trim().length < 2) {
             errors.assignedDriver = "Driver ID must be at least 2 characters";
-        }
-
-        if (!formData.assignedDriver.name?.trim()) {
-            errors.assignedDriver =
-                "Driver name is required when driver ID is provided";
-        } else if (formData.assignedDriver.name.trim().length < 2) {
-            errors.assignedDriver = "Driver name must be at least 2 characters";
         }
     }
 

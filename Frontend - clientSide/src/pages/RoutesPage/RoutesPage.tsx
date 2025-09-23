@@ -12,7 +12,7 @@ import RoutesControls from "../../components/RoutesPage_Components/RoutesControl
 import FiltersSection from "../../components/RoutesPage_Components/FiltersSection";
 import BulkActionsBar from "../../components/RoutesPage_Components/BulkActionsBar";
 import RoutesTable from "../../components/RoutesPage_Components/RoutesTable";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { notify } from "../../utils/functions/notify";
 
 // Demo data
@@ -81,6 +81,7 @@ const RoutesPage = () => {
     const [editingRouteId, setEditingRouteId] = useState("");
     const [selected, setSelected] = useState<Record<string, boolean>>({});
     const navigate = useNavigate();
+    const [searchParams, setSearchParams] = useSearchParams();
     const [routes, setRoutes] = useState(initialRoutes);
     const [searchBy, setSearchBy] = useState<SearchBy>({
         routeId: "",
@@ -88,6 +89,29 @@ const RoutesPage = () => {
         status: "",
         duration: "",
     });
+
+    // Sync modal state with URL search params
+    useEffect(() => {
+        const modal = searchParams.get("modal");
+        const routeId = searchParams.get("routeId") || "";
+
+        if (modal === "addRoute") {
+            setIsAddModalOpen(true);
+            setIsEditModalOpen(false);
+            setEditingRouteId("");
+            return;
+        }
+        if (modal === "editRoute" && routeId) {
+            setEditingRouteId(routeId);
+            setIsEditModalOpen(true);
+            setIsAddModalOpen(false);
+            return;
+        }
+        // No modal param → close both
+        setIsAddModalOpen(false);
+        setIsEditModalOpen(false);
+        setEditingRouteId("");
+    }, [searchParams]);
 
     // Calculate selection state
     const selectedCount = Object.values(selected).filter(Boolean).length;
@@ -139,24 +163,37 @@ const RoutesPage = () => {
         navigate(`/routes/${id}`);
     };
 
-    // Edit Route
+    // Open Add Route (URL-driven)
+    const openAddRoute = () => {
+        setSearchParams({ modal: "addRoute" });
+    };
+
+    // Open Edit Route (URL-driven)
+    const openEditRoute = (id: string) => {
+        setSearchParams({ modal: "editRoute", routeId: id });
+    };
+
+    // Close any modal: clear params
+    const closeModals = () => {
+        setSearchParams({});
+    };
+
+    // Edit Route (table action)
     const editRoute = (id: string) => {
         const route = routes.find((r) => r.id === id);
         if (route) {
-            setEditingRouteId(route.id);
-            setIsEditModalOpen(true);
+            openEditRoute(route.id);
         }
     };
 
     // Handle Close Edit Modal
     const handleCloseEditModal = () => {
-        setIsEditModalOpen(false);
-        setEditingRouteId("");
+        closeModals();
     };
 
     // Handle Close Add Modal
     const handleCloseAddModal = () => {
-        setIsAddModalOpen(false);
+        closeModals();
     };
 
     // Export CSV
@@ -194,7 +231,7 @@ const RoutesPage = () => {
 
                 <RoutesControls
                     onExportCsv={handleExportCsv}
-                    onAddRoute={() => setIsAddModalOpen(true)}
+                    onAddRoute={openAddRoute}
                 />
 
                 <FiltersSection

@@ -1,5 +1,8 @@
 import { useState } from "react";
-import type { AddRouteModalProps } from "../../common/Types/Interfaces";
+import type {
+    AddRouteModalProps,
+    ValidationErrors,
+} from "../../common/Types/Interfaces";
 import { notify } from "../../utils/functions/notify";
 import ModalWrapper from "./SharedModalComponents/ModalWrapper";
 import FormSection from "./SharedModalComponents/FormSection";
@@ -15,14 +18,17 @@ import {
     validateForm,
     hasValidationErrors,
 } from "./AddRouteModal_Components/validation";
-import type { ValidationErrors } from "../../common/Types/Interfaces";
+import { checkDriverAvailability } from "../../utils/functions/checkDriverAvailability";
 
 const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
     const [formData, setFormData] = useState({
         startLocation: "",
         endLocation: "",
         status: "unassigned",
-        assignedDriver: { id: "", name: "" } as { id?: string; name?: string },
+        assignedDriver: { id: "" } as {
+            id?: string;
+            name?: string;
+        },
         distance: 0,
         distanceUnit: "km",
         duration: 0,
@@ -38,8 +44,12 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
         {}
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [availabilityStatus, setAvailabilityStatus] = useState<
+        "unknown" | "available" | "unavailable" | "on_route"
+    >("unknown");
+    const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
 
-    const handleSubmit = (e?: React.FormEvent) => {
+    const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
 
         if (isSubmitting) return;
@@ -59,8 +69,36 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
             return;
         }
 
-        // Call the onAddRoute function with the form data
-        onAddRoute(formData);
+        // If assigning, verify availability via API at submit time
+        if (formData.status === "assigned" && formData.assignedDriver?.id) {
+            try {
+                setIsCheckingAvailability(true);
+                const status = await checkDriverAvailability(
+                    formData.assignedDriver.id
+                );
+                setAvailabilityStatus(status);
+                if (status === "available") {
+                    onAddRoute(formData);
+                } else if (status === "unavailable") {
+                    notify("error", "This driver is unavailable");
+                    setIsSubmitting(false);
+                    setIsCheckingAvailability(false);
+                    return;
+                } else if (status === "on_route") {
+                    notify(
+                        "error",
+                        "This driver currently has another route assigned"
+                    );
+                    setIsSubmitting(false);
+                    setIsCheckingAvailability(false);
+                    return;
+                }
+            } finally {
+                setIsCheckingAvailability(false);
+            }
+        } else {
+            onAddRoute(formData);
+        }
         onClose();
     };
 
@@ -70,7 +108,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
             startLocation: "",
             endLocation: "",
             status: "unassigned",
-            assignedDriver: { id: "", name: "" } as {
+            assignedDriver: { id: "" } as {
                 id?: string;
                 name?: string;
             },
@@ -86,6 +124,8 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
         });
         setValidationErrors({});
         setIsSubmitting(false);
+        setAvailabilityStatus("unknown");
+        setIsCheckingAvailability(false);
         onClose();
     };
 
@@ -98,6 +138,8 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
             }));
         }
     };
+
+    if (!isOpen) return null;
 
     return (
         <ModalWrapper isOpen={isOpen}>
@@ -156,9 +198,37 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                                 assignedDriver: driver,
                             }));
                             clearFieldError("assignedDriver");
+                            setAvailabilityStatus("unknown");
                         }}
                         assignedDriverError={validationErrors.assignedDriver}
                         status={formData.status}
+                        onCheckAvailability={async (driverId) => {
+                            if (!driverId) return;
+                            setIsCheckingAvailability(true);
+                            try {
+                                const status = await checkDriverAvailability(
+                                    driverId
+                                );
+                                setAvailabilityStatus(status);
+                                if (
+                                    status === "unavailable" ||
+                                    status === "on_route"
+                                ) {
+                                    notify(
+                                        "error",
+                                        status === "unavailable"
+                                            ? "Driver is unavailable"
+                                            : "Driver is currently on a route"
+                                    );
+                                } else {
+                                    notify("success", "Driver is available");
+                                }
+                            } finally {
+                                setIsCheckingAvailability(false);
+                            }
+                        }}
+                        availabilityStatus={availabilityStatus}
+                        isCheckingAvailability={isCheckingAvailability}
                     />
 
                     {/* Distance Duration Section */}

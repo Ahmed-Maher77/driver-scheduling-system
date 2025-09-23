@@ -20,6 +20,7 @@ import DistanceDurationSection from "./AddRouteModal_Components/DistanceDuration
 import CostSpeedSection from "./AddRouteModal_Components/CostSpeedSection";
 import NotesSection from "./EditRouteModal_Components/NotesSection";
 import DatesSection from "./EditRouteModal_Components/DatesSection";
+import { checkDriverAvailability } from "../../utils/functions/checkDriverAvailability";
 
 const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
     const [formData, setFormData] = useState<RouteRow>({
@@ -46,6 +47,10 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
     const [validationErrors, setValidationErrors] =
         useState<EditValidationErrors>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [availabilityStatus, setAvailabilityStatus] = useState<
+        "unknown" | "available" | "unavailable" | "on_route"
+    >("unknown");
+    const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
 
     useEffect(() => {
         if (routeId) {
@@ -55,7 +60,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
         }
     }, [routeId]);
 
-    const handleSubmit = (e?: React.FormEvent) => {
+    const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
 
         if (isSubmitting) return;
@@ -75,16 +80,48 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
             return;
         }
 
-        // save route to api
-        // formData
-        notify("success", "Route edited successfully");
-        onClose();
+        // If assigning, verify availability via API at submit time
+        if (formData.status === "assigned" && formData.assignedDriver?.id) {
+            try {
+                setIsCheckingAvailability(true);
+                const status = await checkDriverAvailability(
+                    formData.assignedDriver.id
+                );
+                setAvailabilityStatus(status);
+                if (status === "available") {
+                    // save route to api
+                    notify("success", "Route edited successfully");
+                    onClose();
+                } else if (status === "unavailable") {
+                    notify("error", "This driver is unavailable");
+                    setIsSubmitting(false);
+                    setIsCheckingAvailability(false);
+                    return;
+                } else if (status === "on_route") {
+                    notify(
+                        "error",
+                        "This driver currently has another route assigned"
+                    );
+                    setIsSubmitting(false);
+                    setIsCheckingAvailability(false);
+                    return;
+                }
+            } finally {
+                setIsCheckingAvailability(false);
+            }
+        } else {
+            // save route to api
+            notify("success", "Route edited successfully");
+            onClose();
+        }
     };
 
     const handleClose = () => {
         // Reset validation errors when closing
         setValidationErrors({});
         setIsSubmitting(false);
+        setAvailabilityStatus("unknown");
+        setIsCheckingAvailability(false);
         onClose();
     };
 
@@ -125,8 +162,8 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
 
                     {/* Note for user */}
                     <p className="text-sm gray-c italic mb-5 mt-[-10px]">
-                        <span className="font-semibold">Note:</span> {" "}
-                        Assigned Driver fields only appear when status is "assigned"
+                        <span className="font-semibold">Note:</span> Assigned
+                        Driver fields only appear when status is "assigned"
                     </p>
 
                     <LocationSection
@@ -160,6 +197,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                                 assignedDriver: driver,
                             }));
                             clearFieldError("assignedDriver");
+                            setAvailabilityStatus("unknown");
                         }}
                         onLastDriverChange={(driver) => {
                             setFormData((prev) => ({
@@ -171,6 +209,25 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         assignedDriverError={validationErrors.assignedDriver}
                         lastDriverError={validationErrors.lastDriver}
                         status={formData.status}
+                        onCheckAvailability={async (driverId) => {
+                            if (!driverId) return;
+                            setIsCheckingAvailability(true);
+                            try {
+                                const status = await checkDriverAvailability(
+                                    driverId
+                                );
+                                setAvailabilityStatus(status);
+                                if (status === "unavailable") {
+                                    notify("error", "Driver is unavailable");
+                                } else {
+                                    notify("success", "Driver is available");
+                                }
+                            } finally {
+                                setIsCheckingAvailability(false);
+                            }
+                        }}
+                        availabilityStatus={availabilityStatus}
+                        isCheckingAvailability={isCheckingAvailability}
                     />
 
                     {/* Distance Duration Section */}

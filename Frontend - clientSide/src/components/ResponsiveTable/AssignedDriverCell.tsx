@@ -1,9 +1,5 @@
 import { NavLink } from "react-router-dom";
-
-export interface AssignedDriverCellProps {
-    driver?: { id?: string; name?: string };
-    cellKey: string;
-}
+import type { AssignedDriverCellProps } from "../../common/Types/Interfaces";
 
 const AssignedDriverCell = ({ driver, cellKey }: AssignedDriverCellProps) => {
     if (!driver) return null;

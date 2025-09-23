@@ -9,6 +9,9 @@ const DriverSection: React.FC<DriverSectionProps> = ({
     assignedDriverError,
     lastDriverError,
     status,
+    onCheckAvailability,
+    availabilityStatus = "unknown",
+    isCheckingAvailability = false,
 }) => {
     return (
         <div className="grid grid-cols-1 gap-4 w-full">
@@ -48,7 +51,36 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                             }
                             className="main-input flex-1"
                         />
+                        <button
+                            type="button"
+                            className="main-btn green-bg px-4 py-2"
+                            onClick={() =>
+                                onCheckAvailability?.(assignedDriver?.id)
+                            }
+                            disabled={
+                                isCheckingAvailability || !assignedDriver?.id
+                            }
+                        >
+                            {isCheckingAvailability
+                                ? "Checking..."
+                                : "Check Availability"}
+                        </button>
                     </div>
+                    {availabilityStatus !== "unknown" && (
+                        <p
+                            className={`text-xs mt-1 ${
+                                availabilityStatus === "available"
+                                    ? "green-c"
+                                    : "red-c"
+                            }`}
+                        >
+                            {availabilityStatus === "available"
+                                ? "Driver is available"
+                                : availabilityStatus === "on_route"
+                                ? "Driver is currently on a route"
+                                : "Driver is unavailable"}
+                        </p>
+                    )}
                     {assignedDriverError && (
                         <p className="text-red-500 text-xs mt-1">
                             {assignedDriverError}
