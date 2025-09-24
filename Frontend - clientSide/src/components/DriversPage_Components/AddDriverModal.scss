@@ -1,0 +1,193 @@
+.add-driver-modal-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: var(--table-scroll-bar-color) transparent;
+}
+
+/* WebKit-based browsers */
+.add-driver-modal-wrapper::-webkit-scrollbar {
+    height: 6px;
+}
+.add-driver-modal-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+.add-driver-modal-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--table-scroll-bar-color-d);
+    border-radius: 9999px;
+}
+
+/* Custom file upload styles */
+.file-upload-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.file-upload-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.file-upload-label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    border: 2px dashed var(--gray-bg-l);
+    border-radius: 8px;
+    background: var(--gray-bg-l);
+    color: var(--gray-c-d);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 48px;
+
+    &:hover {
+        border-color: var(--primary-color);
+        background: var(--primary-color-light);
+        color: var(--primary-color);
+    }
+
+    &:focus-within {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px var(--primary-color-light);
+    }
+}
+
+.file-upload-icon {
+    width: 20px;
+    height: 20px;
+    color: currentColor;
+}
+
+.file-upload-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.file-upload-main-text {
+    font-weight: 500;
+}
+
+.file-upload-sub-text {
+    font-size: 12px;
+    color: var(--gray-c);
+}
+
+.file-upload-error {
+    border-color: var(--error-color) !important;
+    background: var(--error-color-light) !important;
+    color: var(--error-color) !important;
+}
+
+.file-selected {
+    border-color: var(--success-color) !important;
+    background: var(--success-color-light) !important;
+    color: var(--success-color) !important;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--gray-bg-l);
+    border-radius: 6px;
+    font-size: 12px;
+    color: var(--gray-c-d);
+}
+
+.file-info-icon {
+    width: 16px;
+    height: 16px;
+    color: var(--success-color);
+}
+
+.file-info-name {
+    font-weight: 500;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-info-size {
+    color: var(--gray-c);
+    font-size: 11px;
+}
+
+/* Picture upload specific styles */
+.picture-upload {
+    .file-upload-label {
+        border-style: solid;
+        background: var(--white);
+        border-color: var(--gray-border);
+
+        &:hover {
+            border-color: var(--primary-color);
+            background: var(--primary-color-light);
+        }
+    }
+
+    .file-upload-icon {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* License and National ID upload specific styles */
+.document-upload {
+    .file-upload-label {
+        border-style: dashed;
+        background: var(--gray-bg-l);
+        border-color: var(--gray-border);
+
+        &:hover {
+            border-color: var(--primary-color);
+            background: var(--primary-color-light);
+        }
+    }
+
+    .file-upload-icon {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* Required field indicator */
+.required-upload {
+    .file-upload-label {
+        border-color: var(--primary-color);
+        background: var(--primary-color-light);
+        color: var(--primary-color);
+    }
+}
+
+/* Error state */
+.upload-error {
+    .file-upload-label {
+        border-color: var(--error-color);
+        background: var(--error-color-light);
+        color: var(--error-color);
+    }
+}
+
+/* Success state */
+.upload-success {
+    .file-upload-label {
+        border-color: var(--success-color);
+        background: var(--success-color-light);
+        color: var(--success-color);
+    }
+}

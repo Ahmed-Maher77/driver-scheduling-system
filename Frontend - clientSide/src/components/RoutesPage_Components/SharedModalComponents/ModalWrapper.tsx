@@ -25,7 +25,7 @@ const ModalWrapper: React.FC<ModalWrapperProps> = ({
 
     return (
         <div
-            className={`fixed inset-0 flex items-center justify-center z-[999] p-4 transition-opacity duration-300 ease-out ${
+            className={`main-modal-wrapper popup-scrollbar fixed inset-0 flex items-center justify-center z-[999] p-4 transition-opacity duration-300 ease-out ${
                 mounted
                     ? "bg-[#00000050] backdrop-blur-[1px] opacity-100"
                     : "bg-transparent opacity-0 pointer-events-none"

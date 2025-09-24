@@ -10,8 +10,9 @@ import AddRouteModal from "../../components/RoutesPage_Components/AddRouteModal"
 import { exportCsv } from "../../components/RoutesPage_Components/exportCsv";
 import RoutesControls from "../../components/RoutesPage_Components/RoutesControls";
 import FiltersSection from "../../components/RoutesPage_Components/FiltersSection";
-import BulkActionsBar from "../../components/RoutesPage_Components/BulkActionsBar";
+import BulkActionsBar from "../../components/BulkActionsBar/BulkActionsBar";
 import RoutesTable from "../../components/RoutesPage_Components/RoutesTable";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal/DeleteConfirmationModal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { notify } from "../../utils/functions/notify";
 
@@ -80,6 +81,9 @@ const RoutesPage = () => {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [editingRouteId, setEditingRouteId] = useState("");
     const [selected, setSelected] = useState<Record<string, boolean>>({});
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [deletingRouteId, setDeletingRouteId] = useState("");
+    const [isExportingCsv, setIsExportingCsv] = useState(false);
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [routes, setRoutes] = useState(initialRoutes);
@@ -131,31 +135,27 @@ const RoutesPage = () => {
 
     // Add Route
     const addRoute = (routeData: AddRouteItemProps) => {
-        const newRoute = {
-            startLocation: routeData.startLocation,
-            endLocation: routeData.endLocation,
-            distance: routeData.distance,
-            distanceUnit: routeData.distanceUnit,
-            duration: routeData.duration,
-            timeUnit: routeData.timeUnit,
-            cost: routeData.cost,
-            currency: routeData.currency,
-            maxSpeed: routeData.maxSpeed,
-            speedUnit: routeData.speedUnit,
-        };
-
         // Add route to api
-        // addRouteToApi(newRoute);
+        // addRouteToApi(routeData);
         // invalidate the routes
+        console.log("Route data:", routeData); // Reserved for future API integration
         notify("success", "Route added successfully");
     };
 
     // Delete Route
     const deleteRoute = (id: string) => {
+        setDeletingRouteId(id);
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDelete = () => {
         // delete route from api
-        // deleteRouteFromApi(id);
-        // invalidate the routes
+        // deleteRouteFromApi(deletingRouteId);
+        // invalidate the fetch routes
+        // setRoutes((prev) => prev.filter((r) => r.id !== deletingRouteId));
         notify("success", "Route deleted successfully");
+        setShowDeleteConfirm(false);
+        setDeletingRouteId("");
     };
 
     // View Route Details
@@ -197,8 +197,18 @@ const RoutesPage = () => {
     };
 
     // Export CSV
-    const handleExportCsv = () => {
-        exportCsv(routes, "routes.csv");
+    const handleExportCsv = async () => {
+        setIsExportingCsv(true);
+        try {
+            // Simulate API delay
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            exportCsv(routes, "routes.csv");
+            notify("success", "Routes exported successfully");
+        } catch {
+            notify("error", "Failed to export routes");
+        } finally {
+            setIsExportingCsv(false);
+        }
     };
 
     // Selection functions
@@ -229,11 +239,14 @@ const RoutesPage = () => {
             <div className="container">
                 <PageHeader title="Route Management" />
 
+                {/* ================== Routes Controls ================== */}
                 <RoutesControls
                     onExportCsv={handleExportCsv}
                     onAddRoute={openAddRoute}
+                    isExportingCsv={isExportingCsv}
                 />
 
+                {/* ================== Routes Filters Section ================== */}
                 <FiltersSection
                     showFilters={showFilters}
                     onToggleFilters={() => setShowFilters((prev) => !prev)}
@@ -241,12 +254,18 @@ const RoutesPage = () => {
                     setSearchBy={setSearchBy}
                 />
 
-                <main className="white-bg p-4 rounded-lg shadow-md transition-all duration-300 ease-in-out">
+                <main
+                    className={`white-bg p-4 rounded-lg ${
+                        showFilters ? "rounded-t-none" : ""
+                    } shadow-md transition-all duration-300 ease-in-out`}
+                >
+                    {/* Bulk Actions Bar */}
                     <BulkActionsBar
                         selectedCount={selectedCount}
                         onDeleteSelected={deleteSelectedRoutes}
                     />
 
+                    {/* Routes Table */}
                     <RoutesTable
                         routes={routes}
                         selected={selected}
@@ -261,16 +280,28 @@ const RoutesPage = () => {
                 </main>
             </div>
 
+            {/* ================== Edit Route Modal ================== */}
             <EditRouteModal
                 isOpen={isEditModalOpen}
                 onClose={handleCloseEditModal}
                 routeId={editingRouteId}
             />
 
+            {/* ================== Add Route Modal ================== */}
             <AddRouteModal
                 isOpen={isAddModalOpen}
                 onClose={handleCloseAddModal}
                 onAddRoute={addRoute}
+            />
+
+            {/* ================== Delete Confirmation Modal ================== */}
+            <DeleteConfirmationModal
+                isOpen={showDeleteConfirm}
+                onClose={() => setShowDeleteConfirm(false)}
+                onConfirm={confirmDelete}
+                title="Confirm Delete"
+                message={`Are you sure you want to delete route ${deletingRouteId}? This action cannot be undone.`}
+                confirmButtonText="Delete Route"
             />
         </div>
     );

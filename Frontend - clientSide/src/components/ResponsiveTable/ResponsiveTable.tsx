@@ -1,37 +1,28 @@
 import "./ResponsiveTable.scss";
 import type {
+    BuildColumnsProps,
     ResponsiveTableProps,
     TableColumn,
-    TableAlign,
 } from "../../common/Types/Interfaces";
 import AssignedDriverCell from "./AssignedDriverCell";
 import DetailsCell from "./DetailsCell";
 import DefaultCell from "./DefaultCell";
 
-const getAlignClass = (align?: TableAlign, fallback: TableAlign = "center") =>
-    align === "left"
-        ? "text-left"
-        : align === "right"
-        ? "text-right"
-        : fallback === "left"
-        ? "text-left"
-        : fallback === "right"
-        ? "text-right"
-        : "text-center";
+function buildColumns<T extends Record<string, unknown>>({
+    columns,
+    headers,
+    rows,
+}: BuildColumnsProps<T>): TableColumn<T>[] {
+    // If columns are provided, use them
+    if (columns?.length) return columns;
 
-function buildColumns<T extends Record<string, unknown>>(
-    columns: TableColumn<T>[] | undefined,
-    headers: string[] | undefined,
-    rows: T[],
-    defaultAlign: TableAlign
-): TableColumn<T>[] {
-    if (columns && columns.length) return columns;
-    const source =
-        headers || (rows[0] ? (Object.keys(rows[0]) as string[]) : []);
-    return source.map((key) => ({
+    // Determine column keys from headers or first row
+    const columnKeys = headers || (rows[0] ? Object.keys(rows[0]) : []);
+
+    // Create simple columns with capitalized labels
+    return columnKeys.map((key) => ({
         key,
-        label: String(key).charAt(0).toUpperCase() + String(key).slice(1),
-        align: defaultAlign,
+        label: key.charAt(0).toUpperCase() + key.slice(1),
     }));
 }
 
@@ -42,26 +33,22 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
     stickyHeader = true,
     className = "",
     tableClassName = "",
-    cellAlign = "center",
     seeDetails = false,
 }: ResponsiveTableProps<T>) => {
-    const effectiveColumns = buildColumns<T>(columns, headers, rows, cellAlign);
+    const effectiveColumns = buildColumns<T>({ columns, headers, rows });
 
     return (
         <div
             className={`responsive-table-wrapper table-responsive mt-4 ${className}`}
         >
             <table className={`responsive-table w-full ${tableClassName}`}>
-                {/* Header */}
+                {/* Table Header */}
                 <thead className={stickyHeader ? "gray-bg-l" : undefined}>
                     <tr>
                         {effectiveColumns.map((col) => (
                             <th
                                 key={String(col.key)}
-                                className={`p-4 ${getAlignClass(
-                                    col.align,
-                                    cellAlign
-                                )}`}
+                                className="p-4 text-center"
                             >
                                 {col.label ??
                                     String(col.key).charAt(0).toUpperCase() +
@@ -71,11 +58,12 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
                     </tr>
                 </thead>
 
-                {/* Body */}
+                {/* Table Body */}
                 <tbody>
                     {rows.map((row, rowIdx) => (
                         <tr key={rowIdx}>
                             {effectiveColumns.map((col, colIdx) => {
+                                // Assigned Driver Cell
                                 if (String(col.key) === "assignedDriver") {
                                     const cell = (
                                         <AssignedDriverCell
@@ -87,6 +75,7 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
                                     if (cell) return cell;
                                 }
 
+                                // Details Cell
                                 if (
                                     colIdx === effectiveColumns.length - 1 &&
                                     seeDetails
@@ -101,16 +90,12 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
                                     );
                                 }
 
-                                const alignClass = getAlignClass(
-                                    col.align,
-                                    cellAlign
-                                );
+                                // Default Cell
                                 return (
                                     <DefaultCell<T>
                                         key={String(col.key)}
                                         row={row}
                                         col={col}
-                                        alignClass={alignClass}
                                     />
                                 );
                             })}

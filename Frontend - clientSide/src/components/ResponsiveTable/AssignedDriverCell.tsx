@@ -6,17 +6,12 @@ const AssignedDriverCell = ({ driver, cellKey }: AssignedDriverCellProps) => {
     return (
         <td key={cellKey} className="p-4">
             {driver.name ? (
-                <>
+                <NavLink
+                    to={`/drivers/${driver.id}`}
+                    className="blue-c hover-blue-c ml-2 inline-block font-medium"
+                >
                     {driver.name}
-                    {driver.id && (
-                        <NavLink
-                            to={`/drivers/${driver.id}`}
-                            className="blue-c hover-blue-c ml-2 inline-block"
-                        >
-                            <i className="fa-solid fa-up-right-from-square text-sm"></i>
-                        </NavLink>
-                    )}
-                </>
+                </NavLink>
             ) : (
                 <span className="gray-c">Unassigned</span>
             )}

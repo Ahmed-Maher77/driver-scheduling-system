@@ -1,7 +1,4 @@
-interface BulkActionsBarProps {
-    selectedCount: number;
-    onDeleteSelected: () => void;
-}
+import type { BulkActionsBarProps } from "../../common/Types/Interfaces";
 
 const BulkActionsBar = ({
     selectedCount,
@@ -11,8 +8,14 @@ const BulkActionsBar = ({
 
     return (
         <div className="bulk-bar yellow-50 p-3 rounded-lg flex items-center justify-between mt-[-10px]">
+            {/* Selected Items Count */}
             <span className="gray-c-d">{selectedCount} selected</span>
-            <button onClick={onDeleteSelected} className="red-c font-semibold">
+
+            {/* Delete Selected Items */}
+            <button
+                onClick={onDeleteSelected}
+                className="red-c font-semibold cursor-pointer hover-red-c"
+            >
                 Delete selected
             </button>
         </div>

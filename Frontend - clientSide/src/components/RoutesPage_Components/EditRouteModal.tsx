@@ -60,17 +60,14 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
         }
     }, [routeId]);
 
+    // Handle Submit (Edit Route)
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
-
         if (isSubmitting) return;
-
         setIsSubmitting(true);
-
         // Validate form data
         const errors = validateEditForm(formData);
         setValidationErrors(errors);
-
         if (hasEditValidationErrors(errors)) {
             notify(
                 "error",
@@ -81,41 +78,36 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
         }
 
         // If assigning, verify availability via API at submit time
-        if (formData.status === "assigned" && formData.assignedDriver?.id) {
-            try {
-                setIsCheckingAvailability(true);
-                const status = await checkDriverAvailability(
-                    formData.assignedDriver.id
-                );
-                setAvailabilityStatus(status);
-                if (status === "available") {
-                    // save route to api
-                    notify("success", "Route edited successfully");
-                    onClose();
-                } else if (status === "unavailable") {
-                    notify("error", "This driver is unavailable");
-                    setIsSubmitting(false);
-                    setIsCheckingAvailability(false);
-                    return;
-                } else if (status === "on_route") {
-                    notify(
-                        "error",
-                        "This driver currently has another route assigned"
-                    );
-                    setIsSubmitting(false);
-                    setIsCheckingAvailability(false);
-                    return;
-                }
-            } finally {
+        try {
+            setIsCheckingAvailability(true);
+            const status = await checkDriverAvailability(
+                formData.assignedDriver?.id || ""
+            );
+            setAvailabilityStatus(status);
+            if (status === "available") {
+                // save route to api
+                notify("success", "Route edited successfully");
+                onClose();
+            } else if (status === "unavailable") {
+                notify("error", "This driver is unavailable");
+                setIsSubmitting(false);
                 setIsCheckingAvailability(false);
+                return;
+            } else if (status === "on_route") {
+                notify(
+                    "error",
+                    "This driver currently has another route assigned"
+                );
+                setIsSubmitting(false);
+                setIsCheckingAvailability(false);
+                return;
             }
-        } else {
-            // save route to api
-            notify("success", "Route edited successfully");
-            onClose();
+        } finally {
+            setIsCheckingAvailability(false);
         }
     };
 
+    // Close Modal
     const handleClose = () => {
         // Reset validation errors when closing
         setValidationErrors({});
@@ -143,7 +135,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                 <ModalHeader title="Edit Route" onClose={handleClose} />
 
                 <FormSection onSubmit={handleSubmit}>
-                    {/* Basic Info Section */}
+                    {/* ================== Basic Info Section ================== */}
                     <BasicInfoSection
                         routeId={formData.id}
                         status={formData.status}
@@ -160,12 +152,13 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         statusError={validationErrors.status}
                     />
 
-                    {/* Note for user */}
+                    {/* ================== Note for user ================== */}
                     <p className="text-sm gray-c italic mb-5 mt-[-10px]">
                         <span className="font-semibold">Note:</span> Assigned
                         Driver fields only appear when status is "assigned"
                     </p>
 
+                    {/* ================== Location Section ================== */}
                     <LocationSection
                         startLocation={formData.startLocation}
                         endLocation={formData.endLocation}
@@ -187,7 +180,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         endLocationError={validationErrors.endLocation}
                     />
 
-                    {/* Driver Section */}
+                    {/* ================== Driver Section ================== */}
                     <DriverSection
                         assignedDriver={formData.assignedDriver}
                         lastDriver={formData.lastDriver}
@@ -230,7 +223,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         isCheckingAvailability={isCheckingAvailability}
                     />
 
-                    {/* Distance Duration Section */}
+                    {/* ================== Distance Duration Section ================== */}
                     <DistanceDurationSection
                         distance={formData.distance || 0}
                         distanceUnit={formData.distanceUnit || "km"}
@@ -266,7 +259,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         durationError={validationErrors.duration}
                     />
 
-                    {/* Cost Speed Section */}
+                    {/* ================== Cost Speed Section ================== */}
                     <CostSpeedSection
                         cost={formData.cost || 0}
                         currency={formData.currency || "EGP"}
@@ -299,7 +292,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         maxSpeedError={validationErrors.maxSpeed}
                     />
 
-                    {/* Notes Section */}
+                    {/* ================== Notes Section ================== */}
                     <NotesSection
                         notes={formData.notes || ""}
                         onNotesChange={(value) => {
@@ -312,14 +305,14 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         notesError={validationErrors.notes}
                     />
 
-                    {/* Dates Section */}
+                    {/* ================== Dates Section ================== */}
                     <DatesSection
                         createdAt={formData.createdAt}
                         updatedAt={formData.updatedAt || null}
                         assignedAt={formData.assignedAt || ""}
                     />
 
-                    {/* Modal Actions */}
+                    {/* ================== Modal Actions ================== */}
                     <ModalActions
                         onCancel={handleClose}
                         onSubmit={handleSubmit}

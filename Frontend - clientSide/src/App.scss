@@ -2,13 +2,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 :root {
-    --main-bg: #f6f6f6;
+    --main-bg: #e9ecef;
     --nav-bg: #fff;
     --white-c: #fff;
     --fixed-white-c: #fff;
     --white-bg: #fff;
     // black
     --black-c: #000;
+
     // blue
     --blue-c: #1e88e5;
     --blue-c-d: #004480;
@@ -28,7 +29,7 @@
     // red
     --red-c: #f44336;
     --red-c-d: #b72014;
-
+    --red-bg: #f44336;
     // button colors
     --button-black-bg: #3b3b3b;
 
@@ -68,6 +69,9 @@
 
     // Focus ring
     --focus-ring: rgba(6, 172, 172, 0.25);
+
+    // Border
+    --gray-border: #949494;
 }
 
 /* ===================================== Global styles =====================================*/
@@ -83,7 +87,8 @@ body {
     width: 6px;
 }
 ::-webkit-scrollbar-thumb {
-    background-color: var(--green-color);
+    background-color: var(--green-bg-dark);
+    border-radius: 20px;
 }
 ::-webkit-scrollbar-track {
     background-color: #ffffff;
@@ -217,20 +222,49 @@ body {
         }
     }
 }
+.red-bg {
+    background-color: var(--red-bg);
+    transition: var(--trans-3);
+    &:hover {
+        background-color: var(--red-c-d);
+    }
+}
 // buttons
 .button-black-bg {
     background-color: var(--button-black-bg);
     border: 2px solid var(--button-black-bg) !important;
     transition: var(--trans-3);
+    color: var(--fixed-white-c);
     &:hover {
         background-color: transparent;
         color: var(--button-black-bg);
+    }
+}
+.button-white-bg {
+    background-color: var(--white-bg);
+    border: 2px solid var(--white-bg) !important;
+    transition: var(--trans-3);
+    color: var(--black-c) !important;
+    &:hover {
+        border-color: var(--black-c) !important;
+        background-color: var(--black-c);
+        color: var(--white-bg) !important;
     }
 }
 
 // Borders
 .border-timeline-icon {
     border: 8px solid var(--white-bg) !important;
+}
+.img-border-full {
+    border-radius: 50%;
+    border: 2px solid var(--gray-c-l);
+}
+.file-upload-border {
+    border: 2px dashed var(--gray-border) !important;
+    &:hover {
+        border-color: var(--green-color) !important;
+    }
 }
 
 // Transition
@@ -300,6 +334,13 @@ body {
         &:hover {
             color: var(--whatsapp-color);
         }
+    }
+}
+.social-link {
+    color: var(--gray-c);
+    transition: var(--trans-3);
+    &:hover {
+        color: var(--green-color);
     }
 }
 .animated-hover-icon-container {

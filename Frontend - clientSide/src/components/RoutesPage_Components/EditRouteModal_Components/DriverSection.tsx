@@ -15,7 +15,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
 }) => {
     return (
         <div className="grid grid-cols-1 gap-4 w-full">
-            {/* Assigned Driver - Only show when status is "assigned" */}
+            {/* ================== Assigned Driver [Only show when status is "assigned"] ================== */}
             {status === "assigned" && (
                 <div className="main-input-container w-full">
                     {/* Assigned Driver Label */}
@@ -23,7 +23,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                         Assigned Driver
                     </label>
 
-                    {/* Driver ID and Name */}
+                    {/* ================== Driver ID and Name ================== */}
                     <div className="flex gap-4 w-full flex-wrap">
                         {/* Driver ID */}
                         <input
@@ -51,6 +51,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                             }
                             className="main-input flex-1"
                         />
+                        {/* Check Availability Button */}
                         <button
                             type="button"
                             className="main-btn green-bg px-4 py-2"
@@ -66,6 +67,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                                 : "Check Availability"}
                         </button>
                     </div>
+                    {/* Availability Status */}
                     {availabilityStatus !== "unknown" && (
                         <p
                             className={`text-xs mt-1 ${
@@ -81,6 +83,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                                 : "Driver is unavailable"}
                         </p>
                     )}
+                    {/* Assigned Driver Error */}
                     {assignedDriverError && (
                         <p className="text-red-500 text-xs mt-1">
                             {assignedDriverError}
@@ -89,7 +92,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                 </div>
             )}
 
-            {/* Last Driver */}
+            {/* ================== Last Driver ================== */}
             <div className="main-input-container w-full">
                 {/* Last Driver Label */}
                 <label className="block gray-c-d text-sm mb-2">
@@ -104,7 +107,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                         placeholder="Driver ID"
                         value={lastDriver?.id || ""}
                         onChange={(e) =>
-                            onLastDriverChange({
+                            onLastDriverChange?.({
                                 id: e.target.value,
                                 name: lastDriver?.name || "",
                             })
@@ -117,7 +120,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                         placeholder="Driver Name"
                         value={lastDriver?.name || ""}
                         onChange={(e) =>
-                            onLastDriverChange({
+                            onLastDriverChange?.({
                                 id: lastDriver?.id || "",
                                 name: e.target.value,
                             })
@@ -125,6 +128,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                         className="main-input flex-1"
                     />
                 </div>
+                {/* Last Driver Error */}
                 {lastDriverError && (
                     <p className="text-red-500 text-xs mt-1">
                         {lastDriverError}

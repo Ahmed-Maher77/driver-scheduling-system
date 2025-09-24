@@ -202,6 +202,7 @@ export interface EditRouteModalProps {
     isOpen: boolean;
     onClose: () => void;
     routeId: string;
+    onSave?: (route: RouteRow) => void;
 }
 
 // Add Route Modal Props
@@ -249,6 +250,84 @@ export interface RoutesTableProps {
     onDeleteRoute: (id: string) => void;
 }
 
+// ============================== Drivers Types ==============================
+export type DriverStatus = "available" | "unavailable" | "on_route";
+
+export type DriverRow = {
+    id: string;
+    name: string;
+    picture?: File | null | string;
+    assignedRouteId?: string | null;
+    vehicleType?: string;
+    status: DriverStatus;
+    licenseType?: string;
+    phone?: string;
+};
+
+export interface DriversTableProps {
+    drivers: DriverRow[];
+    selected: Record<string, boolean>;
+    selectedCount: number;
+    allSelected: boolean;
+    onToggleAll: () => void;
+    onToggleOne: (id: string) => void;
+    onViewDriver: (id: string) => void;
+    onEditDriver: (id: string) => void;
+    onDeleteDriver: (id: string) => void;
+}
+
+export interface RoutesControlsProps {
+    onExportCsv: () => void;
+    onAddRoute: () => void;
+    isExportingCsv?: boolean;
+}
+
+export interface DriversControlsProps {
+    onExportCsv: () => void;
+    onAddDriver: () => void;
+    isExportingCsv?: boolean;
+}
+
+export type DriverForm = {
+    name: string;
+    picture?: File | null | string;
+    phone: string;
+    address?: string;
+    contact_channels: {
+        email?: string;
+        facebook?: string;
+        whatsapp?: string;
+        linkedin?: string;
+    };
+    country?: string;
+    city?: string;
+    status: Exclude<DriverStatus, "on_route">; // available | unavailable
+    assignedRouteId?: string;
+    notes?: string;
+    national_id: File | null | string;
+    gender: "Male" | "Female" | "Other";
+    dateOfBirth: string; // ISO
+    drivingLicense: {
+        type: string;
+        number: string;
+        expiration: string; // ISO
+        image: File | null | string; // required
+    };
+    vehicle: {
+        type: string;
+        make: string;
+        model: string;
+        year: string;
+        color: string;
+    };
+};
+
+// Add Driver Modal Props
+export interface AddDriverModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+}
+
 // Driver Section Props
 export interface DriverInfo {
     id?: string;
@@ -265,6 +344,15 @@ export interface DriverSectionProps {
     onCheckAvailability?: (driverId?: string) => void;
     availabilityStatus?: "unknown" | "available" | "unavailable" | "on_route";
     isCheckingAvailability?: boolean;
+}
+
+// Edit Driver Modal Props
+export interface EditDriverModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    driverId: string;
+    drivers: DriverRow[];
+    onSave?: (driver: DriverForm & { id: string }) => void;
 }
 
 // Dates Section Props
@@ -358,4 +446,318 @@ export interface ValidationErrors {
 export interface AssignedDriverCellProps {
     driver?: { id?: string; name?: string };
     cellKey: string;
+}
+
+// Contact Info Props
+export type ContactInfoProps = {
+    location?: string;
+    email?: string;
+    whatsapp?: string;
+    linkedin?: string;
+    facebook?: string;
+};
+
+// Contact Map Props
+export type ContactMapProps = {
+    title?: string;
+    src?: string;
+    className?: string;
+};
+
+// Driver
+export type Driver = { id: string; name: string; picture?: string };
+export type DriverAssignmentProps = {
+    assignedDriver?: Driver | null;
+    lastDriver?: Driver | null;
+};
+
+// Route Activity
+export type ActivityItem = {
+    id: string;
+    time: string;
+    description: string;
+};
+export type RouteActivityProps = {
+    items?: ActivityItem[];
+};
+
+// Route Header
+export type RouteHeaderProps = {
+    id: string;
+    status: "assigned" | "unassigned" | "in progress";
+    onEdit?: () => void;
+    onDelete?: () => void;
+};
+
+// Driver Card Props
+export interface DriverCardProps {
+    driver?: Driver | null;
+    title?: string | null;
+}
+
+// Default Cell Props
+export interface DefaultCellProps<T extends Record<string, unknown>> {
+    row: T;
+    col: TableColumn<T>;
+}
+
+// Build Columns Props
+export interface BuildColumnsProps<T extends Record<string, unknown>> {
+    columns: TableColumn<T>[] | undefined;
+    headers: string[] | undefined;
+    rows: T[];
+}
+
+// Actions Column Props
+export interface ActionsColumnProps {
+    onViewRoute: (id: string) => void;
+    onEditRoute: (id: string) => void;
+    onDeleteRoute: (id: string) => void;
+}
+
+// Select Column Props
+export interface SelectColumnProps {
+    selected: Record<string, boolean>;
+    selectedCount: number;
+    allSelected: boolean;
+    onToggleAll: () => void;
+    onToggleOne: (id: string) => void;
+}
+
+// Bulk Actions Bar Props
+export interface BulkActionsBarProps {
+    selectedCount: number;
+    onDeleteSelected: () => void;
+}
+
+// Route Assignment Section Props
+export interface RouteAssignmentSectionProps {
+    form: DriverForm;
+    isUnavailable: boolean;
+    isCheckingAvailability: boolean;
+    routeAvailabilityStatus:
+        | "unknown"
+        | "assigned"
+        | "unassigned"
+        | "in progress";
+    update: (path: string, value: string | File | null) => void;
+    onCheckAvailability: () => void;
+    onRouteIdChange: () => void;
+}
+
+// Notes Section Props
+export interface NotesSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Vehicle Section Props
+export interface VehicleSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// License Document Section Props
+export interface LicenseDocumentSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// License Section Props
+export interface LicenseSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// National Id Document Section Props
+export interface NationalIdDocumentSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Identity Section Props
+export interface IdentitySectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Contact Channels Section Props
+export interface ContactChannelsSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Address Section Props
+export interface AddressSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Picture Upload Section Props
+export interface PictureUploadSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Basic Info Section Props
+export interface BasicInfoSectionProps {
+    driver: DriverRow;
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Delete Confirmation Modal Props
+export interface DeleteConfirmationModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    title: string;
+    message: string;
+    confirmButtonText?: string;
+    cancelButtonText?: string;
+}
+
+// Route Assignment Section Props
+export interface RouteAssignmentSectionProps {
+    form: DriverForm;
+    isUnavailable: boolean;
+    isCheckingAvailability: boolean;
+    routeAvailabilityStatus:
+        | "unknown"
+        | "assigned"
+        | "unassigned"
+        | "in progress";
+    update: (path: string, value: string | File | null) => void;
+    onCheckAvailability: () => void;
+    onRouteIdChange: () => void;
+}
+
+// Driver Search By
+export type DriverSearchBy = {
+    driverId: string;
+    name: string;
+    status: DriverStatus | "";
+    vehicleType: string;
+    licenseType: string;
+};
+// Driver Filters Section Props
+export interface DriverFiltersSectionProps {
+    showFilters: boolean;
+    onToggleFilters: () => void;
+    searchBy: DriverSearchBy;
+    setSearchBy: React.Dispatch<React.SetStateAction<DriverSearchBy>>;
+}
+
+// Contacts Section Props
+export interface ContactsSectionProps {
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Assignment Card Props
+export interface AssignmentCardProps {
+    assignedRoute?: {
+        id?: string;
+        startLocation?: string;
+        endLocation?: string;
+        assignedAt?: string;
+        distance?: number | string;
+        distanceUnit?: string;
+        duration?: number | string;
+        timeUnit?: string;
+    } | null;
+}
+
+// Past Routes Timeline Props
+export interface PastRoutesTimelineProps {
+    items: PastRouteItem[];
+}
+// Past Route Item
+export interface PastRouteItem {
+    id: string;
+    startLocation: string;
+    endLocation: string;
+}
+
+// Vehicle Card Props
+export interface VehicleCardProps {
+    type?: string | null;
+    make?: string | null;
+    model?: string | null;
+    year?: string | null | number;
+    color?: string | null;
+}
+
+// Notes Card Props
+export interface NotesCardProps {
+    notes?: string | null;
+}
+
+// Personal Location Card Props
+export interface PersonalLocationCardProps {
+    gender?: string | null;
+    address?: string | null;
+    city?: string | null;
+    country?: string | null;
+}
+
+// Contact Info Card Props
+export interface ContactInfoCardProps {
+    phone?: string | null;
+    email?: string | null;
+    whatsapp?: string | null;
+    linkedin?: string | null;
+    facebook?: string | null;
+}
+
+// Header Summary Props
+export interface HeaderSummaryProps {
+    name: string;
+    id: string;
+    status: string;
+    joinedAt?: string;
+    pictureUrl: string;
+    onEdit: () => void;
+    onDelete: () => void;
+}
+
+// Info Row Props
+export interface InfoRowProps {
+    label: string;
+    value?: string | number | null;
+    href?: string | null;
+}
+
+// Calendar Types
+export interface MonthRoute {
+    id: string;
+    assignedAt: string; // ISO date (YYYY-MM-DD)
+    startLocation?: string;
+    endLocation?: string;
+}
+
+// Day Routes Modal Props
+export interface DayRoutesModalProps {
+    isOpen: boolean;
+    dateLabel: string;
+    routes: MonthRoute[];
+    onClose: () => void;
+    onSeeDetails: (routeId: string) => void;
+}
+
+// Day Grid Props
+export interface DayGridProps {
+    monthMatrix: (Date | null)[];
+    monthRoutesByDate: Record<string, MonthRoute[]>;
+    isLoading?: boolean;
+    errorMessage?: string;
+    onOpenDay: (key: string, routes: MonthRoute[]) => void;
+}
+
+// Month Controls Props
+export interface MonthControlsProps {
+    monthLabel: string;
+    isLoading: boolean;
+    onPrev: () => void;
+    onNext: () => void;
 }

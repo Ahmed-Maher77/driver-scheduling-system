@@ -17,7 +17,7 @@ const Layout = () => {
     const dispatch = useAppDispatch();
 
     // Hide Common Components if current route isn't one of the defined routes
-    const definedRoutes = ["/", "/about", "/contact", "/drivers", "/routes"];
+    const definedRoutes = ["/", "/about", "/contact", "/drivers", "/routes", "/calendar"];
     const showCommonComponents = definedRoutes.some((route) => {
         if (route === "/") {
             return location.pathname === "/";
@@ -34,7 +34,6 @@ const Layout = () => {
         const updateWidth = (width: number) => {
             const isXLargeScreen = width > 1400;
             dispatch(setIsXLargeScreen(isXLargeScreen));
-            console.log(isXLargeScreen);
         };
         // Initial measure
         updateWidth(element.getBoundingClientRect().width);
@@ -60,12 +59,14 @@ const Layout = () => {
     }, []);
 
 
+    // Show Page Loader
     if (showPageLoader) {
         return <PageLoader />;
     }
 
     return (
         <div className="flex h-screen">
+            {/* Sidebar + Overlay [if activeBar is true in small screens] */}
             {showCommonComponents && (
                 <>
                     <Sidebar />
@@ -73,13 +74,17 @@ const Layout = () => {
                 </>
             )}
 
+            {/* Navbar [in small screens] */}
             {showCommonComponents && <Navbar />}
 
+            {/* Main Container */}
             <div
                 ref={mainContainerRef}
                 className={`main-content flex-1 overflow-y-auto overflow-x-hidden pt-[75px] lg:pt-0`}
             >
+                {/* Outlet [the page content] */}
                 <Outlet />
+                {/* Pages Footer */}
                 {showCommonComponents && <Footer />}
             </div>
         </div>

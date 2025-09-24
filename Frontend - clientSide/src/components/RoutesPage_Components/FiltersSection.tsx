@@ -56,7 +56,7 @@ const FiltersSection = ({
             >
                 <div
                     ref={contentRef}
-                    className="routes-filters-actions white-bg p-4 py-6 rounded-lg shadow-md my-4 mb-10 flex flex-col xl:flex-row gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
+                    className="routes-filters-actions white-bg p-4 py-6 pb-2 rounded-lg rounded-b-none shadow-md flex flex-col xl:flex-row gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
                     style={{
                         transform: showFilters
                             ? "translateY(0)"

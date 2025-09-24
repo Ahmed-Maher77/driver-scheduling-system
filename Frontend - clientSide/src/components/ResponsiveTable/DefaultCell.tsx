@@ -1,18 +1,11 @@
-import type { TableColumn } from "../../common/Types/Interfaces";
-
-export interface DefaultCellProps<T extends Record<string, unknown>> {
-    row: T;
-    col: TableColumn<T>;
-    alignClass: string;
-}
+import type { DefaultCellProps } from "../../common/Types/Interfaces";
 
 const DefaultCell = <T extends Record<string, unknown>>({
     row,
     col,
-    alignClass,
 }: DefaultCellProps<T>) => {
     return (
-        <td key={String(col.key)} className={`p-4 ${alignClass}`}>
+        <td key={String(col.key)} className="p-4 text-center">
             {col.render ? col.render(row) : String(row[col.key as keyof T])}
         </td>
     );
