@@ -9,54 +9,60 @@ import BulkActionsBar from "../../components/BulkActionsBar/BulkActionsBar";
 import AddDriverModal from "../../components/DriversPage_Components/AddDriverModal";
 import EditDriverModal from "../../components/DriversPage_Components/EditDriverModal";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal/DeleteConfirmationModal";
-import type { DriverRow } from "../../common/Types/Interfaces";
 import { exportDriversCsv } from "../../components/DriversPage_Components/exportCsv";
 import { notify } from "../../utils/functions/notify";
+import useGetAllDrivers from "../../utils/hooks/api/useGetAllDrivers.tsx";
+import axios from "axios";
 
-const initialDriversData: DriverRow[] = [
-    {
-        id: "DR001",
-        name: "Ethan Harper",
-        picture: "https://via.placeholder.com/150",
-        status: "available", // available, unavailable, on_route
-        phone: "+1234567890",
-        licenseType: "B",
-        vehicleType: "Car",
-        assignedRouteId: "RT001",
-    },
-    {
-        id: "DR002",
-        name: "Liam Carter",
-        picture: "https://via.placeholder.com/150",
-        status: "unavailable", // available, unavailable, on_route
-        phone: "+1234567890",
-        licenseType: "B",
-        vehicleType: "Car",
-        assignedRouteId: "RT002",
-    },
-    {
-        id: "DR003",
-        name: "Noah White",
-        picture: "https://via.placeholder.com/150",
-        status: "on_route", // available, unavailable, on_route
-        phone: "+1234567890",
-        licenseType: "B",
-        vehicleType: "Car",
-        assignedRouteId: "RT003",
-    },
-    {
-        id: "DR004",
-        name: "James Brown",
-        picture: "https://via.placeholder.com/150",
-        status: "unavailable", // available, unavailable, on_route
-        phone: "+1234567890",
-        licenseType: "B",
-        vehicleType: "Car",
-        assignedRouteId: "RT004",
-    },
-];
+// const initialDriversData: any[] = [
+//     {
+//         id: "DR001",
+//         name: "Ethan Harper",
+//         picture: "https://via.placeholder.com/150",
+//         status: "available", // available, unavailable, on_route
+//         phone: "+1234567890",
+//         licenseType: "B",
+//         vehicleType: "Car",
+//         assignedRouteId: "RT001",
+//     },
+//     {
+//         id: "DR002",
+//         name: "Liam Carter",
+//         picture: "https://via.placeholder.com/150",
+//         status: "unavailable", // available, unavailable, on_route
+//         phone: "+1234567890",
+//         licenseType: "B",
+//         vehicleType: "Car",
+//         assignedRouteId: "RT002",
+//     },
+//     {
+//         id: "DR003",
+//         name: "Noah White",
+//         picture: "https://via.placeholder.com/150",
+//         status: "on_route", // available, unavailable, on_route
+//         phone: "+1234567890",
+//         licenseType: "B",
+//         vehicleType: "Car",
+//         assignedRouteId: "RT003",
+//     },
+//     {
+//         id: "DR004",
+//         name: "James Brown",
+//         picture: "https://via.placeholder.com/150",
+//         status: "unavailable", // available, unavailable, on_route
+//         phone: "+1234567890",
+//         licenseType: "B",
+//         vehicleType: "Car",
+//         assignedRouteId: "RT004",
+//     },
+// ];
 
 const DriversPage = () => {
+    const { data, isLoading, error } = useGetAllDrivers({
+        pageNumber: 1,
+        limit: 15,
+    });
+
     const [showFilters, setShowFilters] = useState(true);
     const [selected, setSelected] = useState<Record<string, boolean>>({});
     const [searchBy, setSearchBy] = useState<DriverSearchBy>({
@@ -65,7 +71,7 @@ const DriversPage = () => {
         vehicleType: "",
         licenseType: "",
     });
-    const [drivers, setDrivers] = useState<DriverRow[]>(initialDriversData);
+    const [drivers, setDrivers] = useState<any>([]);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deletingDriverId, setDeletingDriverId] = useState("");
     const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
@@ -75,6 +81,15 @@ const DriversPage = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingDriverId, setEditingDriverId] = useState("");
     const [isExportingCsv, setIsExportingCsv] = useState(false);
+
+
+    useEffect(() => {
+        const fetchDrivers = async () => {
+        const res = await axios.get("http://localhost:3001/get-all-drivers?page=1&limit=15");
+        console.log(res.data);
+        };
+        fetchDrivers();
+    }, []);
 
     // Sync modal state with URL search params
     useEffect(() => {
@@ -99,14 +114,23 @@ const DriversPage = () => {
     }, [searchParams]);
 
     // Calculate selection state
-    const selectedCount = Object.values(selected).filter(Boolean).length;
+    const selectedCount = Object.values(selected).filter(Boolean)?.length;
     const allSelected =
-        drivers.length > 0 && drivers.every((d) => selected[d.id]);
+        drivers?.length > 0 && drivers.every((d: any) => selected[d.id]);
+
+    console.log(error);
 
     useEffect(() => {
         // get drivers from api
-        // setDrivers(newDrivers);
-    }, []);
+        console.log("Hook data:", data);
+        console.log("Hook error:", error);
+        console.log("Hook loading:", isLoading);
+
+        if (data) {
+            // Adjust based on your actual API response structure
+            setDrivers(data?.data || data?.drivers || data || []);
+        }
+    }, [data, error, isLoading]);
 
     // Filter Drivers based on: driverId, name, status, vehicleType
     useEffect(() => {
@@ -139,7 +163,7 @@ const DriversPage = () => {
     const toggleAll = () => {
         const next = { ...selected };
         const shouldSelectAll = !allSelected;
-        drivers.forEach((d) => (next[d.id] = shouldSelectAll));
+        drivers.forEach((d: any) => (next[d.id] = shouldSelectAll));
         setSelected(next);
     };
 
@@ -152,7 +176,9 @@ const DriversPage = () => {
     };
 
     const confirmBulkDelete = () => {
-        const selectedIds = Object.keys(selected).filter((k) => selected[k]);
+        const selectedIds = Object.keys(selected).filter(
+            (k: any) => selected[k]
+        );
         if (!selectedIds.length) return;
         // delete selected drivers from api
         // deleteSelectedDriversFromApi(selectedIds);
@@ -170,7 +196,7 @@ const DriversPage = () => {
         try {
             // Simulate API delay
             await new Promise((resolve) => setTimeout(resolve, 1000));
-            exportDriversCsv(drivers);
+            exportDriversCsv(drivers as any);
             notify("success", "Drivers exported successfully");
         } catch {
             notify("error", "Failed to export drivers");
@@ -200,7 +226,11 @@ const DriversPage = () => {
                 />
 
                 {/* ================== Drivers Table ================== */}
-                <main className={`white-bg p-4 rounded-lg ${showFilters ? "rounded-t-none" : ""} shadow-md transition-all duration-300 ease-in-out`}>
+                <main
+                    className={`white-bg p-4 rounded-lg ${
+                        showFilters ? "rounded-t-none" : ""
+                    } shadow-md transition-all duration-300 ease-in-out`}
+                >
                     {/* Bulk Actions Bar */}
                     <BulkActionsBar
                         selectedCount={selectedCount}
@@ -209,7 +239,7 @@ const DriversPage = () => {
 
                     {/* Drivers Table */}
                     <DriversTable
-                        drivers={drivers}
+                        drivers={drivers as any}
                         selected={selected}
                         selectedCount={selectedCount}
                         allSelected={allSelected}
@@ -230,7 +260,7 @@ const DriversPage = () => {
                 isOpen={isEditModalOpen}
                 onClose={closeModals}
                 driverId={editingDriverId}
-                drivers={drivers}
+                drivers={drivers as any}
             />
 
             {/* ================== Delete Confirmation Modal ================== */}
