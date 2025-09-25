@@ -16,7 +16,6 @@ import {
     AddressSection,
     ContactChannelsSection,
     IdentitySection,
-    NationalIdDocumentSection,
     LicenseSection,
     LicenseDocumentSection,
     VehicleSection,
@@ -207,7 +206,6 @@ const EditDriverModal = ({
             //     vehicle: form.vehicle,
             //     assignedRouteId: form.assignedRouteId,
             //     notes: form.notes,
-            //     national_id: form.national_id,
             //     picture: form.picture,
             //     status: form.status,
             // }
@@ -251,10 +249,10 @@ const EditDriverModal = ({
                         <IdentitySection form={form} update={update} />
 
                         {/* National ID Document Section */}
-                        <NationalIdDocumentSection
+                        {/* <NationalIdDocumentSection
                             form={form}
                             update={update}
-                        />
+                        /> */}
 
                         {/* License Section */}
                         <LicenseSection form={form} update={update} />

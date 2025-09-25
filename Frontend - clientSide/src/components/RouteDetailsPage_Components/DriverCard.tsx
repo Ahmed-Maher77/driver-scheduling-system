@@ -17,7 +17,7 @@ const DriverCard = ({ driver, title }: DriverCardProps) => {
             />
             <div>
                 <div className="text-xs text-gray-500">{title || "—"}</div>
-                <div className="text-sm font-medium mt-1">{driver?.name || "—"}</div>
+                <a className="text-sm font-medium mt-1 blue-c hover-blue-c" href={`/drivers/${driver?.id}`}>{driver?.name || "—"}</a>
             </div>
         </div>
     );

@@ -10,7 +10,7 @@ const FiltersSection = ({
     setSearchBy,
 }: FiltersSectionProps) => {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchBy((prev) => ({ ...prev, routeId: e.target.value }));
+        setSearchBy((prev) => ({ ...prev, routeIdOrDriverName: e.target.value }));
     };
     const handleStatusChange = (value: string) => {
         setSearchBy((prev) => ({ ...prev, status: value }));
@@ -71,7 +71,7 @@ const FiltersSection = ({
                             type="text"
                             placeholder="Search by Route ID or Driver name..."
                             className="main-input w-full"
-                            value={searchBy.routeId}
+                            value={searchBy.routeIdOrDriverName}
                             onChange={handleSearchChange}
                         />
                         <i className="fa-solid fa-magnifying-glass"></i>

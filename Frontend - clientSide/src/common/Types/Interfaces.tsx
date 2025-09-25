@@ -225,8 +225,7 @@ export interface AddRouteModalProps {
 
 // Filters Section Props
 export interface SearchBy {
-    routeId: string;
-    driverName: string;
+    routeIdOrDriverName: string;
     status: string;
     duration: string;
 }
@@ -634,8 +633,7 @@ export interface RouteAssignmentSectionProps {
 
 // Driver Search By
 export type DriverSearchBy = {
-    driverId: string;
-    name: string;
+    driverIdOrName: string;
     status: DriverStatus | "";
     vehicleType: string;
     licenseType: string;

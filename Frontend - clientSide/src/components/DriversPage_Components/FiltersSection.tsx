@@ -86,12 +86,11 @@ const DriversFiltersSection = ({
                             type="text"
                             placeholder="Search by Driver ID or Name..."
                             className="main-input w-full"
-                            value={searchBy.driverId}
-                            onChange={(e) =>
+                            value={searchBy.driverIdOrName}
+                            onChange={(e) =>    
                                 setSearchBy((prev) => ({
                                     ...prev,
-                                    driverId: e.target.value,
-                                    name: e.target.value,
+                                    driverIdOrName: e.target.value,
                                 }))
                             }
                         />

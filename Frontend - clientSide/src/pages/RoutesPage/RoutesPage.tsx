@@ -88,8 +88,7 @@ const RoutesPage = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [routes, setRoutes] = useState(initialRoutes);
     const [searchBy, setSearchBy] = useState<SearchBy>({
-        routeId: "",
-        driverName: "",
+        routeIdOrDriverName: "",
         status: "",
         duration: "",
     });

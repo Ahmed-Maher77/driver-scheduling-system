@@ -3,9 +3,9 @@ import type { StatsCardProps } from "../../../common/Types/Interfaces";
 
 const statsData = [
     { title: "Total Drivers", value: 120, iconClass: "fa-solid fa-users" },
-    { title: "Available Drivers", value: 45, iconClass: "fa-solid fa-user-xmark" },
+    { title: "Available Drivers", value: 45, iconClass: "fa-solid fa-user-plus" },
     { title: "Total Routes", value: 400, iconClass: "fa-solid fa-route" },
-    { title: "Unassigned Routes", value: 35, iconClass: "fa-solid fa-road-circle-xmark" },
+    { title: "Unassigned Routes", value: 35, iconClass: "fa-solid fa-road-circle-check" },
 ] as StatsCardProps[];
 
 const StatsContainer = () => {

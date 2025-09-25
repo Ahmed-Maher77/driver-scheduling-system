@@ -12,12 +12,7 @@ const IdentitySection = ({ form, update }: IdentitySectionProps) => {
                     </label>
                     <input
                         className="main-input bg-gray-100 cursor-not-allowed w-full"
-                        value={
-                            form.national_id &&
-                            typeof form.national_id === "object"
-                                ? form.national_id.name
-                                : "No file selected"
-                        }
+                        value={form.national_id as string}
                         readOnly
                         disabled
                     />

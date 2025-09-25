@@ -60,8 +60,7 @@ const DriversPage = () => {
     const [showFilters, setShowFilters] = useState(true);
     const [selected, setSelected] = useState<Record<string, boolean>>({});
     const [searchBy, setSearchBy] = useState<DriverSearchBy>({
-        driverId: "",
-        name: "",
+        driverIdOrName: "",
         status: "",
         vehicleType: "",
         licenseType: "",
