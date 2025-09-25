@@ -35,16 +35,10 @@ vercel login
 3. **Navigate to your backend directory**:
 
 ```bash
-cd "Backend - serverSide"
+cd Backend-server
 ```
 
-**⚠️ IMPORTANT**: Vercel doesn't allow spaces in function names. If deployment fails, rename your directory:
-
-```bash
-# Rename the directory to remove spaces
-mv "Backend - serverSide" "backend-server"
-cd backend-server
-```
+**Note**: The directory has been renamed from "Backend - serverSide" to "Backend-server" to avoid Vercel deployment issues with spaces in directory names.
 
 4. **Deploy**:
 
