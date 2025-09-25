@@ -68,7 +68,6 @@ app.use("/check-route-availability", CheckRouteAvailability);
 // Get Routes By Month
 app.use("/get-assigned-routes-by-month", GetAssignedRoutesByMonth);
 
-
 // ========== Drivers ==========
 // Get All Drivers
 app.use("/get-all-drivers", GetAllDrivers);
@@ -88,19 +87,16 @@ app.use("/delete-bulk-drivers", DeleteBulkDrivers);
 // Check Driver Availability
 app.use("/check-driver-availability", CheckDriverAvailability);
 
-// Upload Image on Server
-app.use("/upload-image-on-server", UploadImageOnServer);
-
+// Upload Image on Server (commented out - not implemented yet)
+// app.use("/upload-image-on-server", UploadImageOnServer);
 
 // ========== Activity Feeds ==========
 // Get Activity Feeds
 app.use("/get-activity-feeds", GetActivityFeeds);
 
-
 // ========== Dashboard Stats ==========
 // Get Dashboard Stats
 app.use("/get-dashboard-stats", GetDashboardStats);
-
 
 // Not Found - catch all unmatched routes
 app.use((req, res) => {
