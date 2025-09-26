@@ -35,17 +35,21 @@ const DayRoutesModal = ({
                     <div className="grid gap-3">
                         {routes.map((r) => (
                             <div
-                                key={r.id}
+                                key={r.route_id}
                                 className="rounded border border-[#e9edf2] p-4 flex items-start justify-between gap-4 hover:shadow-sm transition"
                             >
                                 <div className="flex-1 min-w-0">
                                     {/* Route ID + Assigned At */}
                                     <div className="flex items-center gap-2 flex-wrap">
                                         <span className="font-semibold truncate">
-                                            {r.id}
+                                            {r.route_id}
                                         </span>
                                         <span className="px-2 py-[2px] text-[10px] rounded-full bg-blue-50 text-blue-600 border border-blue-100">
-                                            {r.assignedAt}
+                                            {r.assigned_at
+                                                ? new Date(
+                                                      r.assigned_at
+                                                  ).toLocaleDateString()
+                                                : "N/A"}
                                         </span>
                                     </div>
 
@@ -54,12 +58,12 @@ const DayRoutesModal = ({
                                         <span className="font-semibold gray-c-d">
                                             From:
                                         </span>{" "}
-                                        {r.startLocation || "?"}
+                                        {r.start_location || "?"}
                                         <span className="mx-2">→</span>
                                         <span className="font-semibold gray-c-d">
                                             To:
                                         </span>{" "}
-                                        {r.endLocation || "?"}
+                                        {r.end_location || "?"}
                                     </div>
                                 </div>
 
@@ -67,7 +71,7 @@ const DayRoutesModal = ({
                                 <div className="shrink-0">
                                     <button
                                         className="main-btn button-black-bg"
-                                        onClick={() => onSeeDetails(r.id)}
+                                        onClick={() => onSeeDetails(r.route_id)}
                                     >
                                         <i className="fa-regular fa-eye" /> See
                                         details

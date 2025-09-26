@@ -746,10 +746,10 @@ export interface InfoRowProps {
 
 // Calendar Types
 export interface MonthRoute {
-    id: string;
-    assignedAt: string; // ISO date (YYYY-MM-DD)
-    startLocation?: string;
-    endLocation?: string;
+    route_id: string;
+    assigned_at: string; // ISO date (YYYY-MM-DD)
+    start_location?: string;
+    end_location?: string;
 }
 
 // Day Routes Modal Props
@@ -783,6 +783,12 @@ export interface MonthControlsProps {
 export interface UseGetAllDriversProps {
     pageNumber: number;
     limit: number;
+}
+
+// Use Get Routes By Month Props
+export interface UseGetRoutesByMonthProps {
+    month: number | string;
+    year: number | string;
 }
 
 // ============================== Pagination Types ==============================

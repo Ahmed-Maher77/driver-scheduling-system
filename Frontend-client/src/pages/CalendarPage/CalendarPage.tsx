@@ -5,8 +5,8 @@ import PageHeader from "../../components/Headings/PageHeader/PageHeader";
 import MonthControls from "../../components/CalenderPage_Components/MonthControls";
 import DayGrid from "../../components/CalenderPage_Components/DayGrid";
 import DayRoutesModal from "../../components/CalenderPage_Components/DayRoutesModal";
-import { notify } from "../../utils/functions/notify";
 import getMonthMatrix from "../../utils/functions/getMonthMatrix";
+import useGetRoutesByMonth from "../../utils/hooks/api/useGetRoutesByMonth";
 
 const CalendarPage = () => {
     const navigate = useNavigate();
@@ -17,10 +17,17 @@ const CalendarPage = () => {
     const [isDayModalOpen, setIsDayModalOpen] = useState(false);
     const [modalDate, setModalDate] = useState<string>("");
     const [modalRoutes, setModalRoutes] = useState<MonthRoute[]>([]);
-    const [errorMessage, setErrorMessage] = useState<string>("");
+    // Fetch routes by month
+    const {
+        data: fetchedRoutesByMonth,
+        isLoading: isLoadingRoutesByMonth,
+        error: errorRoutesByMonth,
+    } = useGetRoutesByMonth({
+        month: currentMonth + 1, // 1-based month
+        year: currentYear,
+    });
     // State for current month's routes
     const [monthRoutes, setMonthRoutes] = useState<MonthRoute[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
 
     // Month Matrix
     const monthMatrix = useMemo(
@@ -32,17 +39,29 @@ const CalendarPage = () => {
     const monthRoutesByDate = useMemo(() => {
         const map: Record<string, MonthRoute[]> = {};
         const toKey = (dateStr: string) => {
+            // Handle undefined, null, or empty string
+            if (!dateStr || dateStr === "undefined" || dateStr === "null") {
+                return null; // Skip this route
+            }
             const d = new Date(dateStr);
-            if (Number.isNaN(d.getTime())) return dateStr;
+            if (Number.isNaN(d.getTime())) {
+                console.warn("Invalid date string:", dateStr);
+                return null; // Skip this route
+            }
             const y = d.getFullYear();
             const m = `${d.getMonth() + 1}`.padStart(2, "0");
             const dd = `${d.getDate()}`.padStart(2, "0");
             return `${y}-${m}-${dd}`;
         };
-        for (const r of monthRoutes) {
-            const key = toKey(r.assignedAt);
-            map[key] ||= [];
-            map[key].push(r);
+        // Safety check inside useMemo to ensure monthRoutes is always an array
+        const safeMonthRoutes = Array.isArray(monthRoutes) ? monthRoutes : [];
+        for (const r of safeMonthRoutes) {
+            const key = toKey(r.assigned_at);
+            if (key) {
+                // Only process valid keys
+                map[key] ||= [];
+                map[key].push(r);
+            }
         }
         return map;
     }, [monthRoutes]);
@@ -107,52 +126,33 @@ const CalendarPage = () => {
 
     // Fetch routes whenever month changes (mock API)
     useEffect(() => {
-        let isActive = true;
-        const fetchMonthRoutes = async () => {
-            // const fetchMonthRoutes = async (apiMonth: number) => {
-            setIsLoading(true);
-            try {
-                // TODO: replace with real API call using currentYear and apiMonth
-                // const res = await fetch(`/api/calendar?year=${currentYear}&month=${apiMonth}`);
-                // const data: MonthRoute[] = await res.json();
-                // setMonthRoutes(data);
-                setMonthRoutes([
-                    {
-                        id: "RT016",
-                        assignedAt: "2025-09-21",
-                        startLocation: "Warehouse G",
-                        endLocation: "City Center",
-                    },
-                    {
-                        id: "RT017",
-                        assignedAt: "2025-09-22",
-                        startLocation: "Warehouse H",
-                        endLocation: "City Center",
-                    },
-                    {
-                        id: "RT023",
-                        assignedAt: "2025-09-22",
-                        startLocation: "Warehouse J",
-                        endLocation: "City Center",
-                    },
-                ]);
-            } catch {
-                const message =
-                    "Something went wrong while fetching month routes";
-                setErrorMessage(message);
-                notify("error", message);
-            } finally {
-                if (isActive) setIsLoading(false);
+        if (fetchedRoutesByMonth) {
+            // Try different possible response structures
+            let routes = [];
+
+            if (Array.isArray(fetchedRoutesByMonth)) {
+                routes = fetchedRoutesByMonth;
+            } else if (
+                fetchedRoutesByMonth?.routes &&
+                Array.isArray(fetchedRoutesByMonth.routes)
+            ) {
+                routes = fetchedRoutesByMonth.routes;
+            } else if (
+                fetchedRoutesByMonth?.data &&
+                Array.isArray(fetchedRoutesByMonth.data)
+            ) {
+                routes = fetchedRoutesByMonth.data;
+            } else {
+                console.warn(
+                    "No valid routes array found in response:",
+                    fetchedRoutesByMonth
+                );
+                routes = [];
             }
-        };
-        // Convert to 1-based month for API usage
-        // const apiMonth = currentMonth + 1;
-        // fetchMonthRoutes(apiMonth);
-        fetchMonthRoutes();
-        return () => {
-            isActive = false;
-        };
-    }, [currentYear, currentMonth]);
+
+            setMonthRoutes(routes);
+        }
+    }, [fetchedRoutesByMonth]);
 
     return (
         <div className="Calendar-Page main-page pt-6 pb-[60px]">
@@ -166,7 +166,7 @@ const CalendarPage = () => {
                 {/* ================== Controls ================== */}
                 <MonthControls
                     monthLabel={monthLabel}
-                    isLoading={isLoading}
+                    isLoading={isLoadingRoutesByMonth}
                     onPrev={goPrevMonth}
                     onNext={goNextMonth}
                 />
@@ -176,8 +176,8 @@ const CalendarPage = () => {
                     <DayGrid
                         monthMatrix={monthMatrix}
                         monthRoutesByDate={monthRoutesByDate}
-                        isLoading={isLoading}
-                        errorMessage={errorMessage}
+                        isLoading={isLoadingRoutesByMonth}
+                        errorMessage={errorRoutesByMonth}
                         onOpenDay={openDayModal}
                     />
                 </main>
