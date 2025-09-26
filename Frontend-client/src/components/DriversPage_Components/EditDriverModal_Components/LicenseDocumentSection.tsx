@@ -16,7 +16,7 @@ const LicenseDocumentSection = ({
                 {/* File Upload Container */}
                 <div
                     className={`file-upload-container document-upload required-upload ${
-                        form.drivingLicense.image ? "upload-success" : ""
+                        form.driving_license.image ? "upload-success" : ""
                     }`}
                 >
                     {/* File Input */}
@@ -26,7 +26,7 @@ const LicenseDocumentSection = ({
                         accept="image/*,.pdf"
                         onChange={(e) => {
                             const file = e.target.files?.[0] || null;
-                            update("drivingLicense.image", file);
+                            update("driving_license.image", file);
                         }}
                     />
 
@@ -35,7 +35,7 @@ const LicenseDocumentSection = ({
                         <div className="file-upload-text">
                             <i className="fa-solid fa-id-card file-upload-icon"></i>
                             <span className="file-upload-main-text">
-                                {form.drivingLicense.image
+                                {form.driving_license.image
                                     ? "Document Selected"
                                     : "Upload License"}
                             </span>
@@ -46,16 +46,16 @@ const LicenseDocumentSection = ({
                     </label>
 
                     {/* File Info */}
-                    {form.drivingLicense.image &&
-                        typeof form.drivingLicense.image === "object" && (
+                    {form.driving_license.image &&
+                        typeof form.driving_license.image === "object" && (
                             <div className="file-info">
                                 <i className="fa-solid fa-check-circle file-info-icon"></i>
                                 <span className="file-info-name">
-                                    {form.drivingLicense.image.name}
+                                    {form.driving_license.image.name}
                                 </span>
                                 <span className="file-info-size">
                                     {(
-                                        form.drivingLicense.image.size / 1024
+                                        form.driving_license.image.size / 1024
                                     ).toFixed(1)}{" "}
                                     KB
                                 </span>

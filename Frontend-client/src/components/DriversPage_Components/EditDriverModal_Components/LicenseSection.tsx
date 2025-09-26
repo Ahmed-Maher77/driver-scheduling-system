@@ -13,9 +13,9 @@ const LicenseSection = ({ form, update }: LicenseSectionProps) => {
                     <div className="relative">
                         <select
                             className="main-input appearance-none pr-8 w-full"
-                            value={form.drivingLicense.type}
+                            value={form.driving_license.type}
                             onChange={(e) =>
-                                update("drivingLicense.type", e.target.value)
+                                update("driving_license.type", e.target.value)
                             }
                         >
                             <option value="">Select Type</option>
@@ -36,9 +36,9 @@ const LicenseSection = ({ form, update }: LicenseSectionProps) => {
                     <input
                         className="main-input w-full"
                         placeholder="Enter license number"
-                        value={form.drivingLicense.number}
+                        value={form.driving_license.number}
                         onChange={(e) =>
-                            update("drivingLicense.number", e.target.value)
+                            update("driving_license.number", e.target.value)
                         }
                     />
                 </div>
@@ -51,9 +51,9 @@ const LicenseSection = ({ form, update }: LicenseSectionProps) => {
                     <input
                         className="main-input w-full"
                         type="date"
-                        value={form.drivingLicense.expiration}
+                        value={form.driving_license.expiration}
                         onChange={(e) =>
-                            update("drivingLicense.expiration", e.target.value)
+                            update("driving_license.expiration", e.target.value)
                         }
                     />
                 </div>

@@ -44,8 +44,10 @@ const IdentitySection = ({ form, update }: IdentitySectionProps) => {
                     <input
                         className="main-input w-full"
                         type="date"
-                        value={form.dateOfBirth}
-                        onChange={(e) => update("dateOfBirth", e.target.value)}
+                        value={form.date_of_birth}
+                        onChange={(e) =>
+                            update("date_of_birth", e.target.value)
+                        }
                     />
                 </div>
             </div>

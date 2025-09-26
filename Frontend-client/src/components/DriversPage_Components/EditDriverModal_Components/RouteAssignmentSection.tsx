@@ -22,9 +22,9 @@ const RouteAssignmentSection = ({
                     <input
                         className="main-input w-full"
                         placeholder="Enter Route ID"
-                        value={form.assignedRouteId || ""}
+                        value={form.assignedRoute_id || ""}
                         onChange={(e) => {
-                            update("assignedRouteId", e.target.value);
+                            update("assignedRoute_id", e.target.value);
                             onRouteIdChange();
                         }}
                     />
@@ -37,7 +37,7 @@ const RouteAssignmentSection = ({
                         className="main-btn green-bg hover-green-bg px-4 py-2 whitespace-nowrap"
                         onClick={onCheckAvailability}
                         disabled={
-                            isCheckingAvailability || !form.assignedRouteId
+                            isCheckingAvailability || !form.assignedRoute_id
                         }
                     >
                         {isCheckingAvailability ? (

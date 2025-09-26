@@ -79,6 +79,7 @@ export type RouteItem = {
 
 export type RouteRow = {
     id: string;
+    route_id?: string; // backend identifier used in tables and selection
     start_location: string;
     end_location: string;
     status: "assigned" | "unassigned" | "in progress";
@@ -823,7 +824,6 @@ export interface DeleteSelectedRoutesResponse {
         unassigned_driver_id?: string;
     }>;
 }
-
 
 // ============================== Pagination Types ==============================
 export interface PaginationProps {

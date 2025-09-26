@@ -39,8 +39,8 @@ export const useSelectColumn = ({
             <input
                 type="checkbox"
                 className="checkbox"
-                checked={!!selected[row.route_id]}
-                onChange={() => onToggleOne(row.route_id)}
+                checked={!!selected[row.route_id || ""]}
+                onChange={() => onToggleOne(row.route_id || "")}
             />
         ),
         align: "center",
