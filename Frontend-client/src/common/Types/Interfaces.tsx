@@ -421,14 +421,6 @@ export interface NotesSectionProps {
     notesError?: string;
 }
 
-// Basic Info Section Props
-export interface BasicInfoSectionProps {
-    routeId: string;
-    status?: string;
-    onStatusChange?: (value: string) => void;
-    statusError?: string;
-}
-
 // Location Section Props
 export interface LocationSectionProps {
     startLocation: string;
@@ -627,13 +619,6 @@ export interface AddressSectionProps {
 
 // Picture Upload Section Props
 export interface PictureUploadSectionProps {
-    form: DriverForm;
-    update: (path: string, value: string | File | null) => void;
-}
-
-// Basic Info Section Props
-export interface BasicInfoSectionProps {
-    driver: DriverRow;
     form: DriverForm;
     update: (path: string, value: string | File | null) => void;
 }

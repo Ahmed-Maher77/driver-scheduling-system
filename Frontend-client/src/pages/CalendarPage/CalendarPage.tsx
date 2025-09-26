@@ -108,7 +108,8 @@ const CalendarPage = () => {
     // Fetch routes whenever month changes (mock API)
     useEffect(() => {
         let isActive = true;
-        const fetchMonthRoutes = async (apiMonth: number) => {
+        const fetchMonthRoutes = async () => {
+        // const fetchMonthRoutes = async (apiMonth: number) => {
             setIsLoading(true);
             try {
                 // TODO: replace with real API call using currentYear and apiMonth
@@ -145,8 +146,9 @@ const CalendarPage = () => {
             }
         };
         // Convert to 1-based month for API usage
-        const apiMonth = currentMonth + 1;
-        fetchMonthRoutes(apiMonth);
+        // const apiMonth = currentMonth + 1;
+        // fetchMonthRoutes(apiMonth);
+        fetchMonthRoutes();
         return () => {
             isActive = false;
         };

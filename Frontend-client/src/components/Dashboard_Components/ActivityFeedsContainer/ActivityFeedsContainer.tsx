@@ -38,8 +38,10 @@ const ActivityFeedsContainer = () => {
                         key={feed._id}
                         routeId={feed.route_id}
                         status={feed.status}
-                        driver={feed.driver}
-                        lastDriver={feed.last_driver}
+                        driver={feed.driver?.id ? feed.driver : undefined}
+                        lastDriver={
+                            feed.last_driver?.id ? feed.last_driver : undefined
+                        }
                         actionTime={feed.action_time}
                     />
                 ))}

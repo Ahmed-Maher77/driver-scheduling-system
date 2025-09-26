@@ -13,8 +13,8 @@ const NotesSection: React.FC<RouteNotesSectionProps> = ({
                     Notes <span className="text-gray-400">(Optional)</span>
                 </label>
                 <textarea
-                    value={notes}
-                    onChange={(e) => onNotesChange(e.target.value)}
+                    value={notes || ""}
+                    onChange={(e) => onNotesChange?.(e.target.value)}
                     placeholder="Add any additional notes about this route..."
                     className={`main-input w-full min-h-[100px] resize-y ${
                         notesError ? "border-red-500" : ""
