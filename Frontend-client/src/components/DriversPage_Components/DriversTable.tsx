@@ -6,6 +6,7 @@ import type {
     DriverRow,
     DriversTableProps,
 } from "../../common/Types/Interfaces";
+import defaultDriverPicture from "../../assets/images/person.png";
 
 const DriversTable = ({
     drivers,
@@ -63,9 +64,9 @@ const DriversTable = ({
             render: (row) => (
                 <img
                     src={
-                        typeof row.picture === "string"
+                        typeof row.picture === "string" && row.picture
                             ? row.picture
-                            : "/user.svg"
+                            : defaultDriverPicture
                     }
                     alt={row.name}
                     className="w-10 h-10 rounded-full object-cover mx-auto"

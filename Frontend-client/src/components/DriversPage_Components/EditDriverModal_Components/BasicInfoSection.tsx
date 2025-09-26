@@ -1,10 +1,5 @@
-import type { DriverForm, DriverRow } from "../../../common/Types/Interfaces";
+import type { BasicInfoSectionProps } from "../../../common/Types/Interfaces";
 
-interface BasicInfoSectionProps {
-    driver: DriverRow;
-    form: DriverForm;
-    update: (path: string, value: string | File | null) => void;
-}
 
 const BasicInfoSection = ({ driver, form, update }: BasicInfoSectionProps) => {
     return (
@@ -18,7 +13,7 @@ const BasicInfoSection = ({ driver, form, update }: BasicInfoSectionProps) => {
                     </label>
                     <input
                         className="main-input bg-gray-100 cursor-not-allowed w-full"
-                        value={driver.id}
+                        value={driver.driver_id}
                         readOnly
                         disabled
                     />

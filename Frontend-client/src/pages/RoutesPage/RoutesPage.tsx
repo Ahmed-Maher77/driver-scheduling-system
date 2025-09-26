@@ -36,7 +36,7 @@ const RoutesPage = () => {
         pageNumber: paginationInfo.pageNumber,
         limit: 10,
     });
-    const [routes, setRoutes] = useState<any[]>([]);
+    const [routes] = useState<any[]>([]);
     // Filters
     const [showFilters, setShowFilters] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -80,18 +80,12 @@ const RoutesPage = () => {
     // Calculate selection state
     const selectedCount = Object.values(selected).filter(Boolean).length;
     const allSelected =
-        routes.length > 0 && routes.every((r) => selected[r.id]);
+        fetchedRoutesData?.data?.length > 0 &&
+        fetchedRoutesData.data.every((r: any) => selected[r.route_id]);
 
     useEffect(() => {
         // get drivers from api
         if (fetchedRoutesData) {
-            // Set the driver data
-            const incomingRoutes =
-                fetchedRoutesData?.data.map((r: any) => ({
-                    ...r,
-                    assigned_at: extractDate(r.assigned_at) || null,
-                })) || [];
-            setRoutes(incomingRoutes);
             // Set the pagination info
             setPaginationInfo({
                 pageNumber: fetchedRoutesData?.currentPage || 1,
@@ -243,7 +237,12 @@ const RoutesPage = () => {
 
                     {/* Routes Table */}
                     <RoutesTable
-                        routes={routes}
+                        routes={
+                            fetchedRoutesData?.data?.map((r: any) => ({
+                                ...r,
+                                assigned_at: extractDate(r.assigned_at) || null,
+                            })) || []
+                        }
                         selected={selected}
                         selectedCount={selectedCount}
                         allSelected={allSelected}

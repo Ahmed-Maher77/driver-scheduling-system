@@ -25,8 +25,8 @@ import { checkDriverAvailability } from "../../utils/functions/checkDriverAvaila
 const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
     const [formData, setFormData] = useState<RouteRow>({
         id: "",
-        startLocation: "",
-        endLocation: "",
+        start_location: "",
+        end_location: "",
         status: "unassigned",
         assignedDriver: undefined,
         lastDriver: undefined,
@@ -160,19 +160,19 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
 
                     {/* ================== Location Section ================== */}
                     <LocationSection
-                        startLocation={formData.startLocation}
-                        endLocation={formData.endLocation}
+                        startLocation={formData.start_location}
+                        endLocation={formData.end_location}
                         onStartLocationChange={(value) => {
                             setFormData((prev) => ({
                                 ...prev,
-                                startLocation: value,
+                                start_location: value,
                             }));
                             clearFieldError("startLocation");
                         }}
                         onEndLocationChange={(value) => {
                             setFormData((prev) => ({
                                 ...prev,
-                                endLocation: value,
+                                end_location: value,
                             }));
                             clearFieldError("endLocation");
                         }}

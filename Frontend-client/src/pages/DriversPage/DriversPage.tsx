@@ -14,7 +14,6 @@ import { notify } from "../../utils/functions/notify";
 import useGetAllDrivers from "../../utils/hooks/api/useGetAllDrivers.tsx";
 import Pagination from "../../components/Pagination/Pagination.tsx";
 
-
 const DriversPage = () => {
     // Pagination Info
     const [paginationInfo, setPaginationInfo] = useState({
@@ -30,7 +29,7 @@ const DriversPage = () => {
         isLoading,
         error,
     } = useGetAllDrivers({ pageNumber: paginationInfo.pageNumber, limit: 10 });
-    const [drivers, setDrivers] = useState<any>([]);
+    const [drivers] = useState<any>([]);
 
     // Filters
     const [showFilters, setShowFilters] = useState(true);
@@ -76,13 +75,12 @@ const DriversPage = () => {
     // Calculate selection state
     const selectedCount = Object.values(selected).filter(Boolean)?.length;
     const allSelected =
-        drivers?.length > 0 && drivers.every((d: any) => selected[d.id]);
+        fetchedDriversData?.data?.length > 0 &&
+        fetchedDriversData.data.every((d: any) => selected[d.driver_id]);
 
     useEffect(() => {
         // get drivers from api
         if (fetchedDriversData) {
-            // Set the driver data
-            setDrivers(fetchedDriversData?.data || []);
             // Set the pagination info
             setPaginationInfo({
                 pageNumber: fetchedDriversData?.currentPage || 1,
@@ -201,7 +199,7 @@ const DriversPage = () => {
 
                     {/* Drivers Table */}
                     <DriversTable
-                        drivers={drivers as any}
+                        drivers={fetchedDriversData?.data || []}
                         selected={selected}
                         selectedCount={selectedCount}
                         allSelected={allSelected}

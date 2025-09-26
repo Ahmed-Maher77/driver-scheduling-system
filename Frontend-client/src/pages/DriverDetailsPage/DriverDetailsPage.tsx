@@ -79,8 +79,7 @@ const initialDriverData = {
 const DriverDetailsPage = () => {
     const navigate = useNavigate();
     const { driverId } = useParams();
-    const [driverData, setDriverData] =
-        useState<typeof initialDriverData>(initialDriverData);
+    const [driverData] = useState<typeof initialDriverData>(initialDriverData);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 

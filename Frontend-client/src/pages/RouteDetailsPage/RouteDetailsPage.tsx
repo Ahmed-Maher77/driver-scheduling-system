@@ -15,8 +15,8 @@ import type { RouteRow } from "../../common/Types/Interfaces";
 // Mock data - in real app, this would come from API based on routeId
 const initialRouteData: RouteRow = {
     id: "RT001",
-    startLocation: "Warehouse A",
-    endLocation: "City Center",
+    start_location: "Warehouse A",
+    end_location: "City Center",
     status: "assigned",
     assignedDriver: {
         id: "DR001",
@@ -43,7 +43,7 @@ const initialRouteData: RouteRow = {
 const RouteDetailsPage = () => {
     const navigate = useNavigate();
     const { routeId } = useParams();
-    const [routeData, setRouteData] = useState<RouteRow>(initialRouteData);
+    const [routeData] = useState<RouteRow>(initialRouteData);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
@@ -101,8 +101,8 @@ const RouteDetailsPage = () => {
                     {/* Route Info + Route Notes */}
                     <div className="flex flex-col md:flex-row gap-5">
                         <RouteInfo
-                            startLocation={routeData.startLocation}
-                            endLocation={routeData.endLocation}
+                            startLocation={routeData.start_location}
+                            endLocation={routeData.end_location}
                             distance={routeData.distance || 0}
                             distanceUnit={routeData.distanceUnit || "km"}
                             duration={routeData.duration || 0}

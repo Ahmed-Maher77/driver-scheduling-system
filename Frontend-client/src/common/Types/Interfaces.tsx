@@ -171,6 +171,28 @@ export interface SectionHeaderProps {
     countColor?: "blue" | "green" | "purple" | "red" | "yellow" | "gray";
 }
 
+// Route Modal Basic Info Section Props
+export interface RouteBasicInfoSectionProps {
+    routeId?: string;
+    status?: string;
+    onStatusChange?: (value: string) => void;
+    statusError?: string;
+}
+
+// Driver Modal Basic Info Section Props
+export interface BasicInfoSectionProps {
+    driver: DriverRow;
+    form: DriverForm;
+    update: (path: string, value: string | File | null) => void;
+}
+
+// Route Modal Notes Section Props
+export interface RouteNotesSectionProps {
+    notes?: string;
+    onNotesChange?: (value: string) => void;
+    notesError?: string;
+}
+
 // Activity Feed Item Props
 export interface ActivityFeedItemProps {
     routeId: string;
@@ -402,8 +424,8 @@ export interface NotesSectionProps {
 // Basic Info Section Props
 export interface BasicInfoSectionProps {
     routeId: string;
-    status: string;
-    onStatusChange: (value: string) => void;
+    status?: string;
+    onStatusChange?: (value: string) => void;
     statusError?: string;
 }
 
@@ -425,14 +447,6 @@ export interface DistanceDurationSectionProps {
     onDistanceUnitChange: (value: string) => void;
     onDurationChange: (value: number) => void;
     onTimeUnitChange: (value: string) => void;
-}
-
-// Basic Info Section Props
-export interface BasicInfoSectionProps {
-    routeId: string;
-    status: string;
-    onStatusChange: (value: string) => void;
-    statusError?: string;
 }
 
 // Driver Info

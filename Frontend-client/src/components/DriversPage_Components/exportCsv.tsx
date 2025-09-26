@@ -15,13 +15,13 @@ export const exportDriversCsv = (
     ];
 
     const rows = drivers.map((d) => [
-        d.id,
+        d.driver_id,
         d.name,
         d.phone || "",
         d.status,
-        d.assignedRouteId || "",
-        d.vehicleType || "",
-        d.licenseType || "",
+        d.assignedRoute?.id || "",
+        d.vehicle_type || "",
+        d.license_type || "",
     ]);
 
     const csv = [header, ...rows].map((a) => a.join(",")).join("\n");

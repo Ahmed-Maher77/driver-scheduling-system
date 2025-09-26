@@ -16,8 +16,8 @@ export const exportCsv = (
 
     const rows = routes.map((r) => [
         r.id,
-        r.startLocation,
-        r.endLocation,
+        r.start_location,
+        r.end_location,
         r.distance,
         r.status,
         r.assignedDriver?.name || "unassigned",

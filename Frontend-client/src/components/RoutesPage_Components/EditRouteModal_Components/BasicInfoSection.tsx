@@ -1,8 +1,8 @@
 import React from "react";
 import CustomSelect from "../CustomSelect";
-import type { BasicInfoSectionProps } from "../../../common/Types/Interfaces";
+import type { RouteBasicInfoSectionProps } from "../../../common/Types/Interfaces";
 
-const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
+const BasicInfoSection: React.FC<RouteBasicInfoSectionProps> = ({
     routeId,
     status,
     onStatusChange,
@@ -26,8 +26,8 @@ const BasicInfoSection: React.FC<BasicInfoSectionProps> = ({
             <div className="main-input-container">
                 <CustomSelect
                     label="Status"
-                    value={status}
-                    onChange={onStatusChange}
+                    value={status || "unassigned"}
+                    onChange={onStatusChange || (() => {})}
                     options={[
                         { label: "Unassigned", value: "unassigned" },
                         { label: "Assigned", value: "assigned" },

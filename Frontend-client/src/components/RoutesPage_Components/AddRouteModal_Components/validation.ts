@@ -1,4 +1,7 @@
-import type { AddRouteItemProps, ValidationErrors } from "../../../common/Types/Interfaces";
+import type {
+    AddRouteItemProps,
+    ValidationErrors,
+} from "../../../common/Types/Interfaces";
 
 export const validateForm = (formData: AddRouteItemProps): ValidationErrors => {
     const errors: ValidationErrors = {};

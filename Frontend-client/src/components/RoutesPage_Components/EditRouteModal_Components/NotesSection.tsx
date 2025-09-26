@@ -1,7 +1,7 @@
 import React from "react";
-import type { NotesSectionProps } from "../../../common/Types/Interfaces";
+import type { RouteNotesSectionProps } from "../../../common/Types/Interfaces";
 
-const NotesSection: React.FC<NotesSectionProps> = ({
+const NotesSection: React.FC<RouteNotesSectionProps> = ({
     notes,
     onNotesChange,
     notesError,

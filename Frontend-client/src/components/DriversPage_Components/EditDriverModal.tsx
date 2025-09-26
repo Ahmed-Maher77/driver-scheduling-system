@@ -9,7 +9,10 @@ import type {
     EditDriverModalProps,
 } from "../../common/Types/Interfaces";
 import { notify } from "../../utils/functions/notify";
-import { checkRouteAvailability, type RouteAvailability } from "../../utils/functions/checkRouteAvailability";
+import {
+    checkRouteAvailability,
+    type RouteAvailability,
+} from "../../utils/functions/checkRouteAvailability";
 import {
     BasicInfoSection,
     PictureUploadSection,
@@ -42,19 +45,19 @@ const toForm = (d: DriverRow): DriverForm => ({
     gender: (d as any).gender || "Male",
     dateOfBirth: (d as any).dateOfBirth || "",
     drivingLicense: {
-        type: d.licenseType || "",
+        type: d.license_type || "",
         number: (d as any).licenseNumber || "",
         expiration: (d as any).licenseExpiration || "",
         image: null, // Will be loaded from API
     },
     vehicle: {
-        type: d.vehicleType || "",
+        type: d.vehicle_type || "",
         make: (d as any).vehicleMake || "",
         model: (d as any).vehicleModel || "",
         year: (d as any).vehicleYear || "",
         color: (d as any).vehicleColor || "",
     },
-    assignedRouteId: d.assignedRouteId || "",
+    assignedRouteId: d.assignedRoute?.id || "",
     notes: (d as any).notes || "",
 });
 
@@ -91,7 +94,7 @@ const EditDriverModal = ({
         // fetchDriverDetails();
 
         // Current: Using local data
-        const d = drivers.find((x) => x.id === driverId);
+        const d = drivers.find((x) => x.driver_id === driverId);
         setForm(d ? toForm(d) : null);
     }, [driverId, drivers, isOpen]);
 
@@ -133,7 +136,7 @@ const EditDriverModal = ({
     };
 
     if (!isOpen) return null;
-    const driver = drivers.find((x) => x.id === driverId);
+    const driver = drivers.find((x) => x.driver_id === driverId);
 
     // ================== Loading State ==================
     if (loading) {
@@ -268,7 +271,9 @@ const EditDriverModal = ({
                             form={form}
                             isUnavailable={isUnavailable}
                             isCheckingAvailability={isCheckingAvailability}
-                            routeAvailabilityStatus={availabilityStatus as RouteAvailability}
+                            routeAvailabilityStatus={
+                                availabilityStatus as RouteAvailability
+                            }
                             update={update}
                             onCheckAvailability={handleCheckRouteAvailability}
                             onRouteIdChange={() =>
