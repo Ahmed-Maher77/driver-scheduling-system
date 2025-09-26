@@ -109,7 +109,7 @@ const CalendarPage = () => {
     useEffect(() => {
         let isActive = true;
         const fetchMonthRoutes = async () => {
-        // const fetchMonthRoutes = async (apiMonth: number) => {
+            // const fetchMonthRoutes = async (apiMonth: number) => {
             setIsLoading(true);
             try {
                 // TODO: replace with real API call using currentYear and apiMonth
