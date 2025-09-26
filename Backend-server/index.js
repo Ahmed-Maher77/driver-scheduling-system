@@ -26,6 +26,7 @@ const EditRoute = require("./routes/EditRoute_Route");
 const EditDriver = require("./routes/EditDriver_Route");
 const DeleteBulkRoutes = require("./routes/DeleteBulkRoutes_Route");
 const DeleteBulkDrivers = require("./routes/DeleteBulkDrivers_Route");
+const UploadImageOnServer = require("./routes/UploadImageOnServer_Route");
 
 // utilities
 const startServerWithDB = require("./utils/serverManager");
@@ -33,6 +34,9 @@ const startServerWithDB = require("./utils/serverManager");
 // ======================= Middlewares =======================
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.static("views/staticFiles")); // Serve static files from views/staticFiles directory
+
+// Serve uploaded images as static files
+app.use("/uploads", express.static("uploads"));
 
 // CORS middleware
 app.use((req, res, next) => {
@@ -106,8 +110,8 @@ app.use("/delete-bulk-drivers", DeleteBulkDrivers);
 // Check Driver Availability
 app.use("/check-driver-availability", CheckDriverAvailability);
 
-// Upload Image on Server (commented out - not implemented yet)
-// app.use("/upload-image-on-server", UploadImageOnServer);
+// Upload Image on Server
+app.use("/upload-image-on-server", UploadImageOnServer);
 
 // ========== Activity Feeds ==========
 // Get Activity Feeds

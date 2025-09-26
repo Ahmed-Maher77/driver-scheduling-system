@@ -12,6 +12,7 @@ import {
     checkRouteAvailability,
     type RouteAvailability,
 } from "../../utils/functions/checkRouteAvailability";
+import { uploadFile } from "../../utils/functions/uploadFile";
 import {
     BasicInfoSection,
     AddressSection,
@@ -166,6 +167,54 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
         setIsCheckingAvailability(false);
     };
 
+    // ================== Upload Files ==================
+    const uploadDriverFiles = async (form: DriverForm): Promise<DriverForm> => {
+        const updatedForm = { ...form };
+        const filesToUpload: { file: File; field: string }[] = [];
+
+        // Collect files to upload
+        if (form.picture && typeof form.picture === "object") {
+            filesToUpload.push({ file: form.picture, field: "picture" });
+        }
+        if (form.national_id && typeof form.national_id === "object") {
+            filesToUpload.push({
+                file: form.national_id,
+                field: "national_id",
+            });
+        }
+        if (
+            form.driving_license.image &&
+            typeof form.driving_license.image === "object"
+        ) {
+            filesToUpload.push({
+                file: form.driving_license.image,
+                field: "driving_license.image",
+            });
+        }
+
+        // Upload files
+        for (const { file, field } of filesToUpload) {
+            try {
+                const uploadResponse = await uploadFile(file);
+
+                // Update the form with the uploaded file URL
+                if (field === "picture") {
+                    updatedForm.picture = uploadResponse.file.url;
+                } else if (field === "national_id") {
+                    updatedForm.national_id = uploadResponse.file.url;
+                } else if (field === "driving_license.image") {
+                    updatedForm.driving_license.image = uploadResponse.file.url;
+                }
+            } catch (error: any) {
+                const errorMessage =
+                    error?.response?.data?.message || "Failed to upload file";
+                throw new Error(`${field}: ${errorMessage}`);
+            }
+        }
+
+        return updatedForm;
+    };
+
     // ================== Submit (Add Driver) ==================
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -195,11 +244,18 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
 
         // Proceed with submission
         try {
-            await addDriver(form);
+            // Upload files first
+            notify("info", "Uploading files...");
+            const formWithUploadedFiles = await uploadDriverFiles(form);
+
+            // Submit driver data with uploaded file URLs
+            await addDriver(formWithUploadedFiles);
+
             // Only close modal on success
             onClose();
             setForm(initialForm);
             setErrors({});
+            notify("success", "Driver added successfully");
         } catch (error: any) {
             // Handle error and show it in the modal
             const errorMessage =
@@ -302,7 +358,7 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
                                 isSubmitting || isCheckingAvailability
                                     ? isCheckingAvailability
                                         ? "Checking..."
-                                        : "Adding..."
+                                        : "Adding Driver..."
                                     : "Add Driver"
                             }
                             isSubmitting={
