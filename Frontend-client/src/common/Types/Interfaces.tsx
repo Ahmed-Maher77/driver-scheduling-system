@@ -100,8 +100,8 @@ export type RouteRow = {
 
 // Add Route Item Props
 export interface AddRouteItemProps {
-    startLocation?: string;
-    endLocation?: string;
+    start_location?: string;
+    end_location?: string;
     status?: string;
     assignedDriver?: DriverInfo;
     distance?: number;
@@ -246,7 +246,7 @@ export interface AddRouteModalProps {
             | "updatedAt"
             | "assignedAt"
         >
-    ) => void;
+    ) => Promise<void>;
 }
 
 // Filters Section Props
@@ -342,12 +342,12 @@ export type DriverForm = {
     country?: string;
     city?: string;
     status: Exclude<DriverStatus, "on_route">; // available | unavailable
-    assignedRouteId?: string;
+    assignedRoute_id?: string;
     notes?: string;
     national_id: File | null | string;
     gender: "Male" | "Female" | "Other";
-    dateOfBirth: string; // ISO
-    drivingLicense: {
+    date_of_birth: string; // ISO
+    driving_license: {
         type: string;
         number: string;
         expiration: string; // ISO
@@ -632,6 +632,7 @@ export interface DeleteConfirmationModalProps {
     message: string;
     confirmButtonText?: string;
     cancelButtonText?: string;
+    isLoading?: boolean;
 }
 
 // Route Assignment Section Props
@@ -790,6 +791,39 @@ export interface UseGetRoutesByMonthProps {
     month: number | string;
     year: number | string;
 }
+
+// Add Route Response
+export interface AddRouteResponse {
+    message: string;
+    route_id: string;
+    data?: any;
+}
+
+// Delete Driver Response
+export interface DeleteDriverResponse {
+    message: string;
+    driver_id: string;
+    data?: any;
+}
+
+// Delete Selected Drivers Response
+export interface DeleteSelectedDriversResponse {
+    message: string;
+    deleted_count: number;
+    data?: any;
+}
+
+// Delete Selected Routes Response
+export interface DeleteSelectedRoutesResponse {
+    message: string;
+    deleted_count: number;
+    unassigned_drivers: number;
+    deleted_routes: Array<{
+        route_id: string;
+        unassigned_driver_id?: string;
+    }>;
+}
+
 
 // ============================== Pagination Types ==============================
 export interface PaginationProps {

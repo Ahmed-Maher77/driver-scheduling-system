@@ -13,6 +13,8 @@ import { exportDriversCsv } from "../../components/DriversPage_Components/export
 import { notify } from "../../utils/functions/notify";
 import useGetAllDrivers from "../../utils/hooks/api/useGetAllDrivers.tsx";
 import Pagination from "../../components/Pagination/Pagination.tsx";
+import useDeleteDriver from "../../utils/hooks/api/useDeleteDriver.tsx";
+import useDeleteSelectedDrivers from "../../utils/hooks/api/useDeleteSelectedDrivers.tsx";
 
 const DriversPage = () => {
     // Pagination Info
@@ -49,6 +51,12 @@ const DriversPage = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingDriverId, setEditingDriverId] = useState("");
     const [isExportingCsv, setIsExportingCsv] = useState(false);
+    const {
+        deleteDriver,
+        isPending: isDeletingDriver,
+        data: deleteDriverData,
+    } = useDeleteDriver();
+    const { deleteSelectedDrivers, isPending: isBulkDeleting } = useDeleteSelectedDrivers();
 
     // Sync modal state with URL search params
     useEffect(() => {
@@ -108,15 +116,11 @@ const DriversPage = () => {
         setShowDeleteConfirm(true);
     };
 
-    const confirmDeleteDriver = () => {
-        // setDrivers((prev) => prev.filter((d) => d.id !== deletingDriverId));
-        console.log("Deleting driver:", deletingDriverId);
-        // call api to delete driver
-        // deleteDriverFromApi(deletingDriverId);
-        // invalidate the drivers
-        notify("success", "Driver deleted");
+    const confirmDeleteDriver = async () => {
+        await deleteDriver(deletingDriverId);
         setShowDeleteConfirm(false);
         setDeletingDriverId("");
+        console.log("deleteDriverData", deleteDriverData);
     };
 
     // Selection functions
@@ -131,23 +135,25 @@ const DriversPage = () => {
         setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const deleteSelectedDrivers = () => {
+    const handleDeleteSelectedDrivers = () => {
         setShowBulkDeleteConfirm(true);
     };
 
-    const confirmBulkDelete = () => {
+    const confirmBulkDelete = async () => {
         const selectedIds = Object.keys(selected).filter(
             (k: any) => selected[k]
         );
         if (!selectedIds.length) return;
-        // delete selected drivers from api
-        // deleteSelectedDriversFromApi(selectedIds);
-        // setDrivers((prev) => prev.filter((d) => !selected[d.id]));
-        // Clear selection
-        setSelected({});
-        notify("success", "Selected drivers deleted successfully");
-        setShowBulkDeleteConfirm(false);
-        // invalidate the drivers
+
+        try {
+            // delete selected drivers from api
+            await deleteSelectedDrivers(selectedIds);
+            // Clear selection
+            setSelected({});
+            setShowBulkDeleteConfirm(false);
+        } catch {
+            notify("error", "Failed to delete selected drivers");
+        }
     };
 
     // Export CSV
@@ -194,7 +200,7 @@ const DriversPage = () => {
                     {/* Bulk Actions Bar */}
                     <BulkActionsBar
                         selectedCount={selectedCount}
-                        onDeleteSelected={deleteSelectedDrivers}
+                        onDeleteSelected={handleDeleteSelectedDrivers}
                     />
 
                     {/* Drivers Table */}
@@ -238,6 +244,7 @@ const DriversPage = () => {
                 title="Confirm Delete"
                 message={`Are you sure you want to delete driver ${deletingDriverId}? This action cannot be undone.`}
                 confirmButtonText="Delete Driver"
+                isLoading={isDeletingDriver}
             />
 
             {/* ================== Bulk Delete Confirmation Modal ================== */}
@@ -248,6 +255,7 @@ const DriversPage = () => {
                 title="Confirm Bulk Delete"
                 message={`Are you sure you want to delete ${selectedCount} selected drivers? This action cannot be undone.`}
                 confirmButtonText="Delete Selected"
+                isLoading={isBulkDeleting}
             />
         </div>
     );

@@ -1,5 +1,9 @@
 import { useRef, useEffect } from "react";
-import type { TableColumn, RouteRow, SelectColumnProps } from "../../../common/Types/Interfaces";
+import type {
+    TableColumn,
+    RouteRow,
+    SelectColumnProps,
+} from "../../../common/Types/Interfaces";
 
 export const useSelectColumn = ({
     selected,
@@ -35,8 +39,8 @@ export const useSelectColumn = ({
             <input
                 type="checkbox"
                 className="checkbox"
-                checked={!!selected[row.id]}
-                onChange={() => onToggleOne(row.id)}
+                checked={!!selected[row.route_id]}
+                onChange={() => onToggleOne(row.route_id)}
             />
         ),
         align: "center",

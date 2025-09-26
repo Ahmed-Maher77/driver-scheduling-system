@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import type {
     AddRouteModalProps,
     ValidationErrors,
@@ -48,13 +48,30 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
         "unknown" | "available" | "unavailable" | "on_route"
     >("unknown");
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+
+    // Scroll to top when error is displayed
+    useEffect(() => {
+        if (submitError && modalRef.current) {
+            // Small delay to ensure the error div is rendered
+            setTimeout(() => {
+                modalRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }, 100);
+        }
+    }, [submitError]);
 
     // Handle Submit (Add Route)
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         if (isSubmitting) return;
         setIsSubmitting(true);
+        setSubmitError(null); // Clear any previous errors
         // Validate form data
+        console.log("formData", formData);
         const errors = validateForm(formData);
         setValidationErrors(errors);
         if (hasValidationErrors(errors)) {
@@ -65,7 +82,6 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
             setIsSubmitting(false);
             return;
         }
-
         // If assigning, verify availability via API at submit time
         if (formData.status === "assigned" && formData.assignedDriver?.id) {
             try {
@@ -75,15 +91,66 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                 );
                 setAvailabilityStatus(status);
                 if (status === "available") {
-                    onAddRoute(formData);
+                    const submittedData = {
+                        start_location: formData.start_location,
+                        end_location: formData.end_location,
+                        status: formData.status,
+                        assignedDriver_id: formData.assignedDriver?.id,
+                        distance: formData.distance,
+                        distance_unit: formData.distanceUnit,
+                        duration: formData.duration,
+                        time_unit: formData.timeUnit,
+                        cost: formData.cost,
+                        currency: formData.currency,
+                        max_speed: formData.maxSpeed,
+                        speed_unit: formData.speedUnit,
+                        notes: formData.notes,
+                    };
+
+                    try {
+                        await onAddRoute(submittedData);
+                        // Reset form and close modal on success
+                        setFormData({
+                            start_location: "",
+                            end_location: "",
+                            status: "unassigned",
+                            assignedDriver: { id: "" } as {
+                                id?: string;
+                                name?: string;
+                            },
+                            distance: 0,
+                            distanceUnit: "km",
+                            duration: 0,
+                            timeUnit: "minutes",
+                            cost: 0,
+                            currency: "EGP",
+                            maxSpeed: 0,
+                            speedUnit: "km/h",
+                            notes: "",
+                        });
+                        setValidationErrors({});
+                        setAvailabilityStatus("unknown");
+                        setIsCheckingAvailability(false);
+                        setSubmitError(null);
+                        onClose();
+                    } catch (error: any) {
+                        // Handle error and show it in the modal
+                        const errorMessage =
+                            error?.response?.data?.message ||
+                            error?.message ||
+                            "Failed to add route";
+                        setSubmitError(errorMessage);
+                        setIsSubmitting(false);
+                        setIsCheckingAvailability(false);
+                        return;
+                    }
                 } else if (status === "unavailable") {
-                    notify("error", "This driver is unavailable");
+                    setSubmitError("This driver is unavailable");
                     setIsSubmitting(false);
                     setIsCheckingAvailability(false);
                     return;
                 } else if (status === "on_route") {
-                    notify(
-                        "error",
+                    setSubmitError(
                         "This driver currently has another route assigned"
                     );
                     setIsSubmitting(false);
@@ -94,9 +161,60 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                 setIsCheckingAvailability(false);
             }
         } else {
-            onAddRoute(formData);
+            const submittedData = {
+                start_location: formData.start_location,
+                end_location: formData.end_location,
+                status: formData.status,
+                assignedDriver_id: formData.assignedDriver?.id,
+                distance: formData.distance,
+                distance_unit: formData.distanceUnit,
+                duration: formData.duration,
+                time_unit: formData.timeUnit,
+                cost: formData.cost,
+                currency: formData.currency,
+                max_speed: formData.maxSpeed,
+                speed_unit: formData.speedUnit,
+                notes: formData.notes,
+            };
+
+            try {
+                await onAddRoute(submittedData);
+                // Reset form and close modal on success
+                setFormData({
+                    start_location: "",
+                    end_location: "",
+                    status: "unassigned",
+                    assignedDriver: { id: "" } as {
+                        id?: string;
+                        name?: string;
+                    },
+                    distance: 0,
+                    distanceUnit: "km",
+                    duration: 0,
+                    timeUnit: "minutes",
+                    cost: 0,
+                    currency: "EGP",
+                    maxSpeed: 0,
+                    speedUnit: "km/h",
+                    notes: "",
+                });
+                setValidationErrors({});
+                setAvailabilityStatus("unknown");
+                setIsCheckingAvailability(false);
+                setSubmitError(null);
+                onClose();
+            } catch (error: any) {
+                // Handle error and show it in the modal
+                const errorMessage =
+                    error?.response?.data?.message ||
+                    error?.message ||
+                    "Failed to add route";
+                setSubmitError(errorMessage);
+                setIsSubmitting(false);
+                return;
+            }
         }
-        onClose();
+        setIsSubmitting(false);
     };
 
     // Close Modal
@@ -124,6 +242,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
         setIsSubmitting(false);
         setAvailabilityStatus("unknown");
         setIsCheckingAvailability(false);
+        setSubmitError(null);
         onClose();
     };
 
@@ -137,12 +256,33 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
         }
     };
 
+    // Clear submit error when user starts typing
+    const clearSubmitError = () => {
+        if (submitError) {
+            setSubmitError(null);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
         <ModalWrapper isOpen={isOpen}>
-            <div className="p-6">
+            <div ref={modalRef} className="p-6">
                 <ModalHeader title="Add New Route" onClose={handleClose} />
+
+                {/* ================== Error Display ================== */}
+                {submitError && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                        <div className="flex items-center">
+                            <i className="fa-solid fa-exclamation-triangle text-red-500 mr-2"></i>
+                            <p className="text-red-700 text-sm font-medium">
+                                {submitError === "Duplicate entry detected"
+                                    ? "A route with the same start and end location already exists"
+                                    : submitError}
+                            </p>
+                        </div>
+                    </div>
+                )}
 
                 <FormSection onSubmit={handleSubmit}>
                     {/* ================== Basic Info Section ================== */}
@@ -174,6 +314,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                                 start_location: value,
                             }));
                             clearFieldError("startLocation");
+                            clearSubmitError();
                         }}
                         onEndLocationChange={(value) => {
                             setFormData((prev) => ({
@@ -181,6 +322,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                                 end_location: value,
                             }));
                             clearFieldError("endLocation");
+                            clearSubmitError();
                         }}
                         startLocationError={validationErrors.startLocation}
                         endLocationError={validationErrors.endLocation}
@@ -195,6 +337,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                                 assignedDriver: driver,
                             }));
                             clearFieldError("assignedDriver");
+                            clearSubmitError();
                             setAvailabilityStatus("unknown");
                         }}
                         assignedDriverError={validationErrors.assignedDriver}

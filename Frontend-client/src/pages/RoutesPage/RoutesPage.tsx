@@ -17,6 +17,9 @@ import { notify } from "../../utils/functions/notify";
 import Pagination from "../../components/Pagination/Pagination";
 import useGetAllRoutes from "../../utils/hooks/api/useGetAllRoutes";
 import { extractDate } from "../../utils/functions/formatDate";
+import useAddNewRoute from "../../utils/hooks/api/useAddNewRoute";
+import useDeleteRoute from "../../utils/hooks/api/useDeleteRoute";
+import useDeleteSelectedRoutes from "../../utils/hooks/api/useDeleteSelectedRoutes";
 
 const RoutesPage = () => {
     // Pagination Info
@@ -37,6 +40,8 @@ const RoutesPage = () => {
         limit: 10,
     });
     const [routes] = useState<any[]>([]);
+    // Add Route
+    const { addRoute, isPending, error: addRouteError } = useAddNewRoute();
     // Filters
     const [showFilters, setShowFilters] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -46,8 +51,14 @@ const RoutesPage = () => {
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deletingRouteId, setDeletingRouteId] = useState("");
     const [isExportingCsv, setIsExportingCsv] = useState(false);
+    const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
+
+    // Delete hooks
+    const { deleteRoute, isPending: isDeletingRoute } = useDeleteRoute();
+    const { deleteSelectedRoutes, isPending: isBulkDeleting } =
+        useDeleteSelectedRoutes();
     const [searchBy, setSearchBy] = useState<SearchBy>({
         routeIdOrDriverName: "",
         status: "",
@@ -103,27 +114,30 @@ const RoutesPage = () => {
         // setRoutes(newRoutes);
     }, [searchBy]);
 
+    // Handle Add Route Errors and Pending Status
+    useEffect(() => {
+        if (addRouteError) {
+            notify("error", "Something went wrong while adding route");
+        }
+        if (isPending) {
+            notify("info", "Adding route...");
+        }
+    }, [addRouteError, isPending]);
+
     // Add Route
-    const addRoute = (routeData: AddRouteItemProps) => {
-        // Add route to api
-        // addRouteToApi(routeData);
-        // invalidate the routes
-        console.log("Route data:", routeData); // Reserved for future API integration
-        notify("success", "Route added successfully");
+    const handleAddRoute = async (routeData: AddRouteItemProps) => {
+        // Submit data to api
+        await addRoute(routeData);
     };
 
     // Delete Route
-    const deleteRoute = (id: string) => {
+    const handleDeleteRoute = (id: string) => {
         setDeletingRouteId(id);
         setShowDeleteConfirm(true);
     };
 
-    const confirmDelete = () => {
-        // delete route from api
-        // deleteRouteFromApi(deletingRouteId);
-        // invalidate the fetch routes
-        // setRoutes((prev) => prev.filter((r) => r.id !== deletingRouteId));
-        notify("success", "Route deleted successfully");
+    const confirmDeleteRoute = async () => {
+        await deleteRoute(deletingRouteId);
         setShowDeleteConfirm(false);
         setDeletingRouteId("");
     };
@@ -185,7 +199,8 @@ const RoutesPage = () => {
     const toggleAll = () => {
         const next = { ...selected };
         const shouldSelectAll = !allSelected;
-        routes.forEach((r) => (next[r.id] = shouldSelectAll));
+        const currentRoutes = fetchedRoutesData?.data || [];
+        currentRoutes.forEach((r: any) => (next[r.route_id] = shouldSelectAll));
         setSelected(next);
     };
 
@@ -193,15 +208,22 @@ const RoutesPage = () => {
         setSelected((prev) => ({ ...prev, [id]: !prev[id] }));
     };
 
-    const deleteSelectedRoutes = () => {
+    const handleDeleteSelectedRoutes = () => {
+        setShowBulkDeleteConfirm(true);
+    };
+
+    const confirmBulkDeleteRoutes = async () => {
         const selectedIds = Object.keys(selected).filter((k) => selected[k]);
         if (!selectedIds.length) return;
-        // delete selected routes from api
-        // deleteSelectedRoutesFromApi(selectedIds);
-        // Clear selection
-        setSelected({});
-        notify("success", "Selected routes deleted successfully");
-        // invalidate the routes
+
+        try {
+            await deleteSelectedRoutes(selectedIds);
+            // Clear selection
+            setSelected({});
+            setShowBulkDeleteConfirm(false);
+        } catch {
+            notify("error", "Failed to delete selected routes");
+        }
     };
 
     return (
@@ -232,7 +254,7 @@ const RoutesPage = () => {
                     {/* Bulk Actions Bar */}
                     <BulkActionsBar
                         selectedCount={selectedCount}
-                        onDeleteSelected={deleteSelectedRoutes}
+                        onDeleteSelected={handleDeleteSelectedRoutes}
                     />
 
                     {/* Routes Table */}
@@ -250,7 +272,7 @@ const RoutesPage = () => {
                         onToggleOne={toggleOne}
                         onViewRoute={viewRoute}
                         onEditRoute={editRoute}
-                        onDeleteRoute={deleteRoute}
+                        onDeleteRoute={handleDeleteRoute}
                         isLoading={isLoading}
                         error={error}
                     />
@@ -274,17 +296,29 @@ const RoutesPage = () => {
             <AddRouteModal
                 isOpen={isAddModalOpen}
                 onClose={handleCloseAddModal}
-                onAddRoute={addRoute}
+                onAddRoute={handleAddRoute}
             />
 
             {/* ================== Delete Confirmation Modal ================== */}
             <DeleteConfirmationModal
                 isOpen={showDeleteConfirm}
                 onClose={() => setShowDeleteConfirm(false)}
-                onConfirm={confirmDelete}
+                onConfirm={confirmDeleteRoute}
                 title="Confirm Delete"
                 message={`Are you sure you want to delete route ${deletingRouteId}? This action cannot be undone.`}
                 confirmButtonText="Delete Route"
+                isLoading={isDeletingRoute}
+            />
+
+            {/* ================== Bulk Delete Confirmation Modal ================== */}
+            <DeleteConfirmationModal
+                isOpen={showBulkDeleteConfirm}
+                onClose={() => setShowBulkDeleteConfirm(false)}
+                onConfirm={confirmBulkDeleteRoutes}
+                title="Confirm Bulk Delete"
+                message={`Are you sure you want to delete ${selectedCount} selected routes? This action cannot be undone.`}
+                confirmButtonText="Delete Selected"
+                isLoading={isBulkDeleting}
             />
         </div>
     );

@@ -43,8 +43,8 @@ const toForm = (d: DriverRow): DriverForm => ({
     status: d.status === "on_route" ? "available" : d.status,
     national_id: null, // Will be loaded from API
     gender: (d as any).gender || "Male",
-    dateOfBirth: (d as any).dateOfBirth || "",
-    drivingLicense: {
+    date_of_birth: (d as any).date_of_birth || "",
+    driving_license: {
         type: d.license_type || "",
         number: (d as any).licenseNumber || "",
         expiration: (d as any).licenseExpiration || "",
@@ -57,7 +57,7 @@ const toForm = (d: DriverRow): DriverForm => ({
         year: (d as any).vehicleYear || "",
         color: (d as any).vehicleColor || "",
     },
-    assignedRouteId: d.assignedRoute?.id || "",
+    assignedRoute_id: d.assignedRoute?.id || "",
     notes: (d as any).notes || "",
 });
 
@@ -103,14 +103,14 @@ const EditDriverModal = ({
     // ================== Check Route Availability ==================
     const handleCheckRouteAvailability = async () => {
         // Check if route ID is entered
-        if (!form?.assignedRouteId) {
+        if (!form?.assignedRoute_id) {
             notify("error", "Please enter a Route ID first");
             return;
         }
         try {
             setIsCheckingAvailability(true);
             setAvailabilityStatus("unknown");
-            const status = await checkRouteAvailability(form.assignedRouteId);
+            const status = await checkRouteAvailability(form.assignedRoute_id);
             if (status === "unassigned") {
                 setAvailabilityStatus("unassigned");
                 notify("success", "Route is available for assignment");
@@ -182,8 +182,8 @@ const EditDriverModal = ({
         if (!form.name || !form.phone)
             return notify("warning", "Name and Phone are required");
         // check if route is available
-        if (!isUnavailable && form.assignedRouteId) {
-            const status = await checkRouteAvailability(form.assignedRouteId);
+        if (!isUnavailable && form.assignedRoute_id) {
+            const status = await checkRouteAvailability(form.assignedRoute_id);
             if (status === "in progress") {
                 return notify("error", "Route is currently in progress");
             } else if (status === "assigned") {
@@ -204,10 +204,10 @@ const EditDriverModal = ({
             //     city: form.city,
             //     contact_channels: form.contact_channels,
             //     gender: form.gender,
-            //     dateOfBirth: form.dateOfBirth,
-            //     drivingLicense: form.drivingLicense,
+            //     dateOfBirth: form.date_of_birth,
+            //     drivingLicense: form.driving_license,
             //     vehicle: form.vehicle,
-            //     assignedRouteId: form.assignedRouteId,
+            //     assignedRoute_id: form.assignedRoute_id,
             //     notes: form.notes,
             //     picture: form.picture,
             //     status: form.status,

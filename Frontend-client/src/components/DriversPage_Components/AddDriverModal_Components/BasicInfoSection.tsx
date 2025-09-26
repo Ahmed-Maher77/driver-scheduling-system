@@ -124,16 +124,16 @@ const BasicInfoSection = ({ form, errors, update }: BasicInfoSectionProps) => {
                     </label>
                     <input
                         className={`main-input w-full ${
-                            errors["dateOfBirth"] ? "border-red-500" : ""
+                            errors["date_of_birth"] ? "border-red-500" : ""
                         }`}
                         type="date"
                         placeholder="YYYY-MM-DD"
-                        value={form.dateOfBirth}
-                        onChange={(e) => update("dateOfBirth", e.target.value)}
+                        value={form.date_of_birth}
+                        onChange={(e) => update("date_of_birth", e.target.value)}
                     />
-                    {errors["dateOfBirth"] && (
+                    {errors["date_of_birth"] && (
                         <p className="text-red-500 text-xs mt-1">
-                            {errors["dateOfBirth"]}
+                            {errors["date_of_birth"]}
                         </p>
                     )}
                 </div>

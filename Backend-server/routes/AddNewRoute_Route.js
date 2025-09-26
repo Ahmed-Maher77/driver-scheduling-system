@@ -47,6 +47,18 @@ router.post("/", async (req, res) => {
             });
         }
 
+        // Check for duplicate route (same start and end location)
+        const existingRoute = await Routes.findOne({
+            start_location: data.start_location,
+            end_location: data.end_location,
+        });
+
+        if (existingRoute) {
+            return res.status(409).json({
+                message: `Route from "${data.start_location}" to "${data.end_location}" already exists`,
+            });
+        }
+
         // Generate unique route ID
         const routeId = await generateRouteId();
 
@@ -74,12 +86,7 @@ router.post("/", async (req, res) => {
                     // If driver not found, delete the created route and return error
                     await Routes.findByIdAndDelete(savedRoute._id);
                     return res.status(404).json({
-                        message: "Driver not found",
-                        error: "DRIVER_NOT_FOUND",
-                        details: {
-                            driver_id: data.assignedDriver_id,
-                            suggestion: "Please provide a valid driver ID",
-                        },
+                        message: `Driver with ID "${data.assignedDriver_id}" not found`,
                     });
                 }
 
@@ -124,11 +131,6 @@ router.post("/", async (req, res) => {
                 await Routes.findByIdAndDelete(savedRoute._id);
                 return res.status(500).json({
                     message: "Failed to assign driver to route",
-                    error: "DRIVER_ASSIGNMENT_FAILED",
-                    details: {
-                        suggestion:
-                            "Route was not created due to driver assignment failure",
-                    },
                 });
             }
         }
@@ -188,20 +190,6 @@ router.post("/", async (req, res) => {
 
             return res.status(409).json({
                 message: "Duplicate entry detected",
-                error: "DUPLICATE_ENTRY",
-                details: {
-                    duplicate_fields: error.keyPattern
-                        ? Object.keys(error.keyPattern)
-                        : ["unknown"],
-                    duplicate_values: error.keyValue || {},
-                    suggestion: "Please check your data and try again.",
-                    technical_details: {
-                        error_code: error.code,
-                        error_name: error.name,
-                        key_pattern: error.keyPattern,
-                        key_value: error.keyValue,
-                    },
-                },
             });
         }
 
@@ -215,15 +203,12 @@ router.post("/", async (req, res) => {
 
             return res.status(400).json({
                 message: "Validation failed",
-                error: "VALIDATION_ERROR",
-                details: validationErrors,
             });
         }
 
         // Handle other errors
         res.status(500).json({
             message: "Internal server error",
-            error: error.message,
         });
     }
 });

@@ -9,6 +9,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
     message,
     confirmButtonText = "Delete",
     cancelButtonText = "Cancel",
+    isLoading = false,
 }) => {
     if (!isOpen) return null;
 
@@ -20,7 +21,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
 
                 {/* Message */}
                 <p className="gray-c mb-12">{message}</p>
-                
+
                 {/* Buttons */}
                 <div className="flex gap-3 justify-end">
                     {/* Cancel Button */}
@@ -33,9 +34,19 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                     {/* Confirm Button */}
                     <button
                         onClick={onConfirm}
-                        className="main-btn red-bg px-4 py-2"
+                        disabled={isLoading}
+                        className={`main-btn red-bg px-4 py-2 ${
+                            isLoading ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                     >
-                        {confirmButtonText}
+                        {isLoading ? (
+                            <div className="flex items-center gap-2">
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Deleting...
+                            </div>
+                        ) : (
+                            confirmButtonText
+                        )}
                     </button>
                 </div>
             </div>

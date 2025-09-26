@@ -19,19 +19,19 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                         </label>
                         <input
                             className={`main-input w-full ${
-                                errors["drivingLicense.type"]
+                                errors["driving_license.type"]
                                     ? "border-red-500"
                                     : ""
                             }`}
                             placeholder="e.g., A, B, C"
-                            value={form.drivingLicense.type}
+                            value={form.driving_license.type}
                             onChange={(e) =>
-                                update("drivingLicense.type", e.target.value)
+                                update("driving_license.type", e.target.value)
                             }
                         />
-                        {errors["drivingLicense.type"] && (
+                        {errors["driving_license.type"] && (
                             <p className="text-red-500 text-xs mt-1">
-                                {errors["drivingLicense.type"]}
+                                {errors["driving_license.type"]}
                             </p>
                         )}
                     </div>
@@ -43,19 +43,19 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                         </label>
                         <input
                             className={`main-input w-full ${
-                                errors["drivingLicense.number"]
+                                errors["driving_license.number"]
                                     ? "border-red-500"
                                     : ""
                             }`}
                             placeholder="License number"
-                            value={form.drivingLicense.number}
+                            value={form.driving_license.number}
                             onChange={(e) =>
-                                update("drivingLicense.number", e.target.value)
+                                update("driving_license.number", e.target.value)
                             }
                         />
-                        {errors["drivingLicense.number"] && (
+                        {errors["driving_license.number"] && (
                             <p className="text-red-500 text-xs mt-1">
-                                {errors["drivingLicense.number"]}
+                                {errors["driving_license.number"]}
                             </p>
                         )}
                     </div>
@@ -67,23 +67,23 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                         </label>
                         <input
                             className={`main-input w-full ${
-                                errors["drivingLicense.expiration"]
+                                errors["driving_license.expiration"]
                                     ? "border-red-500"
                                     : ""
                             }`}
                             type="date"
                             placeholder="YYYY-MM-DD"
-                            value={form.drivingLicense.expiration}
+                            value={form.driving_license.expiration}
                             onChange={(e) =>
                                 update(
-                                    "drivingLicense.expiration",
+                                    "driving_license.expiration",
                                     e.target.value
                                 )
                             }
                         />
-                        {errors["drivingLicense.expiration"] && (
+                        {errors["driving_license.expiration"] && (
                             <p className="text-red-500 text-xs mt-1">
-                                {errors["drivingLicense.expiration"]}
+                                {errors["driving_license.expiration"]}
                             </p>
                         )}
                     </div>
@@ -97,8 +97,12 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                     </label>
                     <div
                         className={`file-upload-container document-upload required-upload ${
-                            errors["drivingLicense.image"] ? "upload-error" : ""
-                        } ${form.drivingLicense.image ? "upload-success" : ""}`}
+                            errors["driving_license.image"]
+                                ? "upload-error"
+                                : ""
+                        } ${
+                            form.driving_license.image ? "upload-success" : ""
+                        }`}
                     >
                         <input
                             className="file-upload-input w-full"
@@ -106,14 +110,14 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                             accept="image/*"
                             onChange={(e) =>
                                 update(
-                                    "drivingLicense.image",
+                                    "driving_license.image",
                                     e.target.files?.[0] || null
                                 )
                             }
-                            id="drivingLicenseImage"
+                            id="driving_licenseImage"
                         />
                         <label
-                            htmlFor="drivingLicenseImage"
+                            htmlFor="driving_licenseImage"
                             className="file-upload-label file-upload-border"
                         >
                             <svg
@@ -136,7 +140,7 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                             </svg>
                             <div className="file-upload-text">
                                 <span className="file-upload-main-text">
-                                    {form.drivingLicense.image
+                                    {form.driving_license.image
                                         ? "Change License Image"
                                         : "Upload License Image"}
                                 </span>
@@ -145,7 +149,7 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                                 </span>
                             </div>
                         </label>
-                        {form.drivingLicense.image && (
+                        {form.driving_license.image && (
                             <div className="file-info">
                                 <svg
                                     className="file-info-icon"
@@ -158,11 +162,11 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                                     <circle cx="12" cy="12" r="10" />
                                 </svg>
                                 <span className="file-info-name">
-                                    {(form.drivingLicense.image as File).name}
+                                    {(form.driving_license.image as File).name}
                                 </span>
                                 <span className="file-info-size">
                                     {Math.round(
-                                        (form.drivingLicense.image as File)
+                                        (form.driving_license.image as File)
                                             .size / 1024
                                     )}{" "}
                                     KB
@@ -170,9 +174,9 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                             </div>
                         )}
                     </div>
-                    {errors["drivingLicense.image"] && (
+                    {errors["driving_license.image"] && (
                         <p className="text-red-500 text-xs mt-1">
-                            {errors["drivingLicense.image"]}
+                            {errors["driving_license.image"]}
                         </p>
                     )}
                 </div>

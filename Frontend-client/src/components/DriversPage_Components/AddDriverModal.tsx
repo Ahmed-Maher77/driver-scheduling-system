@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import ModalWrapper from "../RoutesPage_Components/SharedModalComponents/ModalWrapper";
 import FormSection from "../RoutesPage_Components/SharedModalComponents/FormSection";
 import ModalHeader from "../RoutesPage_Components/AddRouteModal_Components/ModalHeader";
@@ -23,6 +23,7 @@ import {
     NotesSection,
 } from "./AddDriverModal_Components";
 import "./AddDriverModal.scss";
+import useAddNewDriver from "../../utils/hooks/api/useAddNewDriver";
 
 const initialForm: DriverForm = {
     name: "",
@@ -40,22 +41,38 @@ const initialForm: DriverForm = {
     status: "available",
     national_id: null,
     gender: "Male",
-    dateOfBirth: "",
-    drivingLicense: { type: "", number: "", expiration: "", image: null },
+    date_of_birth: "",
+    driving_license: { type: "", number: "", expiration: "", image: null },
     vehicle: { type: "", make: "", model: "", year: "", color: "" },
-    assignedRouteId: "",
+    assignedRoute_id: "",
     notes: "",
 };
 
 const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
     const [form, setForm] = useState<DriverForm>(initialForm);
     const isUnavailable = form.status === "unavailable";
-    const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [routeAvailabilityStatus, setRouteAvailabilityStatus] = useState<
         "unknown" | "assigned" | "unassigned" | "in progress"
     >("unknown");
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+    const [submitError, setSubmitError] = useState<string | null>(null);
+    const modalRef = useRef<HTMLDivElement>(null);
+    // Add Driver
+    const { addDriver, isPending: isSubmitting } = useAddNewDriver();
+
+    // Scroll to top when error is displayed
+    useEffect(() => {
+        if (submitError && modalRef.current) {
+            // Small delay to ensure the error div is rendered
+            setTimeout(() => {
+                modalRef.current?.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }, 100);
+        }
+    }, [submitError]);
 
     // ================== Update Field ==================
     const update = (path: string, value: string | File | null) => {
@@ -77,6 +94,10 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
             delete copy[path];
             return copy;
         });
+        // clear submit error when user starts typing
+        if (submitError) {
+            setSubmitError(null);
+        }
     };
 
     // ================== Validation ==================
@@ -86,16 +107,16 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
         if (!form.name) errors["name"] = "Name is required";
         if (!form.phone) errors["phone"] = "Phone is required";
         if (!form.gender) errors["gender"] = "Gender is required";
-        if (!form.dateOfBirth)
-            errors["dateOfBirth"] = "Date of birth is required";
-        if (!form.drivingLicense.type)
-            errors["drivingLicense.type"] = "License type is required";
-        if (!form.drivingLicense.number)
-            errors["drivingLicense.number"] = "License number is required";
-        if (!form.drivingLicense.expiration)
-            errors["drivingLicense.expiration"] = "Expiration is required";
-        if (!form.drivingLicense.image)
-            errors["drivingLicense.image"] = "License image is required";
+        if (!form.date_of_birth)
+            errors["date_of_birth"] = "Date of birth is required";
+        if (!form.driving_license.type)
+            errors["driving_license.type"] = "License type is required";
+        if (!form.driving_license.number)
+            errors["driving_license.number"] = "License number is required";
+        if (!form.driving_license.expiration)
+            errors["driving_license.expiration"] = "Expiration is required";
+        if (!form.driving_license.image)
+            errors["driving_license.image"] = "License image is required";
         if (!form.vehicle.type)
             errors["vehicle.type"] = "Vehicle type is required";
         if (!form.vehicle.make) errors["vehicle.make"] = "Make is required";
@@ -135,13 +156,13 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
 
     // ================== Handle [Check Availability] Button Click ==================
     const handleCheckRouteAvailability = async () => {
-        if (!form.assignedRouteId) {
+        if (!form.assignedRoute_id) {
             notify("error", "Please enter a Route ID first");
             return;
         }
         setIsCheckingAvailability(true);
         setRouteAvailabilityStatus("unknown");
-        await checkRouteAvailabilityStatus(form.assignedRouteId);
+        await checkRouteAvailabilityStatus(form.assignedRoute_id);
         setIsCheckingAvailability(false);
     };
 
@@ -149,7 +170,7 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (isSubmitting) return;
-        setIsSubmitting(true);
+        setSubmitError(null); // Clear any previous errors
 
         // Validate form
         const nextErrors = validateForm(form);
@@ -159,47 +180,62 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
                 "error",
                 "Please fix the validation errors before submitting"
             );
-            setIsSubmitting(false);
             return;
         }
 
         // If assigning a route, verify availability
-        if (form.assignedRouteId) {
+        if (form.assignedRoute_id) {
             const isRouteAvailable = await checkRouteAvailabilityStatus(
-                form.assignedRouteId
+                form.assignedRoute_id
             );
             if (!isRouteAvailable) {
-                setIsSubmitting(false);
                 return;
             }
         }
 
         // Proceed with submission
         try {
-            // onAddDriver(form);
-            // call api to add driver
-            // addNewDriver()
-            notify("success", "Driver added successfully");
+            await addDriver(form);
+            // Only close modal on success
             onClose();
             setForm(initialForm);
             setErrors({});
-        } catch {
-            notify("error", "Something went wrong while adding driver");
-        } finally {
-            setIsSubmitting(false);
+        } catch (error: any) {
+            // Handle error and show it in the modal
+            const errorMessage =
+                error?.response?.data?.message ||
+                error?.message ||
+                "Failed to add driver";
+            setSubmitError(errorMessage);
+            return;
         }
     };
 
     // ================== Close Modal ==================
     const handleClose = () => {
-        setIsSubmitting(false);
+        setSubmitError(null);
         onClose();
     };
 
     return (
         <ModalWrapper isOpen={isOpen}>
-            <div className="p-6">
+            <div ref={modalRef} className="p-6">
                 <ModalHeader title="Add Driver" onClose={handleClose} />
+
+                {/* ================== Error Display ================== */}
+                {submitError && (
+                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                        <div className="flex items-center">
+                            <i className="fa-solid fa-exclamation-triangle text-red-500 mr-2"></i>
+                            <p className="text-red-700 text-sm font-medium">
+                                {submitError === "Duplicate entry detected"
+                                    ? "A driver with the same information already exists"
+                                    : submitError}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 <div className="add-driver-modal-wrapper">
                     <FormSection onSubmit={submit} className="space-y-6">
                         {/* ================== Basic Information ================== */}

@@ -78,7 +78,7 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
 
                 {/* Table Body */}
                 <tbody>
-                    {rows?.length <= 0 ? (
+                    {!isLoading && rows?.length <= 0 ? (
                         <tr>
                             <td
                                 colSpan={effectiveColumns.length}

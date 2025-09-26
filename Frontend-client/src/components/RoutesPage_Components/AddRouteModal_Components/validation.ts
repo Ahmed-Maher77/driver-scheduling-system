@@ -7,25 +7,25 @@ export const validateForm = (formData: AddRouteItemProps): ValidationErrors => {
     const errors: ValidationErrors = {};
 
     // Start Location validation
-    if (!formData.startLocation?.trim()) {
+    if (!formData.start_location?.trim()) {
         errors.startLocation = "Start location is required";
-    } else if (formData.startLocation.trim().length < 2) {
+    } else if (formData.start_location.trim().length < 2) {
         errors.startLocation = "Start location must be at least 2 characters";
     }
 
     // End Location validation
-    if (!formData.endLocation?.trim()) {
+    if (!formData.end_location?.trim()) {
         errors.endLocation = "End location is required";
-    } else if (formData.endLocation.trim().length < 2) {
+    } else if (formData.end_location.trim().length < 2) {
         errors.endLocation = "End location must be at least 2 characters";
     }
 
     // Check if start and end locations are the same
     if (
-        formData.startLocation?.trim() &&
-        formData.endLocation?.trim() &&
-        formData.startLocation.trim().toLowerCase() ===
-            formData.endLocation.trim().toLowerCase()
+        formData.start_location?.trim() &&
+        formData.end_location?.trim() &&
+        formData.start_location.trim().toLowerCase() ===
+            formData.end_location.trim().toLowerCase()
     ) {
         errors.endLocation =
             "End location must be different from start location";
