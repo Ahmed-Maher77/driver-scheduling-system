@@ -1,53 +1,48 @@
-import SectionHeader from "../../Headings/SectionHeader/SectionHeader";
+import useGetSummaryOfActivityFeeds from "../../../utils/hooks/api/useGetSummaryOfActivityFeeds";
+import ErrorMessage from "../../ErrorMessage/ErrorMessage";
+import LoadingSpinner from "../../LoadingSpinner/LoadingSpinner";
 import ActivityFeedItem from "./ActivityFeedItem";
-
-const activityFeeds = [
-    {
-        routeId: "RT001",
-        status: "assigned",
-        driver: {
-            id: "DR001",
-            name: "Ethan Harper",
-        },
-        actionTime: "2025-01-01 12:00:00",
-    },
-	{
-		routeId: "RT002",
-		status: "unassigned",
-		driver: {
-			id: null,
-			name: null,
-		},
-		lastDriver: {
-			id: "DR002",
-			name: "Noah White",
-		},
-		actionTime: "2025-01-01 12:00:00",
-	},
-	{
-		routeId: "RT003",
-		status: "assigned",
-		driver: {
-			id: "DR003",
-			name: "Noah White",
-		},
-		actionTime: "2025-01-01 12:00:00",
-	}
-];
+import SectionHeader from "../../Headings/SectionHeader/SectionHeader";
 
 const ActivityFeedsContainer = () => {
+    const {
+        data: activityFeedsData,
+        isLoading,
+        error,
+    } = useGetSummaryOfActivityFeeds();
+
+    const feedsCount = activityFeedsData?.length || 0;
+
     return (
         <div className="activity-feeds-container white-bg p-4 rounded-lg shadow-md">
             <SectionHeader
                 title="Activity Feeds"
                 to="/activity-feeds"
                 label="See All"
+                count={feedsCount}
+                countColor="purple"
             />
 
-            <ul className="flex flex-col gap-6 mt-4 timeline-container">
-			    {activityFeeds.map((feed) => (
-					<ActivityFeedItem key={feed.routeId} routeId={feed.routeId} status={feed.status} driver={feed.driver} lastDriver={feed.lastDriver} actionTime={feed.actionTime} />
-				))}
+            {/* ================= Loading Status ================= */}
+            {isLoading && (
+                <LoadingSpinner message="Loading activity feeds..." />
+            )}
+
+            {/* ================= Error Status ================= */}
+            {error && <ErrorMessage message={error} />}
+
+            {/* ================= Activity Feeds ================= */}
+            <ul className="flex flex-col gap-6 mt-6 timeline-container">
+                {activityFeedsData?.map((feed: any) => (
+                    <ActivityFeedItem
+                        key={feed._id}
+                        routeId={feed.route_id}
+                        status={feed.status}
+                        driver={feed.driver}
+                        lastDriver={feed.last_driver}
+                        actionTime={feed.action_time}
+                    />
+                ))}
             </ul>
         </div>
     );

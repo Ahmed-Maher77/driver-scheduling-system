@@ -12,57 +12,27 @@ import DeleteConfirmationModal from "../../components/DeleteConfirmationModal/De
 import { exportDriversCsv } from "../../components/DriversPage_Components/exportCsv";
 import { notify } from "../../utils/functions/notify";
 import useGetAllDrivers from "../../utils/hooks/api/useGetAllDrivers.tsx";
-import axios from "axios";
+import Pagination from "../../components/Pagination/Pagination.tsx";
 
-// const initialDriversData: any[] = [
-//     {
-//         id: "DR001",
-//         name: "Ethan Harper",
-//         picture: "https://via.placeholder.com/150",
-//         status: "available", // available, unavailable, on_route
-//         phone: "+1234567890",
-//         licenseType: "B",
-//         vehicleType: "Car",
-//         assignedRouteId: "RT001",
-//     },
-//     {
-//         id: "DR002",
-//         name: "Liam Carter",
-//         picture: "https://via.placeholder.com/150",
-//         status: "unavailable", // available, unavailable, on_route
-//         phone: "+1234567890",
-//         licenseType: "B",
-//         vehicleType: "Car",
-//         assignedRouteId: "RT002",
-//     },
-//     {
-//         id: "DR003",
-//         name: "Noah White",
-//         picture: "https://via.placeholder.com/150",
-//         status: "on_route", // available, unavailable, on_route
-//         phone: "+1234567890",
-//         licenseType: "B",
-//         vehicleType: "Car",
-//         assignedRouteId: "RT003",
-//     },
-//     {
-//         id: "DR004",
-//         name: "James Brown",
-//         picture: "https://via.placeholder.com/150",
-//         status: "unavailable", // available, unavailable, on_route
-//         phone: "+1234567890",
-//         licenseType: "B",
-//         vehicleType: "Car",
-//         assignedRouteId: "RT004",
-//     },
-// ];
 
 const DriversPage = () => {
-    const { data, isLoading, error } = useGetAllDrivers({
+    // Pagination Info
+    const [paginationInfo, setPaginationInfo] = useState({
         pageNumber: 1,
-        limit: 15,
+        totalPages: 1,
+        totalDocs: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
     });
+    // Fetch Drivers
+    const {
+        data: fetchedDriversData,
+        isLoading,
+        error,
+    } = useGetAllDrivers({ pageNumber: paginationInfo.pageNumber, limit: 10 });
+    const [drivers, setDrivers] = useState<any>([]);
 
+    // Filters
     const [showFilters, setShowFilters] = useState(true);
     const [selected, setSelected] = useState<Record<string, boolean>>({});
     const [searchBy, setSearchBy] = useState<DriverSearchBy>({
@@ -71,7 +41,6 @@ const DriversPage = () => {
         vehicleType: "",
         licenseType: "",
     });
-    const [drivers, setDrivers] = useState<any>([]);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deletingDriverId, setDeletingDriverId] = useState("");
     const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
@@ -81,15 +50,6 @@ const DriversPage = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingDriverId, setEditingDriverId] = useState("");
     const [isExportingCsv, setIsExportingCsv] = useState(false);
-
-
-    useEffect(() => {
-        const fetchDrivers = async () => {
-        const res = await axios.get("http://localhost:3001/get-all-drivers?page=1&limit=15");
-        console.log(res.data);
-        };
-        fetchDrivers();
-    }, []);
 
     // Sync modal state with URL search params
     useEffect(() => {
@@ -118,19 +78,21 @@ const DriversPage = () => {
     const allSelected =
         drivers?.length > 0 && drivers.every((d: any) => selected[d.id]);
 
-    console.log(error);
-
     useEffect(() => {
         // get drivers from api
-        console.log("Hook data:", data);
-        console.log("Hook error:", error);
-        console.log("Hook loading:", isLoading);
-
-        if (data) {
-            // Adjust based on your actual API response structure
-            setDrivers(data?.data || data?.drivers || data || []);
+        if (fetchedDriversData) {
+            // Set the driver data
+            setDrivers(fetchedDriversData?.data || []);
+            // Set the pagination info
+            setPaginationInfo({
+                pageNumber: fetchedDriversData?.currentPage || 1,
+                totalPages: fetchedDriversData?.totalPages || 1,
+                totalDocs: fetchedDriversData?.totalDocs || 0,
+                hasNextPage: fetchedDriversData?.hasNextPage || false,
+                hasPreviousPage: fetchedDriversData?.hasPreviousPage || false,
+            });
         }
-    }, [data, error, isLoading]);
+    }, [fetchedDriversData, error, isLoading]);
 
     // Filter Drivers based on: driverId, name, status, vehicleType
     useEffect(() => {
@@ -248,10 +210,17 @@ const DriversPage = () => {
                         onViewDriver={(id) => navigate(`/drivers/${id}`)}
                         onEditDriver={(id) => openEditDriver(id)}
                         onDeleteDriver={handleDeleteDriver}
+                        isLoading={isLoading}
+                        error={error}
+                    />
+
+                    {/* Pagination */}
+                    <Pagination
+                        paginationInfo={paginationInfo}
+                        onPageChange={setPaginationInfo}
                     />
                 </main>
             </div>
-
             {/* ================== Add Driver Modal ================== */}
             <AddDriverModal isOpen={isAddModalOpen} onClose={closeModals} />
 

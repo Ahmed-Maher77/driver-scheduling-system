@@ -48,12 +48,12 @@ export const useRoutesTableColumns = ({
     // Combine all columns
     const columns: TableColumn<RouteRow>[] = [
         selectColumn,
-        { key: "id", label: "Route ID", align: "left" },
+        { key: "route_id", label: "Route ID", align: "left" },
         locationColumn,
         distanceColumn,
         statusColumn,
         driverColumn,
-        { key: "assignedAt", label: "Assigned At", align: "center" },
+        { key: "assigned_at", label: "Assigned At", align: "center" },
         actionsColumn,
     ];
 

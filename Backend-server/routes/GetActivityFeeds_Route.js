@@ -4,7 +4,6 @@ const router = express.Router();
 // Import Models
 const ActivityFeeds = require("../models/ActivityFeedsModel");
 
-
 // Get All Activity Feeds => /activity-feeds?page=1&limit=15
 router.get("/", async (req, res) => {
     try {
@@ -24,7 +23,7 @@ router.get("/", async (req, res) => {
         // Calculate total pages count
         const totalDocs = await ActivityFeeds.countDocuments();
         const totalPages = Math.ceil(totalDocs / limit);
-        
+
         res.status(200).json({
             currentPage: page,
             limit,
@@ -37,18 +36,51 @@ router.get("/", async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-})
-
+});
 
 // Get Activity Feed Summary => /activity-feeds/summary
 router.get("/summary", async (req, res) => {
     try {
-        const activityFeeds = await ActivityFeeds.find().limit(10);
-        res.status(200).json(activityFeeds);
+        const activityFeeds = await ActivityFeeds.find()
+            .limit(10)
+            .sort({ action_time: -1 }); // Latest first
+
+        // Format the response to ensure proper structure
+        const formattedFeeds = activityFeeds.map((feed) => ({
+            _id: feed._id,
+            route_id: feed.route_id,
+            status: feed.status,
+            action_time: feed.action_time,
+            driver:
+                feed.driver && feed.driver.id && feed.driver.name
+                    ? {
+                          id: feed.driver.id,
+                          name: feed.driver.name,
+                      }
+                    : feed.driver_id
+                    ? {
+                          id: feed.driver_id,
+                          name: null,
+                      }
+                    : null,
+            last_driver:
+                feed.last_driver && feed.last_driver.id && feed.last_driver.name
+                    ? {
+                          id: feed.last_driver.id,
+                          name: feed.last_driver.name,
+                      }
+                    : feed.last_driver_id
+                    ? {
+                          id: feed.last_driver_id,
+                          name: null,
+                      }
+                    : null,
+        }));
+
+        res.status(200).json(formattedFeeds);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-})
-
+});
 
 module.exports = router;

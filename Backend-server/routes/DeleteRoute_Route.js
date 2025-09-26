@@ -26,7 +26,13 @@ router.delete("/:id", async (req, res) => {
         try {
             await Drivers.updateMany(
                 { assignedRoute_id: id },
-                { $set: { assignedRoute_id: null, status: "available", updated_at: new Date() } }
+                {
+                    $set: {
+                        assignedRoute_id: null,
+                        status: "available",
+                        updated_at: new Date(),
+                    },
+                }
             );
         } catch (e) {
             console.error("Driver cleanup failed:", e?.message || e);
@@ -35,12 +41,22 @@ router.delete("/:id", async (req, res) => {
         // Update activity feed
         try {
             if (deletedRoute.assignedDriver_id) {
+                // Get driver details for last assignment
+                const lastDriver = await Drivers.findById(
+                    deletedRoute.assignedDriver_id
+                );
                 const newActivityFeed = new ActivityFeeds({
                     route_id: deletedRoute.route_id,
                     status: "unassigned",
-                    last_driver_id: deletedRoute.assignedDriver_id,
                     action_time: new Date(),
                 });
+
+                if (lastDriver) {
+                    newActivityFeed.last_driver = {
+                        id: lastDriver.driver_id,
+                        name: lastDriver.name,
+                    };
+                }
                 await newActivityFeed.save();
             }
         } catch (feedErr) {

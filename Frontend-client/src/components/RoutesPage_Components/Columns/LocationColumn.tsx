@@ -4,9 +4,9 @@ export const locationColumn: TableColumn<RouteRow> = {
     key: "location",
     label: "Location",
     render: (row) => (
-        <span>
-            {row.startLocation} <span className="gray-c">→</span>{" "}
-            {row.endLocation}
+        <span style={{ minWidth: "280px", display: "inline-block" }}>
+            {row.start_location} <span className="gray-c">→</span>{" "}
+            {row.end_location}
         </span>
     ),
     align: "left",

@@ -12,6 +12,8 @@ const RoutesTable = ({
     onViewRoute,
     onEditRoute,
     onDeleteRoute,
+    isLoading,
+    error,
 }: RoutesTableProps) => {
     const columns = useRoutesTableColumns({
         selected,
@@ -31,6 +33,8 @@ const RoutesTable = ({
             stickyHeader
             tableClassName="w-full"
             cellAlign="center"
+            isLoading={isLoading}
+            error={error}
         />
     );
 };

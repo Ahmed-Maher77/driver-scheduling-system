@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { formatTime } from "../../../utils/functions/formatTime";
-import { formatDate } from "../../../utils/functions/formatDate";
+import { extractDate } from "../../../utils/functions/formatDate";
 import type { ActivityFeedItemProps } from "../../../common/Types/Interfaces";
 import { useAppSelector } from "../../../utils/redux-toolkit/reduxHooks";
 
@@ -26,7 +26,7 @@ const ActivityFeedItem = ({ routeId, status, driver, lastDriver, actionTime }: A
                         to={`/drivers/${driver?.id || lastDriver?.id}`}
                         className="blue-c hover-blue-c font-medium underline-hover"
                     >
-                        {driver?.name || lastDriver?.name}
+                        {driver?.name || lastDriver?.name || driver?.id || lastDriver?.id}
                         <i className="fa-solid fa-arrow-right rotate-[-40deg] mt-[0.1rem]"></i>
                     </NavLink>
                 </p>
@@ -36,12 +36,12 @@ const ActivityFeedItem = ({ routeId, status, driver, lastDriver, actionTime }: A
             <span className="activity-time gray-c flex flex-col gap-[0.1rem] items-end flex-shrink-0">
                 {/* Day */}
                 <span className="day flex items-center gap-1">
-                    {formatDate(actionTime)}
+                    {extractDate(actionTime as string)}
                     <i className="fa-solid fa-calendar time-icon-color"></i>
                 </span>
                 {/* Time */}
                 <span className="time flex items-center gap-1">
-                    {formatTime(actionTime)}
+                    {formatTime(actionTime as string)}
                     <i className="fa-solid fa-clock time-icon-color"></i>
                 </span>
             </span>

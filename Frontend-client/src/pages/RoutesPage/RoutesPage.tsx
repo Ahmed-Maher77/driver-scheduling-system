@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import PageHeader from "../../components/Headings/PageHeader/PageHeader";
 import type {
     AddRouteItemProps,
-    RouteRow,
     SearchBy,
 } from "../../common/Types/Interfaces";
 import EditRouteModal from "../../components/RoutesPage_Components/EditRouteModal";
@@ -15,67 +14,30 @@ import RoutesTable from "../../components/RoutesPage_Components/RoutesTable";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal/DeleteConfirmationModal";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { notify } from "../../utils/functions/notify";
-
-// Demo data
-const initialRoutes: RouteRow[] = [
-    {
-        id: "RT001",
-        startLocation: "Warehouse A",
-        endLocation: "City Center",
-        status: "assigned",
-        assignedDriver: { id: "DR001", name: "Ethan Harper" },
-        lastDriver: { id: "DR002", name: "ahmed" },
-        createdAt: "2025-01-01",
-        updatedAt: "2025-01-01",
-        assignedAt: "2025-01-01",
-        distance: 18.4,
-        distanceUnit: "mile",
-        duration: 100,
-        timeUnit: "minutes",
-        cost: 100,
-        currency: "EGP",
-        maxSpeed: 120,
-        speedUnit: "km/h",
-    },
-    {
-        id: "RT002",
-        startLocation: "Warehouse B",
-        endLocation: "Suburb North",
-        status: "in progress",
-        assignedDriver: { id: "DR002", name: "Liam Carter" },
-        createdAt: "2025-01-04",
-        updatedAt: "2025-01-04",
-        assignedAt: "2025-01-04",
-        distance: 24.2,
-        distanceUnit: "mile",
-        duration: 120,
-        timeUnit: "minutes",
-        cost: 150,
-        currency: "EGP",
-        maxSpeed: 100,
-        speedUnit: "km/h",
-    },
-    {
-        id: "RT003",
-        startLocation: "Warehouse C",
-        endLocation: "Suburb South",
-        status: "unassigned",
-        assignedDriver: undefined,
-        createdAt: "2025-01-05",
-        updatedAt: "2025-01-05",
-        assignedAt: "2025-01-05",
-        distance: 12.7,
-        distanceUnit: "mile",
-        duration: 120,
-        timeUnit: "minutes",
-        cost: 150,
-        currency: "EGP",
-        maxSpeed: 100,
-        speedUnit: "km/h",
-    },
-];
+import Pagination from "../../components/Pagination/Pagination";
+import useGetAllRoutes from "../../utils/hooks/api/useGetAllRoutes";
+import { extractDate } from "../../utils/functions/formatDate";
 
 const RoutesPage = () => {
+    // Pagination Info
+    const [paginationInfo, setPaginationInfo] = useState({
+        pageNumber: 1,
+        totalPages: 1,
+        totalDocs: 0,
+        hasNextPage: false,
+        hasPreviousPage: false,
+    });
+    // Fetch Routes
+    const {
+        data: fetchedRoutesData,
+        isLoading,
+        error,
+    } = useGetAllRoutes({
+        pageNumber: paginationInfo.pageNumber,
+        limit: 10,
+    });
+    const [routes, setRoutes] = useState<any[]>([]);
+    // Filters
     const [showFilters, setShowFilters] = useState(true);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -86,7 +48,6 @@ const RoutesPage = () => {
     const [isExportingCsv, setIsExportingCsv] = useState(false);
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [routes, setRoutes] = useState(initialRoutes);
     const [searchBy, setSearchBy] = useState<SearchBy>({
         routeIdOrDriverName: "",
         status: "",
@@ -122,9 +83,25 @@ const RoutesPage = () => {
         routes.length > 0 && routes.every((r) => selected[r.id]);
 
     useEffect(() => {
-        // get routes from api
-        // setRoutes(newRoutes);
-    }, []);
+        // get drivers from api
+        if (fetchedRoutesData) {
+            // Set the driver data
+            const incomingRoutes =
+                fetchedRoutesData?.data.map((r: any) => ({
+                    ...r,
+                    assigned_at: extractDate(r.assigned_at) || null,
+                })) || [];
+            setRoutes(incomingRoutes);
+            // Set the pagination info
+            setPaginationInfo({
+                pageNumber: fetchedRoutesData?.currentPage || 1,
+                totalPages: fetchedRoutesData?.totalPages || 1,
+                totalDocs: fetchedRoutesData?.totalDocs || 0,
+                hasNextPage: fetchedRoutesData?.hasNextPage || false,
+                hasPreviousPage: fetchedRoutesData?.hasPreviousPage || false,
+            });
+        }
+    }, [fetchedRoutesData, error, isLoading]);
 
     // Filter Routes based on: routeId, driverName, status, duration
     useEffect(() => {
@@ -275,6 +252,14 @@ const RoutesPage = () => {
                         onViewRoute={viewRoute}
                         onEditRoute={editRoute}
                         onDeleteRoute={deleteRoute}
+                        isLoading={isLoading}
+                        error={error}
+                    />
+
+                    {/* Pagination */}
+                    <Pagination
+                        paginationInfo={paginationInfo}
+                        onPageChange={setPaginationInfo}
                     />
                 </main>
             </div>

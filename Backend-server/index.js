@@ -34,6 +34,25 @@ const startServerWithDB = require("./utils/serverManager");
 app.use(express.json()); // Parse JSON request bodies
 app.use(express.static("views/staticFiles")); // Serve static files from views/staticFiles directory
 
+// CORS middleware
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header(
+        "Access-Control-Allow-Methods",
+        "GET, POST, PUT, DELETE, OPTIONS"
+    );
+    res.header(
+        "Access-Control-Allow-Headers",
+        "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+    );
+
+    if (req.method === "OPTIONS") {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+});
+
 // ====================== Route Handlers ======================
 // Home Page
 app.get("/", (req, res) => {

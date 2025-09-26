@@ -61,6 +61,8 @@ export interface ResponsiveTableProps<T extends Record<string, unknown>> {
     tableClassName?: string;
     cellAlign?: TableAlign;
     seeDetails?: boolean;
+    isLoading?: boolean;
+    error?: string | null | any;
 }
 
 // Route Item
@@ -77,8 +79,8 @@ export type RouteItem = {
 
 export type RouteRow = {
     id: string;
-    startLocation: string;
-    endLocation: string;
+    start_location: string;
+    end_location: string;
     status: "assigned" | "unassigned" | "in progress";
     assignedDriver?: { id?: string; name?: string };
     lastDriver?: { id?: string; name?: string };
@@ -165,6 +167,8 @@ export interface SectionHeaderProps {
     title: string;
     to?: string;
     label?: string;
+    count?: number;
+    countColor?: "blue" | "green" | "purple" | "red" | "yellow" | "gray";
 }
 
 // Activity Feed Item Props
@@ -179,7 +183,7 @@ export interface ActivityFeedItemProps {
         id?: string;
         name?: string;
     };
-    actionTime: string;
+    actionTime: Date | string;
 }
 
 // Custom Select Props
@@ -247,20 +251,33 @@ export interface RoutesTableProps {
     onViewRoute: (id: string) => void;
     onEditRoute: (id: string) => void;
     onDeleteRoute: (id: string) => void;
+    isLoading?: boolean;
+    error?: string | null | any;
 }
 
 // ============================== Drivers Types ==============================
 export type DriverStatus = "available" | "unavailable" | "on_route";
 
 export type DriverRow = {
-    id: string;
+    driver_id: string;
     name: string;
     picture?: File | null | string;
-    assignedRouteId?: string | null;
-    vehicleType?: string;
+    assignedRoute?: {
+        id?: string;
+        startLocation?: string;
+        endLocation?: string;
+        assignedAt?: string;
+        distance?: number | string;
+        distanceUnit?: string;
+        duration?: number | string;
+        timeUnit?: string;
+    } | null;
+    vehicle_type?: string;
     status: DriverStatus;
-    licenseType?: string;
+    license_type?: string;
     phone?: string;
+    isLoading?: boolean;
+    error?: string | null | any;
 };
 
 export interface DriversTableProps {
@@ -273,6 +290,8 @@ export interface DriversTableProps {
     onViewDriver: (id: string) => void;
     onEditDriver: (id: string) => void;
     onDeleteDriver: (id: string) => void;
+    isLoading?: boolean;
+    error?: string | null | any;
 }
 
 export interface RoutesControlsProps {
@@ -758,4 +777,61 @@ export interface MonthControlsProps {
     isLoading: boolean;
     onPrev: () => void;
     onNext: () => void;
+}
+
+// ================================= API Types =================================
+// Use Get All Drivers Props
+export interface UseGetAllDriversProps {
+    pageNumber: number;
+    limit: number;
+}
+
+// ============================== Pagination Types ==============================
+export interface PaginationProps {
+    paginationInfo: {
+        pageNumber: number;
+        totalPages: number;
+        totalDocs: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+    };
+    onPageChange: (page: {
+        pageNumber: number;
+        totalPages: number;
+        totalDocs: number;
+        hasNextPage: boolean;
+        hasPreviousPage: boolean;
+    }) => void;
+}
+export interface PaginationInfoProps {
+    pageNumber: number;
+    totalPages: number;
+}
+export interface PaginationButtonProps {
+    onClick: () => void;
+    disabled?: boolean;
+    children: React.ReactNode;
+    isActive?: boolean;
+    title?: string;
+    className?: string;
+}
+export interface PaginationControlsProps {
+    pageNumber: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+    onPageClick: (page: number) => void;
+    onPrevious: () => void;
+    onNext: () => void;
+}
+export interface PaginationNumbersProps {
+    pageNumber: number;
+    totalPages: number;
+    onPageClick: (page: number) => void;
+}
+export interface PaginationArrowProps {
+    direction: "previous" | "next";
+    onClick: () => void;
+    disabled: boolean;
+    title: string;
 }

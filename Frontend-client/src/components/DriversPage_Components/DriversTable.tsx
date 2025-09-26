@@ -17,6 +17,8 @@ const DriversTable = ({
     onViewDriver,
     onEditDriver,
     onDeleteDriver,
+    isLoading,
+    error,
 }: DriversTableProps) => {
     const headerCheckboxRef = useRef<HTMLInputElement>(null);
 
@@ -48,19 +50,23 @@ const DriversTable = ({
                 <input
                     type="checkbox"
                     className="checkbox"
-                    checked={!!selected[row.id]}
-                    onChange={() => onToggleOne(row.id)}
+                    checked={!!selected[row.driver_id]}
+                    onChange={() => onToggleOne(row.driver_id)}
                 />
             ),
             align: "center",
         },
-        { key: "id", label: "Driver ID", align: "left" },
+        { key: "driver_id", label: "Driver ID", align: "left" },
         {
             key: "picture",
             label: "Picture",
             render: (row) => (
                 <img
-                    src={row.picture || "/user.svg"}
+                    src={
+                        typeof row.picture === "string"
+                            ? row.picture
+                            : "/user.svg"
+                    }
                     alt={row.name}
                     className="w-10 h-10 rounded-full object-cover mx-auto"
                 />
@@ -69,22 +75,22 @@ const DriversTable = ({
         },
         { key: "name", label: "Name", align: "left" },
         {
-            key: "assignedRouteId",
+            key: "assignedRoute",
             label: "Assigned Route",
             render: (row) =>
-                row.assignedRouteId ? (
+                row.assignedRoute ? (
                     <NavLink
-                        to={`/routes/${row.assignedRouteId}`}
+                        to={`/routes/${row.assignedRoute.id}`}
                         className="blue-c hover-blue-c cursor-pointer font-medium"
                     >
-                        {row.assignedRouteId}
+                        {row.assignedRoute.id}
                     </NavLink>
                 ) : (
                     <span className="gray-c">Unassigned</span>
                 ),
             align: "center",
         },
-        { key: "vehicleType", label: "Vehicle Type", align: "center" },
+        { key: "vehicle_type", label: "Vehicle Type", align: "center" },
         {
             key: "status",
             label: "Status",
@@ -104,7 +110,7 @@ const DriversTable = ({
             },
             align: "center",
         },
-        { key: "licenseType", label: "License Type", align: "center" },
+        { key: "license_type", label: "License Type", align: "center" },
         { key: "phone", label: "Phone", align: "center" },
         {
             key: "actions",
@@ -114,21 +120,21 @@ const DriversTable = ({
                     <button
                         title="View"
                         className="blue-c hover-blue-c cursor-pointer"
-                        onClick={() => onViewDriver(row.id)}
+                        onClick={() => onViewDriver(row.driver_id)}
                     >
                         <i className="fa-solid fa-eye cursor-pointer"></i>
                     </button>
                     <button
                         title="Edit"
                         className="blue-c hover-blue-c cursor-pointer"
-                        onClick={() => onEditDriver(row.id)}
+                        onClick={() => onEditDriver(row.driver_id)}
                     >
                         <i className="fa-solid fa-pen"></i>
                     </button>
                     <button
                         title="Delete"
                         className="red-c hover-red-c cursor-pointer"
-                        onClick={() => onDeleteDriver(row.id)}
+                        onClick={() => onDeleteDriver(row.driver_id)}
                     >
                         <i className="fa-solid fa-trash"></i>
                     </button>
@@ -145,6 +151,8 @@ const DriversTable = ({
             stickyHeader
             tableClassName="w-full"
             cellAlign="center"
+            isLoading={isLoading}
+            error={error}
         />
     );
 };

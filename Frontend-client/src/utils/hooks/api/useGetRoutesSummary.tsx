@@ -1,27 +1,26 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "./axios-utils";
-import type { UseGetAllDriversProps } from "../../../common/Types/Interfaces";
 
-function useGetAllDrivers({ pageNumber, limit }: UseGetAllDriversProps) {
-    const fetchDrivers = async () => {
+function useGetRoutesSummary() {
+    const fetchRoutesSummary = async () => {
         try {
             const res = await axiosInstance.get(
-                `/get-all-drivers?page=${pageNumber}&limit=${limit}`
+                `/get-all-routes/summary`
             );
             return res.data;
         } catch (error: any) {
             throw new Error(
-                "An Error occured while fetching drivers data: " + error.message
+                "An Error occured while fetching routes summary data: " + error.message
             );
         }
     };
 
     const { data, isLoading, error } = useQuery({
-        queryKey: ["drivers", pageNumber, limit],
-        queryFn: fetchDrivers,
+        queryKey: ["routes-summary"],
+        queryFn: fetchRoutesSummary,
         staleTime: 10000, // Data stays fresh for 10 seconds
     });
 
     return { data, isLoading, error: error?.message };
 }
-export default useGetAllDrivers;
+export default useGetRoutesSummary;

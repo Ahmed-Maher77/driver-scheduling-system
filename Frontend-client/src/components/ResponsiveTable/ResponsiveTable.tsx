@@ -34,6 +34,8 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
     className = "",
     tableClassName = "",
     seeDetails = false,
+    isLoading = false,
+    error = null,
 }: ResponsiveTableProps<T>) => {
     const effectiveColumns = buildColumns<T>({ columns, headers, rows });
 
@@ -41,6 +43,22 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
         <div
             className={`responsive-table-wrapper table-responsive mt-4 ${className}`}
         >
+            {/* ================== Loading ================== */}
+            {isLoading && (
+                <div className="loading-spinner text-center py-6 gray-c text-lg">
+                    <i className="fa-solid fa-spinner fa-spin"></i>
+                </div>
+            )}
+
+            {/* ================== Error ================== */}
+            {error && (
+                <div className="error-message text-center py-6 gray-c text-lg">
+                    <i className="fa-solid fa-circle-exclamation red-c"></i>
+                    {error}
+                </div>
+            )}
+
+            {/* ================== Table ================== */}
             <table className={`responsive-table w-full ${tableClassName}`}>
                 {/* Table Header */}
                 <thead className={stickyHeader ? "gray-bg-l" : undefined}>
@@ -60,47 +78,61 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
 
                 {/* Table Body */}
                 <tbody>
-                    {rows.map((row, rowIdx) => (
-                        <tr key={rowIdx}>
-                            {effectiveColumns.map((col, colIdx) => {
-                                // Assigned Driver Cell
-                                if (String(col.key) === "assignedDriver") {
-                                    const cell = (
-                                        <AssignedDriverCell
-                                            key={String(col.key)}
-                                            cellKey={String(col.key)}
-                                            driver={(row as any).assignedDriver}
-                                        />
-                                    );
-                                    if (cell) return cell;
-                                }
-
-                                // Details Cell
-                                if (
-                                    colIdx === effectiveColumns.length - 1 &&
-                                    seeDetails
-                                ) {
-                                    return (
-                                        <DetailsCell
-                                            key={`details-${String(
-                                                (row as any).id
-                                            )}`}
-                                            id={String((row as any).id)}
-                                        />
-                                    );
-                                }
-
-                                // Default Cell
-                                return (
-                                    <DefaultCell<T>
-                                        key={String(col.key)}
-                                        row={row}
-                                        col={col}
-                                    />
-                                );
-                            })}
+                    {rows?.length <= 0 ? (
+                        <tr>
+                            <td
+                                colSpan={effectiveColumns.length}
+                                className="p-4 text-center text-lg pt-10"
+                            >
+                                No data found
+                            </td>
                         </tr>
-                    ))}
+                    ) : (
+                        rows?.map((row, rowIdx) => (
+                            <tr key={rowIdx}>
+                                {effectiveColumns.map((col, colIdx) => {
+                                    // Assigned Driver Cell
+                                    if (String(col.key) === "assignedDriver") {
+                                        const cell = (
+                                            <AssignedDriverCell
+                                                key={String(col.key)}
+                                                cellKey={String(col.key)}
+                                                driver={
+                                                    (row as any).assignedDriver
+                                                }
+                                            />
+                                        );
+                                        if (cell) return cell;
+                                    }
+
+                                    // Details Cell
+                                    if (
+                                        colIdx ===
+                                            effectiveColumns.length - 1 &&
+                                        seeDetails
+                                    ) {
+                                        return (
+                                            <DetailsCell
+                                                key={`details-${String(
+                                                    (row as any).id
+                                                )}`}
+                                                id={String((row as any).id)}
+                                            />
+                                        );
+                                    }
+
+                                    // Default Cell
+                                    return (
+                                        <DefaultCell<T>
+                                            key={String(col.key)}
+                                            row={row}
+                                            col={col}
+                                        />
+                                    );
+                                })}
+                            </tr>
+                        ))
+                    )}
                 </tbody>
             </table>
         </div>
