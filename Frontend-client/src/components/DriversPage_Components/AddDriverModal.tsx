@@ -169,50 +169,70 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
 
     // ================== Upload Files ==================
     const uploadDriverFiles = async (form: DriverForm): Promise<DriverForm> => {
-        const updatedForm = { ...form };
-        const filesToUpload: { file: File; field: string }[] = [];
+        try {
+            const filesToUpload: { file: File; field: string }[] = [];
 
-        // Collect files to upload
-        if (form.picture && typeof form.picture === "object") {
-            filesToUpload.push({ file: form.picture, field: "picture" });
-        }
-        if (form.national_id && typeof form.national_id === "object") {
-            filesToUpload.push({
-                file: form.national_id,
-                field: "national_id",
-            });
-        }
-        if (
-            form.driving_license.image &&
-            typeof form.driving_license.image === "object"
-        ) {
-            filesToUpload.push({
-                file: form.driving_license.image,
-                field: "driving_license.image",
-            });
-        }
-
-        // Upload files
-        for (const { file, field } of filesToUpload) {
-            try {
-                const uploadResponse = await uploadFile(file);
-
-                // Update the form with the uploaded file URL
-                if (field === "picture") {
-                    updatedForm.picture = uploadResponse.file.url;
-                } else if (field === "national_id") {
-                    updatedForm.national_id = uploadResponse.file.url;
-                } else if (field === "driving_license.image") {
-                    updatedForm.driving_license.image = uploadResponse.file.url;
-                }
-            } catch (error: any) {
-                const errorMessage =
-                    error?.response?.data?.message || "Failed to upload file";
-                throw new Error(`${field}: ${errorMessage}`);
+            // Collect files that need to be uploaded with field mapping
+            if (form.picture && typeof form.picture === "object") {
+                filesToUpload.push({ file: form.picture, field: "picture" });
             }
-        }
+            if (form.national_id && typeof form.national_id === "object") {
+                filesToUpload.push({
+                    file: form.national_id,
+                    field: "national_id",
+                });
+            }
+            if (
+                form.driving_license.image &&
+                typeof form.driving_license.image === "object"
+            ) {
+                filesToUpload.push({
+                    file: form.driving_license.image,
+                    field: "driving_license.image",
+                });
+            }
 
-        return updatedForm;
+            if (filesToUpload.length === 0) {
+                return form;
+            }
+
+            // Upload files sequentially to avoid overwhelming the server
+            const uploadedFiles: { [key: string]: string } = {};
+
+            for (const { file, field } of filesToUpload) {
+                try {
+                    const result = await uploadFile(file);
+                    uploadedFiles[field] = result.url;
+                } catch (error: any) {
+                    console.error(`Failed to upload ${field}:`, error);
+                    throw new Error(
+                        `Failed to upload ${field}: ${error.message}`
+                    );
+                }
+            }
+
+            // Create updated form with file URLs
+            const updatedForm = { ...form };
+
+            // Update fields with uploaded file URLs
+            if (uploadedFiles.picture) {
+                updatedForm.picture = uploadedFiles.picture;
+            }
+            if (uploadedFiles.national_id) {
+                updatedForm.national_id = uploadedFiles.national_id;
+            }
+            if (uploadedFiles["driving_license.image"]) {
+                updatedForm.driving_license = {
+                    ...updatedForm.driving_license,
+                    image: uploadedFiles["driving_license.image"],
+                };
+            }
+
+            return updatedForm;
+        } catch (error: any) {
+            console.error("Error in uploadDriverFiles:", error);
+            throw new Error(`File upload failed: ${error.message}`);
+        }
     };
 
     // ================== Submit (Add Driver) ==================

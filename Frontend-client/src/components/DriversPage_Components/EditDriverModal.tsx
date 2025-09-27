@@ -205,100 +205,81 @@ const EditDriverModal = ({
 
     // ================== Upload Driver Files ==================
     const uploadDriverFiles = async (form: DriverForm) => {
-        console.log("uploadDriverFiles - Full form:", form);
-        console.log(
-            "uploadDriverFiles - form.driving_license:",
-            form.driving_license
-        );
-        console.log("form.picture type:", typeof form.picture);
-        console.log("form.picture value:", form.picture);
-        console.log(
-            "form.driving_license.image type:",
-            typeof form.driving_license.image
-        );
-        console.log(
-            "form.driving_license.image value:",
-            form.driving_license.image
-        );
-
-        const filesToUpload: File[] = [];
-
-        // Collect files that need to be uploaded
-        if (form.picture && typeof form.picture === "object") {
-            console.log("Adding picture to upload:", form.picture);
-            filesToUpload.push(form.picture);
-        }
-        if (
-            form.driving_license.image &&
-            typeof form.driving_license.image === "object"
-        ) {
+        try {
+            console.log("uploadDriverFiles - Starting file upload process");
             console.log(
-                "Adding license image to upload:",
-                form.driving_license.image
+                "form.picture:",
+                form.picture,
+                "type:",
+                typeof form.picture
             );
-            filesToUpload.push(form.driving_license.image);
-        }
-
-        console.log("Files to upload:", filesToUpload);
-
-        if (filesToUpload.length === 0) {
-            console.log("No files to upload, returning original form");
-            return form;
-        }
-
-        // Upload files and get URLs
-        const uploadedFiles = await Promise.all(
-            filesToUpload.map((file) => uploadFile(file))
-        );
-
-        console.log("Uploaded files:", uploadedFiles);
-
-        // Create updated form with file URLs
-        const updatedForm = { ...form };
-        let fileIndex = 0;
-
-        // Update picture if it was a File object
-        if (form.picture && typeof form.picture === "object") {
             console.log(
-                `Updating picture with file index ${fileIndex}:`,
-                uploadedFiles[fileIndex]
+                "form.driving_license.image:",
+                form.driving_license.image,
+                "type:",
+                typeof form.driving_license.image
             );
-            updatedForm.picture = uploadedFiles[fileIndex].file.url;
-            fileIndex++;
-        } else {
-            console.log(
-                "Picture is not a File object, skipping upload. Type:",
-                typeof form.picture,
-                "Value:",
-                form.picture
-            );
-        }
 
-        // Update driving_license.image if it was a File object
-        if (
-            form.driving_license.image &&
-            typeof form.driving_license.image === "object"
-        ) {
-            console.log(
-                `Updating driving_license.image with file index ${fileIndex}:`,
-                uploadedFiles[fileIndex]
-            );
-            updatedForm.driving_license = {
-                ...updatedForm.driving_license,
-                image: uploadedFiles[fileIndex].file.url,
-            };
-            fileIndex++;
-        } else {
-            console.log(
-                "Driving license image is not a File object, skipping upload. Type:",
-                typeof form.driving_license.image,
-                "Value:",
-                form.driving_license.image
-            );
-        }
+            const filesToUpload: { file: File; field: string }[] = [];
 
-        console.log("Updated form after upload:", updatedForm);
-        return updatedForm;
+            // Collect files that need to be uploaded with field mapping
+            if (form.picture && typeof form.picture === "object") {
+                console.log("Adding picture to upload queue");
+                filesToUpload.push({ file: form.picture, field: "picture" });
+            }
+            if (
+                form.driving_license.image &&
+                typeof form.driving_license.image === "object"
+            ) {
+                console.log("Adding driving_license.image to upload queue");
+                filesToUpload.push({
+                    file: form.driving_license.image,
+                    field: "driving_license.image",
+                });
+            }
+
+            console.log("Files to upload:", filesToUpload.length);
+            if (filesToUpload.length === 0) {
+                console.log("No files to upload, returning original form");
+                return form;
+            }
+
+            // Upload files sequentially to avoid overwhelming the server
+            const uploadedFiles: { [key: string]: string } = {};
+
+            for (const { file, field } of filesToUpload) {
+                try {
+                    const result = await uploadFile(file);
+                    uploadedFiles[field] = result.url;
+                } catch (error: any) {
+                    console.error(`Failed to upload ${field}:`, error);
+                    throw new Error(
+                        `Failed to upload ${field}: ${error.message}`
+                    );
+                }
+            }
+
+            // Create updated form with file URLs
+            const updatedForm = { ...form };
+
+            // Update picture if it was uploaded
+            if (uploadedFiles.picture) {
+                updatedForm.picture = uploadedFiles.picture;
+            }
+
+            // Update driving_license.image if it was uploaded
+            if (uploadedFiles["driving_license.image"]) {
+                updatedForm.driving_license = {
+                    ...updatedForm.driving_license,
+                    image: uploadedFiles["driving_license.image"],
+                };
+            }
+
+            return updatedForm;
+        } catch (error: any) {
+            console.error("Error in uploadDriverFiles:", error);
+            throw new Error(`File upload failed: ${error.message}`);
+        }
     };
 
     // ================== Submit (Edit Driver) ==================
@@ -321,8 +302,13 @@ const EditDriverModal = ({
         }
         setLoading(true);
         try {
+            console.log("Submit - Starting file upload process");
             // Upload files if any
             const updatedForm = await uploadDriverFiles(form);
+            console.log(
+                "Submit - File upload completed, updatedForm:",
+                updatedForm
+            );
 
             const updatedDriverData = cleanDataForAPI({
                 name: updatedForm.name,
@@ -341,20 +327,23 @@ const EditDriverModal = ({
                 status: updatedForm.status,
             });
 
-            console.log(
-                "Sending to API - updatedDriverData:",
-                updatedDriverData
-            );
-            console.log(
-                "driving_license in API data:",
-                updatedDriverData.driving_license
-            );
-
             await updateDriver({ driverId, driverData: updatedDriverData });
+            notify("success", "Driver updated successfully");
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error updating driver:", error);
-            notify("error", "Failed to update driver");
+
+            // Handle specific error types
+            if (error.message?.includes("File upload failed")) {
+                notify("error", error.message);
+            } else if (error.message?.includes("Network Error")) {
+                notify(
+                    "error",
+                    "Network error. Please check your connection and try again."
+                );
+            } else {
+                notify("error", "Failed to update driver. Please try again.");
+            }
         } finally {
             setLoading(false);
         }
