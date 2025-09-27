@@ -182,6 +182,7 @@ const EditDriverModal = ({
             typeof cleaned.picture === "string" &&
             cleaned.picture.includes("localhost")
         ) {
+            console.log("Removing localhost picture URL:", cleaned.picture);
             delete cleaned.picture;
         }
 
@@ -191,22 +192,33 @@ const EditDriverModal = ({
             typeof cleaned.driving_license.image === "string" &&
             cleaned.driving_license.image.includes("localhost")
         ) {
+            console.log(
+                "Removing localhost license image URL:",
+                cleaned.driving_license.image
+            );
             delete cleaned.driving_license.image;
         }
 
+        console.log("Cleaned data for API:", cleaned);
         return cleaned;
     };
 
     // ================== Upload Driver Files ==================
     const uploadDriverFiles = async (form: DriverForm) => {
+        console.log("uploadDriverFiles - Full form:", form);
         console.log(
             "uploadDriverFiles - form.driving_license:",
             form.driving_license
         );
         console.log("form.picture type:", typeof form.picture);
+        console.log("form.picture value:", form.picture);
         console.log(
             "form.driving_license.image type:",
             typeof form.driving_license.image
+        );
+        console.log(
+            "form.driving_license.image value:",
+            form.driving_license.image
         );
 
         const filesToUpload: File[] = [];
@@ -253,6 +265,13 @@ const EditDriverModal = ({
             );
             updatedForm.picture = uploadedFiles[fileIndex].file.url;
             fileIndex++;
+        } else {
+            console.log(
+                "Picture is not a File object, skipping upload. Type:",
+                typeof form.picture,
+                "Value:",
+                form.picture
+            );
         }
 
         // Update driving_license.image if it was a File object
@@ -269,6 +288,13 @@ const EditDriverModal = ({
                 image: uploadedFiles[fileIndex].file.url,
             };
             fileIndex++;
+        } else {
+            console.log(
+                "Driving license image is not a File object, skipping upload. Type:",
+                typeof form.driving_license.image,
+                "Value:",
+                form.driving_license.image
+            );
         }
 
         console.log("Updated form after upload:", updatedForm);
