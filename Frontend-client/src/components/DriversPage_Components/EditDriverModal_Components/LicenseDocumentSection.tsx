@@ -81,7 +81,7 @@ const LicenseDocumentSection = ({
                     {/* File Info */}
                     {isNewFile && (
                         <div className="file-info">
-                            <i className="fa-solid fa-check-circle file-info-icon"></i>
+                            <i className="fa-solid fa-check-circle file-info-icon text-green-500"></i>
                             <span className="file-info-name">
                                 {(form.driving_license.image as File).name}
                             </span>

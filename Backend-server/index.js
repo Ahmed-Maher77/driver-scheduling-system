@@ -32,7 +32,7 @@ const UploadImageOnServer = require("./routes/UploadImageOnServer_Route");
 const startServerWithDB = require("./utils/serverManager");
 
 // ======================= Middlewares =======================
-app.use(express.json()); // Parse JSON request bodies
+app.use(express.json({ limit: "50mb" })); // Parse JSON request bodies with increased limit
 app.use(express.static("views/staticFiles")); // Serve static files from views/staticFiles directory
 
 // Serve uploaded images as static files

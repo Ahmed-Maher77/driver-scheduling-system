@@ -737,6 +737,12 @@ export interface ContactInfoCardProps {
     facebook?: string | null;
 }
 
+// Driver Documents Props
+export interface DriverDocumentsProps {
+    nationalId?: string | null;
+    license?: string | null;
+}
+
 // Header Summary Props
 export interface HeaderSummaryProps {
     name: string;

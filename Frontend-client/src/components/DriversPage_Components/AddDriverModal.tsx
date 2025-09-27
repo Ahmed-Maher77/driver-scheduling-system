@@ -278,10 +278,12 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
             notify("success", "Driver added successfully");
         } catch (error: any) {
             // Handle error and show it in the modal
-            const errorMessage =
-                error?.response?.data?.message ||
-                error?.message ||
-                "Failed to add driver";
+            const errorMessage = error?.response?.data?.details?.duplicate_field
+                ? `${error?.response?.data?.message} - A driver with the same ${error?.response?.data?.details?.duplicate_field} already exists`
+                : error?.response?.data?.message ||
+                  error?.message ||
+                  "Failed to add driver";
+            console.log("errorMessage", errorMessage);
             setSubmitError(errorMessage);
             return;
         }

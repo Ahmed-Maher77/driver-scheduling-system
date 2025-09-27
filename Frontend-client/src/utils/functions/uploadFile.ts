@@ -93,7 +93,7 @@ export async function uploadFile(file: File): Promise<UploadFileData> {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
-                timeout: 30000, // 30 second timeout for file uploads
+                timeout: 60000, // 60 second timeout for file uploads
             }
         );
 

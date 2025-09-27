@@ -328,7 +328,6 @@ const EditDriverModal = ({
             });
 
             await updateDriver({ driverId, driverData: updatedDriverData });
-            notify("success", "Driver updated successfully");
             onClose();
         } catch (error: any) {
             console.error("Error updating driver:", error);

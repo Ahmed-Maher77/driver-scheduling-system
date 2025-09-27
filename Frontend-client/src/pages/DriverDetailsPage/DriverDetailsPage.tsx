@@ -13,6 +13,7 @@ import NotesCard from "../../components/DriverDetailsPage_Components/NotesCard";
 import VehicleCard from "../../components/DriverDetailsPage_Components/VehicleCard";
 import AssignmentCard from "../../components/DriverDetailsPage_Components/AssignmentCard";
 import PastRoutesTimeline from "../../components/DriverDetailsPage_Components/PastRoutesTimeline";
+import DriverDocuments from "../../components/DriverDetailsPage_Components/DriverDocuments";
 import useGetDriverDetails from "../../utils/hooks/api/useGetDriverDetails";
 import ErrorPage from "../../components/ErrorDetailsPage/ErrorPage";
 import LoadingPageSpinner from "../../components/LoadingPageSpinner/LoadingPageSpinner";
@@ -23,7 +24,11 @@ const DriverDetailsPage = () => {
     const { id: driverId } = useParams();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-    const { data: driverData, isLoading, error } = useGetDriverDetails({ driverId });
+    const {
+        data: driverData,
+        isLoading,
+        error,
+    } = useGetDriverDetails({ driverId });
     const { deleteDriver, isPending: isDeleting } = useDeleteDriver();
 
     const handleEdit = () => setIsEditModalOpen(true);
@@ -44,15 +49,19 @@ const DriverDetailsPage = () => {
         return <ErrorPage message="Driver ID is required" />;
     }
     if (error) {
-        return <ErrorPage message={error || "An error occurred while fetching driver details"} />;
+        return (
+            <ErrorPage
+                message={
+                    error || "An error occurred while fetching driver details"
+                }
+            />
+        );
     }
 
     // ================== Loading ==================
     if (isLoading) {
         return <LoadingPageSpinner message="Loading driver details..." />;
     }
-
-
 
     return (
         <div className="driver-details-page main-page py-6 pb-[60px] text-sm md:text-base lg:text-lg">
@@ -90,9 +99,15 @@ const DriverDetailsPage = () => {
                             <ContactInfoCard
                                 phone={driverData?.phone}
                                 email={driverData?.contact_channels?.email}
-                                whatsapp={driverData?.contact_channels?.whatsapp}
-                                linkedin={driverData?.contact_channels?.linkedin}
-                                facebook={driverData?.contact_channels?.facebook}
+                                whatsapp={
+                                    driverData?.contact_channels?.whatsapp
+                                }
+                                linkedin={
+                                    driverData?.contact_channels?.linkedin
+                                }
+                                facebook={
+                                    driverData?.contact_channels?.facebook
+                                }
                             />
                             <div className="h-5" />
                             <PersonalLocationCard
@@ -106,6 +121,12 @@ const DriverDetailsPage = () => {
                         {/* Notes */}
                         <NotesCard notes={driverData?.notes} />
                     </div>
+
+                    {/* Documents */}
+                    <DriverDocuments
+                        nationalId={driverData?.national_id}
+                        license={driverData?.driving_license?.image}
+                    />
 
                     {/* Vehicle + Current Assignment */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
