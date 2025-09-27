@@ -56,6 +56,8 @@ const LicenseDocumentSection = ({
                             accept="image/*,.pdf"
                             onChange={(e) => {
                                 const file = e.target.files?.[0] || null;
+                                console.log("License file selected:", file);
+                                console.log("File type:", typeof file);
                                 update("driving_license.image", file);
                             }}
                         />

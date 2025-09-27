@@ -172,12 +172,43 @@ const EditDriverModal = ({
         });
     };
 
+    // ================== Clean Data for API ==================
+    const cleanDataForAPI = (data: any) => {
+        const cleaned = { ...data };
+
+        // Remove localhost URLs from picture
+        if (
+            cleaned.picture &&
+            typeof cleaned.picture === "string" &&
+            cleaned.picture.includes("localhost")
+        ) {
+            delete cleaned.picture;
+        }
+
+        // Remove localhost URLs from driving_license.image
+        if (
+            cleaned.driving_license?.image &&
+            typeof cleaned.driving_license.image === "string" &&
+            cleaned.driving_license.image.includes("localhost")
+        ) {
+            delete cleaned.driving_license.image;
+        }
+
+        return cleaned;
+    };
+
     // ================== Upload Driver Files ==================
     const uploadDriverFiles = async (form: DriverForm) => {
         console.log(
             "uploadDriverFiles - form.driving_license:",
             form.driving_license
         );
+        console.log("form.picture type:", typeof form.picture);
+        console.log(
+            "form.driving_license.image type:",
+            typeof form.driving_license.image
+        );
+
         const filesToUpload: File[] = [];
 
         // Collect files that need to be uploaded
@@ -267,7 +298,7 @@ const EditDriverModal = ({
             // Upload files if any
             const updatedForm = await uploadDriverFiles(form);
 
-            const updatedDriverData = {
+            const updatedDriverData = cleanDataForAPI({
                 name: updatedForm.name,
                 phone: updatedForm.phone,
                 address: updatedForm.address,
@@ -282,7 +313,7 @@ const EditDriverModal = ({
                 notes: updatedForm.notes,
                 picture: updatedForm.picture,
                 status: updatedForm.status,
-            };
+            });
 
             console.log(
                 "Sending to API - updatedDriverData:",
