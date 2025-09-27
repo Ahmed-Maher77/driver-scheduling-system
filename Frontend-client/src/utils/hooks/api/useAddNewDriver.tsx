@@ -24,10 +24,12 @@ const useAddNewDriver = () => {
             notify("success", "Driver added successfully");
             // Invalidate relevant queries to refresh data
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
+            queryClient.invalidateQueries({ queryKey: ["routes"] });
             queryClient.invalidateQueries({ queryKey: ["routes-summary"] });
             queryClient.invalidateQueries({
                 queryKey: ["activityFeeds-summary"],
             });
+            queryClient.invalidateQueries({ queryKey: ["activityFeeds"] });
             queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
         },
 

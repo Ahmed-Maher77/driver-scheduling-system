@@ -78,14 +78,14 @@ export type RouteItem = {
 };
 
 export type RouteRow = {
-    id: string;
+    id?: string;
     route_id?: string; // backend identifier used in tables and selection
-    start_location: string;
+    start_location?: string;
     end_location: string;
     status: "assigned" | "unassigned" | "in progress";
     assignedDriver?: { id?: string; name?: string };
     lastDriver?: { id?: string; name?: string };
-    createdAt: string;
+    createdAt?: string;
     updatedAt?: string | null;
     assignedAt?: string;
     distance: number;
@@ -97,6 +97,13 @@ export type RouteRow = {
     maxSpeed?: number;
     speedUnit?: string;
     notes?: string;
+    created_at?: string;
+    updated_at?: string | null;
+    assigned_at?: string;
+    distance_unit?: string;
+    time_unit?: string;
+    max_speed?: number;
+    speed_unit?: string;
 };
 
 // Add Route Item Props
@@ -118,8 +125,8 @@ export interface AddRouteItemProps {
 
 // Location Section Props
 export interface LocationSectionProps {
-    startLocation: string;
-    endLocation: string;
+    startLocation: string | undefined;
+    endLocation: string | undefined;
     onStartLocationChange: (value: string) => void;
     onEndLocationChange: (value: string) => void;
     startLocationError?: string;
@@ -261,6 +268,7 @@ export interface FiltersSectionProps {
     onToggleFilters: () => void;
     searchBy: SearchBy;
     setSearchBy: React.Dispatch<React.SetStateAction<SearchBy>>;
+    clearFilters: () => void;
 }
 
 // Routes Table Props
@@ -345,7 +353,7 @@ export type DriverForm = {
     status: Exclude<DriverStatus, "on_route">; // available | unavailable
     assignedRoute_id?: string;
     notes?: string;
-    national_id: File | null | string;
+    national_id?: File | null | string;
     gender: "Male" | "Female" | "Other";
     date_of_birth: string; // ISO
     driving_license: {
@@ -398,9 +406,9 @@ export interface EditDriverModalProps {
 
 // Dates Section Props
 export interface DatesSectionProps {
-    createdAt: string;
-    updatedAt: string | null;
-    assignedAt: string;
+    createdAt: string | undefined;
+    updatedAt: string | null | undefined;
+    assignedAt: string | undefined;
 }
 
 // Cost Speed Section Props
@@ -417,15 +425,15 @@ export interface CostSpeedSectionProps {
 
 // Notes Section Props
 export interface NotesSectionProps {
-    notes: string;
+    notes: string | undefined;
     onNotesChange: (value: string) => void;
     notesError?: string;
 }
 
 // Location Section Props
 export interface LocationSectionProps {
-    startLocation: string;
-    endLocation: string;
+    startLocation: string | undefined;
+    endLocation: string | undefined;
     onStartLocationChange: (value: string) => void;
     onEndLocationChange: (value: string) => void;
 }
@@ -664,6 +672,7 @@ export interface DriverFiltersSectionProps {
     onToggleFilters: () => void;
     searchBy: DriverSearchBy;
     setSearchBy: React.Dispatch<React.SetStateAction<DriverSearchBy>>;
+    clearFilters: () => void;
 }
 
 // Contacts Section Props
@@ -787,6 +796,26 @@ export interface UseGetAllDriversProps {
     limit: number;
 }
 
+// Use Get Driver Details Props
+export interface UseGetDriverDetailsProps {
+    driverId: string | undefined;
+}
+
+// Use Get Route Details Props
+export interface UseGetRouteDetailsProps {
+    routeId: string;
+}
+
+// Activity Feeds Controls Props
+export interface ActivityFeedsControlsProps {
+    onToggleFilters: () => void;
+    showFilters: boolean;
+    selectedCount: number;
+    onExport: () => void;
+    onRefresh: () => void;
+    isRefreshing?: boolean;
+}
+
 // Use Get Routes By Month Props
 export interface UseGetRoutesByMonthProps {
     month: number | string;
@@ -825,22 +854,45 @@ export interface DeleteSelectedRoutesResponse {
     }>;
 }
 
+// Use Get Driver Details Props
+export interface UseGetDriverDetailsProps {
+    driverId: string | undefined;
+}
+
+// Update Driver Response
+export interface UpdateDriverResponse {
+    message: string;
+    driver_id: string;
+    data?: any;
+}
+
+// Update Route Response
+export interface UpdateRouteResponse {
+    message: string;
+    route_id: string;
+    data?: any;
+}
+
+// Driver Filters
+export interface DriverFilters {
+    driverIdOrName?: string;
+    status?: string;
+    vehicleType?: string;
+    licenseType?: string;
+}
+
 // ============================== Pagination Types ==============================
+export interface PaginationInfo {
+    pageNumber: number;
+    totalPages: number;
+    totalDocs: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+}
+
 export interface PaginationProps {
-    paginationInfo: {
-        pageNumber: number;
-        totalPages: number;
-        totalDocs: number;
-        hasNextPage: boolean;
-        hasPreviousPage: boolean;
-    };
-    onPageChange: (page: {
-        pageNumber: number;
-        totalPages: number;
-        totalDocs: number;
-        hasNextPage: boolean;
-        hasPreviousPage: boolean;
-    }) => void;
+    paginationInfo: PaginationInfo;
+    onPageChange: (page: PaginationInfo) => void;
 }
 export interface PaginationInfoProps {
     pageNumber: number;
@@ -873,4 +925,120 @@ export interface PaginationArrowProps {
     onClick: () => void;
     disabled: boolean;
     title: string;
+}
+
+// ============================== Activity Feeds Types ==============================
+// Activity Feed Row
+export type ActivityFeedRow = {
+    _id: string;
+    route_id: string;
+    status: string;
+    driver?: { id?: string; name?: string };
+    last_driver?: { id?: string; name?: string };
+    driver_id?: string; // Legacy field
+    last_driver_id?: string; // Legacy field
+    action_time: string;
+};
+// Activity Feeds Controls Props
+export interface ActivityFeedsControlsProps {
+    onToggleFilters: () => void;
+    showFilters: boolean;
+    selectedCount: number;
+    onExport: () => void;
+    onRefresh: () => void;
+    isRefreshing?: boolean;
+}
+// Activity Feeds Filters Props
+export interface ActivityFeedsFiltersProps {
+    showFilters: boolean;
+    onFilterChange: (filters: ActivityFeedFilters) => void;
+    onClearFilters: () => void;
+}
+// Activity Feed Filters
+export interface ActivityFeedFilters {
+    status: string;
+    driverName: string;
+    dateFrom: string;
+    dateTo: string;
+}
+// Activity Feeds Content Props
+export interface ActivityFeedsContentProps {
+    activityFeeds: ActivityFeedRow[];
+    isRefreshing: boolean;
+    paginationInfo?: PaginationInfo;
+    onViewRoute: (routeId: string) => void;
+    onViewDriver: (driverId: string) => void;
+    onExport: () => void;
+    onRefresh: () => void;
+    onFilterChange: (filters: ActivityFeedFilters) => void;
+    onClearFilters: () => void;
+    onPageChange?: (page: number) => void;
+}
+// Activity Feeds Loading Props
+export interface ActivityFeedsLoadingProps {
+    message?: string;
+}
+// Use Activity Feeds Selection Props
+export interface UseActivityFeedsSelectionProps {
+    activityFeeds: ActivityFeedRow[];
+}
+// Use Activity Feeds Selection Return
+export interface UseActivityFeedsSelectionReturn {
+    selected: Record<string, boolean>;
+    selectedCount: number;
+    allSelected: boolean;
+    toggleAll: () => void;
+    toggleOne: (id: string) => void;
+}
+// Activity Feeds Error Props
+export interface ActivityFeedsErrorProps {
+    message: string;
+}
+// Use Activity Feeds Actions Props
+export interface UseActivityFeedsActionsProps {
+    activityFeeds: ActivityFeedRow[];
+    refetch: () => Promise<any>;
+}
+// Use Activity Feeds Actions Return
+export interface UseActivityFeedsActionsReturn {
+    isRefreshing: boolean;
+    handleViewRoute: (routeId: string) => void;
+    handleViewDriver: (driverId: string) => void;
+    handleExport: () => void;
+    handleRefresh: () => Promise<void>;
+    handleFilterChange: (filters: ActivityFeedFilters) => void;
+    handleClearFilters: () => void;
+}
+// Activity Feeds Layout Props
+export interface ActivityFeedsLayoutProps {
+    children: React.ReactNode;
+}
+// Activity Feeds Pagination Props
+export interface ActivityFeedsPaginationProps {
+    paginationInfo: PaginationInfo;
+    onPageChange: (page: number) => void;
+}
+// Activity Feeds Container Props
+export interface ActivityFeedsContainerProps {
+    pageNumber: number;
+    limit: number;
+    onPageChange?: (page: number) => void;
+}
+// Activity Feeds Table Props
+export interface ActivityFeedsTableProps {
+    activityFeeds: ActivityFeedRow[];
+    onViewRoute?: (routeId: string) => void;
+    onViewDriver?: (driverId: string) => void;
+    isLoading?: boolean;
+}
+// Use Activity Feeds Page State Return
+export interface UseActivityFeedsPageStateReturn {
+    paginationInfo: PaginationInfo;
+    setPaginationInfo: React.Dispatch<React.SetStateAction<PaginationInfo>>;
+    handlePageChange: (page: number) => void;
+}
+// Use Activity Feeds Page State Props
+export interface UseActivityFeedsPageStateProps {
+    pageNumber: number;
+    limit: number;
 }

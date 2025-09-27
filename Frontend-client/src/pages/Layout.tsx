@@ -17,7 +17,7 @@ const Layout = () => {
     const dispatch = useAppDispatch();
 
     // Hide Common Components if current route isn't one of the defined routes
-    const definedRoutes = ["/", "/about", "/contact", "/drivers", "/routes", "/calendar"];
+    const definedRoutes = ["/", "/about", "/contact", "/drivers", "/routes", "/calendar", "/activity-feeds"];
     const showCommonComponents = definedRoutes.some((route) => {
         if (route === "/") {
             return location.pathname === "/";

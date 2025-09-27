@@ -11,9 +11,11 @@ const DriversFiltersSection = ({
     onToggleFilters,
     searchBy,
     setSearchBy,
+    clearFilters,
 }: DriverFiltersSectionProps) => {
     const contentRef = useRef<HTMLDivElement | null>(null);
     const [maxHeight, setMaxHeight] = useState<string>("0px");
+    const [hiddenIcons, setHiddenIcons] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         if (contentRef.current) {
@@ -41,6 +43,38 @@ const DriversFiltersSection = ({
         ],
         []
     );
+
+    // Handle input blur to hide icon when content exists
+    const handleInputBlur = (inputName: string, value: string) => {
+        if (value.trim() !== "") {
+            setHiddenIcons((prev) => new Set(prev).add(inputName));
+        } else {
+            setHiddenIcons((prev) => {
+                const newSet = new Set(prev);
+                newSet.delete(inputName);
+                return newSet;
+            });
+        }
+    };
+
+    // Handle input focus to show icon again
+    const handleInputFocus = (inputName: string) => {
+        setHiddenIcons((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(inputName);
+            return newSet;
+        });
+    };
+
+    // Check if any filters are active
+    const hasActiveFilters = useMemo(() => {
+        return (
+            searchBy.driverIdOrName.trim() !== "" ||
+            searchBy.status.trim() !== "" ||
+            searchBy.vehicleType.trim() !== "" ||
+            searchBy.licenseType.trim() !== ""
+        );
+    }, [searchBy]);
 
     return (
         <>
@@ -70,7 +104,7 @@ const DriversFiltersSection = ({
             >
                 <div
                     ref={contentRef}
-                    className="routes-filters-actions white-bg p-4 py-6 pb-2 rounded-lg rounded-b-none shadow-md flex flex-col gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
+                    className="routes-filters-actions relative white-bg p-4 py-6 pb-2 rounded-lg rounded-b-none shadow-md flex flex-col gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
                     style={{
                         transform: showFilters
                             ? "translateY(0)"
@@ -87,14 +121,23 @@ const DriversFiltersSection = ({
                             placeholder="Search by Driver ID or Name..."
                             className="main-input w-full"
                             value={searchBy.driverIdOrName}
-                            onChange={(e) =>    
+                            onChange={(e) =>
                                 setSearchBy((prev) => ({
                                     ...prev,
                                     driverIdOrName: e.target.value,
                                 }))
                             }
+                            onBlur={(e) =>
+                                handleInputBlur(
+                                    "driverIdOrName",
+                                    e.target.value
+                                )
+                            }
+                            onFocus={() => handleInputFocus("driverIdOrName")}
                         />
-                        <i className="fa-solid fa-magnifying-glass"></i>
+                        {!hiddenIcons.has("driverIdOrName") && (
+                            <i className="fa-solid fa-magnifying-glass"></i>
+                        )}
                     </div>
 
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
@@ -141,10 +184,33 @@ const DriversFiltersSection = ({
                                         vehicleType: e.target.value,
                                     }))
                                 }
+                                onBlur={(e) =>
+                                    handleInputBlur(
+                                        "vehicleType",
+                                        e.target.value
+                                    )
+                                }
+                                onFocus={() => handleInputFocus("vehicleType")}
                             />
-                            <i className="fa-solid fa-car-side"></i>
+                            {!hiddenIcons.has("vehicleType") && (
+                                <i className="fa-solid fa-car-side"></i>
+                            )}
                         </div>
                     </div>
+
+                    {/* Clear All Button */}
+                    {hasActiveFilters && (
+                        <div className="absolute right-[8px] top-0 pt-2 border-t border-gray-200">
+                            <button
+                                onClick={clearFilters}
+                                className="px-2 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-200 flex items-center gap-1 cursor-pointer"
+                                title="Clear All Filters"
+                            >
+                                <i className="fa-solid fa-times"></i>
+                                Clear All Filters
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

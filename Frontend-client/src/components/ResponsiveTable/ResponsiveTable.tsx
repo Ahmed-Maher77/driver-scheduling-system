@@ -38,7 +38,6 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
     error = null,
 }: ResponsiveTableProps<T>) => {
     const effectiveColumns = buildColumns<T>({ columns, headers, rows });
-
     return (
         <div
             className={`responsive-table-wrapper table-responsive mt-4 ${className}`}

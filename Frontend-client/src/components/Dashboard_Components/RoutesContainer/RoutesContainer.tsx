@@ -2,51 +2,8 @@ import "./RoutesContainer.scss";
 import ResponsiveTable from "../../ResponsiveTable/ResponsiveTable";
 import type { RouteItem } from "../../../common/Types/Interfaces";
 import useGetRoutesSummary from "../../../utils/hooks/api/useGetRoutesSummary";
-import { useEffect } from "react";
 import SectionHeader from "../../Headings/SectionHeader/SectionHeader";
 
-// const routesData: RouteItem[] = [
-//     {
-//         id: "RT001",
-//         startLocation: "Warehouse A",
-//         endLocation: "City Center",
-//         status: "assigned",
-//         assignedDriver: {
-//             id: "DR001",
-//             name: "Ethan Harper"
-//         },
-//     },
-//     {
-//         id: "RT002",
-//         startLocation: "Warehouse B",
-//         endLocation: "Suburb North",
-//         status: "unassigned",
-//         assignedDriver: {
-//             id: null,
-//             name: null
-//         }
-//     },
-//     {
-//         id: "RT002",
-//         startLocation: "Warehouse C",
-//         endLocation: "Suburb North",
-//         status: "in progress",
-//         assignedDriver: {
-//             id: null,
-//             name: null
-//         }
-//     },
-//     {
-//         id: "RT003",
-//         startLocation: "Warehouse C",
-//         endLocation: "Suburb South",
-//         status: "assigned",
-//         assignedDriver: {
-//             id: "DR003",
-//             name: "Noah White"
-//         },
-//     },
-// ];
 
 const RoutesContainer = () => {
     const {
@@ -54,10 +11,6 @@ const RoutesContainer = () => {
         isLoading,
         error,
     } = useGetRoutesSummary();
-
-    useEffect(() => {
-        console.log("fetchedRoutesSummaryData", fetchedRoutesSummaryData);
-    }, [fetchedRoutesSummaryData]);
 
     const columns = [
         { key: "route_id", label: "Route Id" },

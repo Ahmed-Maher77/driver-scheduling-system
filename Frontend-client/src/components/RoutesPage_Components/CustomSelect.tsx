@@ -1,4 +1,7 @@
-import type { CustomSelectProps, SelectOption } from "../../common/Types/Interfaces";
+import type {
+    CustomSelectProps,
+    SelectOption,
+} from "../../common/Types/Interfaces";
 
 const CustomSelect = <T extends string>({
     label,
@@ -11,14 +14,13 @@ const CustomSelect = <T extends string>({
 }: CustomSelectProps<T>) => {
     return (
         <div
-            className={`custom-select flex flex-col gap-2 flex-grow-1 ${fullWidth ? "w-full" : ""} ${className}`}>
+            className={`custom-select flex flex-col gap-2 flex-grow-1 ${
+                fullWidth ? "w-full" : ""
+            } ${className}`}
+        >
             {/* Label */}
-            {label && (
-                <label className="block gray-c-d text-sm">
-                    {label}
-                </label>
-            )}
-            
+            {label && <label className="block gray-c-d text-sm">{label}</label>}
+
             {/* Select */}
             <div className="main-input-container w-full cursor-pointer">
                 <select
@@ -37,7 +39,7 @@ const CustomSelect = <T extends string>({
                         </option>
                     ))}
                 </select>
-                
+
                 {/* Arrow Icon */}
                 <i className="fa-solid fa-chevron-down pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 gray-c-l"></i>
             </div>

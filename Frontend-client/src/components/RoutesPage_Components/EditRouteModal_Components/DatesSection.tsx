@@ -6,6 +6,18 @@ const DatesSection: React.FC<DatesSectionProps> = ({
     updatedAt,
     assignedAt,
 }) => {
+    // Format date for input (yyyy-MM-dd)
+    const formatDateForInput = (
+        dateString: string | null | undefined
+    ): string => {
+        if (!dateString) return "";
+        try {
+            return new Date(dateString).toISOString().split("T")[0];
+        } catch {
+            return "";
+        }
+    };
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Created At */}
@@ -15,7 +27,7 @@ const DatesSection: React.FC<DatesSectionProps> = ({
                 </label>
                 <input
                     type="date"
-                    value={createdAt}
+                    value={formatDateForInput(createdAt)}
                     readOnly={true}
                     className="main-input w-full read-only-input"
                 />
@@ -28,7 +40,7 @@ const DatesSection: React.FC<DatesSectionProps> = ({
                 </label>
                 <input
                     type="date"
-                    value={updatedAt || ""}
+                    value={formatDateForInput(updatedAt)}
                     readOnly={true}
                     className="main-input w-full read-only-input"
                 />
@@ -41,7 +53,7 @@ const DatesSection: React.FC<DatesSectionProps> = ({
                 </label>
                 <input
                     type="date"
-                    value={assignedAt || ""}
+                    value={formatDateForInput(assignedAt)}
                     readOnly={true}
                     className="main-input w-full read-only-input"
                 />

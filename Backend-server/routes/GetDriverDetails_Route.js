@@ -35,7 +35,10 @@ router.get("/:id", async (req, res) => {
                 notes: 1,
                 joined_at: 1,
                 updated_at: 1,
-                driving_license: 1,
+                "driving_license.type": 1,
+                "driving_license.number": 1,
+                "driving_license.expiration": 1,
+                "driving_license.image": 1,
                 vehicle: 1,
             }
         ).lean();

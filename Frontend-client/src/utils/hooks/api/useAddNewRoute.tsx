@@ -23,6 +23,7 @@ const useAddNewRoute = () => {
             queryClient.invalidateQueries({
                 queryKey: ["activityFeeds-summary"],
             });
+            queryClient.invalidateQueries({ queryKey: ["activityFeeds"] });
             queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
         },

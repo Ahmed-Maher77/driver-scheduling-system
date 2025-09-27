@@ -13,7 +13,7 @@ export const useActionsColumn = ({
             <button
                 title="View"
                 className="blue-c hover-blue-c cursor-pointer"
-                onClick={() => onViewRoute(row.id)}
+                onClick={() => onViewRoute(row.route_id || "")}
             >
                 <i className="fa-solid fa-eye cursor-pointer"></i>
             </button>
@@ -22,7 +22,7 @@ export const useActionsColumn = ({
             <button
                 title="Edit"
                 className="blue-c hover-blue-c cursor-pointer"
-                onClick={() => onEditRoute(row.id)}
+                onClick={() => onEditRoute(row.route_id || "")}
             >
                 <i className="fa-solid fa-pen"></i>
             </button>
@@ -31,7 +31,7 @@ export const useActionsColumn = ({
             <button
                 title="Delete"
                 className="red-c hover-red-c cursor-pointer"
-                onClick={() => onDeleteRoute(row.id)}
+                onClick={() => onDeleteRoute(row.route_id || "")}
             >
                 <i className="fa-solid fa-trash"></i>
             </button>

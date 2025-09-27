@@ -21,6 +21,9 @@ import CostSpeedSection from "./AddRouteModal_Components/CostSpeedSection";
 import NotesSection from "./EditRouteModal_Components/NotesSection";
 import DatesSection from "./EditRouteModal_Components/DatesSection";
 import { checkDriverAvailability } from "../../utils/functions/checkDriverAvailability";
+import useUpdateRoute from "../../utils/hooks/api/useUpdateRoute";
+import useGetRouteDetails from "../../utils/hooks/api/useGetRouteDetails";
+import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
 const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
     const [formData, setFormData] = useState<RouteRow>({
@@ -51,14 +54,36 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
         "unknown" | "available" | "unavailable" | "on_route"
     >("unknown");
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+    // Update Route
+    const { updateRoute, isPending: isUpdatingRoute } = useUpdateRoute();
+    const { data: routeDetails, isLoading: isLoadingRouteDetails } =
+        useGetRouteDetails({ routeId });
 
+    // Get Route Details
     useEffect(() => {
-        if (routeId) {
-            // get route from api
-            // setFormData(routeData);
-            // invalidate the routes
+        if (routeDetails) {
+            setFormData({
+                id: routeDetails.route_id,
+                start_location: routeDetails.start_location,
+                end_location: routeDetails.end_location,
+                status: routeDetails.status,
+                assignedDriver: routeDetails.assignedDriver,
+                lastDriver: routeDetails.lastDriver || undefined,
+                createdAt: routeDetails.created_at,
+                updatedAt: routeDetails.updated_at,
+                assignedAt: routeDetails.assigned_at,
+                distance: routeDetails.distance,
+                distanceUnit: routeDetails.distance_unit,
+                duration: routeDetails.duration,
+                timeUnit: routeDetails.time_unit,
+                cost: routeDetails.cost,
+                currency: routeDetails.currency,
+                maxSpeed: routeDetails.max_speed,
+                speedUnit: routeDetails.speed_unit,
+                notes: routeDetails.notes,
+            });
         }
-    }, [routeId]);
+    }, [routeDetails]);
 
     // Handle Submit (Edit Route)
     const handleSubmit = async (e?: React.FormEvent) => {
@@ -86,7 +111,29 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
             setAvailabilityStatus(status);
             if (status === "available") {
                 // save route to api
-                notify("success", "Route edited successfully");
+                const updatedRouteData = {
+                    start_location: formData.start_location,
+                    end_location: formData.end_location,
+                    status: formData.status,
+                    assignedDriver: formData.assignedDriver,
+                    lastDriver: formData.lastDriver || undefined,
+                    created_at: formData.createdAt,
+                    updated_at: formData.updatedAt,
+                    assigned_at: formData.assignedAt,
+                    distance: formData.distance,
+                    distance_unit: formData.distanceUnit,
+                    duration: formData.duration,
+                    time_unit: formData.timeUnit,
+                    cost: formData.cost,
+                    currency: formData.currency,
+                    max_speed: formData.maxSpeed,
+                    speed_unit: formData.speedUnit,
+                    notes: formData.notes,
+                };
+                await updateRoute({
+                    routeId: formData.id,
+                    routeData: updatedRouteData,
+                });
                 onClose();
             } else if (status === "unavailable") {
                 notify("error", "This driver is unavailable");
@@ -134,6 +181,12 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
             <div className="p-6">
                 <ModalHeader title="Edit Route" onClose={handleClose} />
 
+                {/* ================== Loading State ================== */}
+                {isLoadingRouteDetails && (
+                    <LoadingSpinner message="Loading route details..." />
+                )}
+
+                {/* ================== Form Section ================== */}
                 <FormSection onSubmit={handleSubmit}>
                     {/* ================== Basic Info Section ================== */}
                     <BasicInfoSection
@@ -317,9 +370,11 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                         onCancel={handleClose}
                         onSubmit={handleSubmit}
                         submitLabel={
-                            isSubmitting ? "Saving..." : "Save Changes"
+                            isSubmitting || isUpdatingRoute
+                                ? "Saving..."
+                                : "Save Changes"
                         }
-                        isSubmitting={isSubmitting}
+                        isSubmitting={isSubmitting || isUpdatingRoute}
                     />
                 </FormSection>
             </div>

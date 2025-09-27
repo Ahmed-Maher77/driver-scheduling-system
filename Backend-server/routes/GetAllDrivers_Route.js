@@ -12,9 +12,41 @@ router.get("/", async (req, res) => {
         const limit = parseInt(req.query.limit) || 15;
         const skip = (page - 1) * limit;
 
+        // Parse filter params
+        const { driverIdOrName, status, vehicleType, licenseType } = req.query;
+
+        // Build filter object dynamically based on provided parameters
+        const filter = {};
+
+        // Add driver ID or name search if provided
+        if (driverIdOrName && driverIdOrName.trim() !== "") {
+            filter.$or = [
+                { driver_id: { $regex: driverIdOrName, $options: "i" } },
+                { name: { $regex: driverIdOrName, $options: "i" } },
+            ];
+        }
+
+        // Add status filter if provided
+        if (status && status.trim() !== "") {
+            filter.status = { $regex: status, $options: "i" };
+        }
+
+        // Add vehicle type filter if provided
+        if (vehicleType && vehicleType.trim() !== "") {
+            filter["vehicle.type"] = { $regex: vehicleType, $options: "i" };
+        }
+
+        // Add license type filter if provided
+        if (licenseType && licenseType.trim() !== "") {
+            filter["driving_license.type"] = {
+                $regex: licenseType,
+                $options: "i",
+            };
+        }
+
         // Fetch drivers with projection, pagination, and sort
         const drivers = await Drivers.find(
-            {},
+            filter,
             {
                 _id: 0,
                 driver_id: 1,
@@ -45,7 +77,7 @@ router.get("/", async (req, res) => {
             joined_at: d.joined_at || null,
         }));
 
-        const totalDocs = await Drivers.countDocuments();
+        const totalDocs = await Drivers.countDocuments(filter);
         const totalPages = Math.ceil(totalDocs / limit) || 1;
 
         return res.status(200).json({

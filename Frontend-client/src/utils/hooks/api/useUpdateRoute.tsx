@@ -1,0 +1,43 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axiosInstance from "./axios-utils";
+import { notify } from "../../functions/notify";
+import type { RouteRow, UpdateRouteResponse } from "../../../common/Types/Interfaces";
+
+const useUpdateRoute = () => {
+    const queryClient = useQueryClient();
+
+    const { mutateAsync, isPending, error, data } = useMutation<
+        UpdateRouteResponse,
+        Error,
+        { routeId: string | undefined, routeData: RouteRow }
+    >({
+        mutationFn: ({ routeId, routeData }: { routeId: string | undefined, routeData: RouteRow }) =>
+            axiosInstance.put(`/edit-route/${routeId}`, routeData),
+
+        onSuccess: () => {
+            notify("success", "Route updated successfully");
+            // Invalidate relevant queries to refresh data
+            queryClient.invalidateQueries({ queryKey: ["routes"] });
+            queryClient.invalidateQueries({ queryKey: ["drivers"] });
+            queryClient.invalidateQueries({ queryKey: ["routes-summary"] });
+            queryClient.invalidateQueries({
+                queryKey: ["activityFeeds-summary"],
+            });
+            queryClient.invalidateQueries({ queryKey: ["activityFeeds"] });
+            queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+        },
+
+        onError: (error) => {
+            console.error("Error updating route:", error.message);
+        },
+    });
+
+    return {
+        updateRoute: mutateAsync,
+        isPending,
+        error,
+        data,
+    };
+};
+
+export default useUpdateRoute;

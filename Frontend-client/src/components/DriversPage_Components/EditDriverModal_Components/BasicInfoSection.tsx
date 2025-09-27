@@ -12,7 +12,7 @@ const BasicInfoSection = ({ driver, form, update }: BasicInfoSectionProps) => {
                         Driver ID
                     </label>
                     <input
-                        className="main-input bg-gray-100 cursor-not-allowed w-full"
+                        className="main-input bg-gray-100 cursor-not-allowed w-full read-only-input"
                         value={driver.driver_id}
                         readOnly
                         disabled

@@ -32,6 +32,8 @@ router.get("/:id", async (req, res) => {
                 max_speed: 1,
                 speed_unit: 1,
                 notes: 1,
+                created_at: 1,
+                updated_at: 1,
             }
         ).lean(); // return plain JS object
 

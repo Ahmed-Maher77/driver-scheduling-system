@@ -1,4 +1,5 @@
 import type { HeaderSummaryProps } from "../../common/Types/Interfaces";
+import { extractDate } from "../../utils/functions/formatDate";
 
 
 const getStatusBadgeClass = (status: string) => {
@@ -42,7 +43,7 @@ const HeaderSummary = ({
                         </span>
                         {joinedAt && (
                             <span className="gray-c text-sm">
-                                Joined: {joinedAt}
+                                Joined: {extractDate(joinedAt)}
                             </span>
                         )}
                     </div>

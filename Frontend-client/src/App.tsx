@@ -3,8 +3,8 @@ import "./App.scss";
 import { Suspense, lazy } from "react";
 
 // Import Toast Wrapper
-import ToastWrapper from './common/ToastWrapper/ToastWrapper';
-import 'react-toastify/dist/ReactToastify.css';
+import ToastWrapper from "./common/ToastWrapper/ToastWrapper";
+import "react-toastify/dist/ReactToastify.css";
 
 // Import Pages
 import NotFound from "./pages/NotFound/NotFound";
@@ -13,18 +13,25 @@ import Layout from "./pages/Layout";
 import PageLoader from "./components/Loader/PageLoader/PageLoader";
 import { Provider } from "react-redux";
 import store from "./utils/redux-toolkit/store";
-import ContactPage from "./pages/ContactPage/ContactPage";
-import AdminPanelPage from "./pages/AdminPanelPage/AdminPanelPage";
-import CalendarPage from "./pages/CalendarPage/CalendarPage";
-import RouteDetailsPage from "./pages/RouteDetailsPage/RouteDetailsPage";
-import DriverDetailsPage from "./pages/DriverDetailsPage/DriverDetailsPage";
 
 // Import Lazy Pages
 const AboutPage = lazy(() => import("./pages/AboutPage/AboutPage"));
 const DriversPage = lazy(() => import("./pages/DriversPage/DriversPage"));
 const RoutesPage = lazy(() => import("./pages/RoutesPage/RoutesPage"));
-
-
+const DriverDetailsPage = lazy(
+    () => import("./pages/DriverDetailsPage/DriverDetailsPage")
+);
+const RouteDetailsPage = lazy(
+    () => import("./pages/RouteDetailsPage/RouteDetailsPage")
+);
+const CalendarPage = lazy(() => import("./pages/CalendarPage/CalendarPage"));
+const AdminPanelPage = lazy(
+    () => import("./pages/AdminPanelPage/AdminPanelPage")
+);
+const ContactPage = lazy(() => import("./pages/ContactPage/ContactPage"));
+const ActivityFeedsPage = lazy(
+    () => import("./pages/ActivityFeedsPage/ActivityFeedsPage")
+);
 
 function App() {
     const router = createBrowserRouter([
@@ -114,6 +121,16 @@ function App() {
                     ),
                 },
 
+                // Activity Feeds
+                {
+                    path: "/activity-feeds",
+                    element: (
+                        <Suspense fallback={<PageLoader />}>
+                            <ActivityFeedsPage />
+                        </Suspense>
+                    ),
+                },
+
                 // {
                 //     path: "/about",
                 //     element: (
@@ -128,11 +145,13 @@ function App() {
             ],
         },
     ]);
-    
-    return <Provider store={store}>  
-        <RouterProvider router={router} />
-        <ToastWrapper />
-    </Provider>;
+
+    return (
+        <Provider store={store}>
+            <RouterProvider router={router} />
+            <ToastWrapper />
+        </Provider>
+    );
 }
 
 export default App;

@@ -71,7 +71,6 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
         setIsSubmitting(true);
         setSubmitError(null); // Clear any previous errors
         // Validate form data
-        console.log("formData", formData);
         const errors = validateForm(formData);
         setValidationErrors(errors);
         if (hasValidationErrors(errors)) {

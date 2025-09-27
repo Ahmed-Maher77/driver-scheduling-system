@@ -30,6 +30,23 @@ const RoutesPage = () => {
         hasNextPage: false,
         hasPreviousPage: false,
     });
+
+    // Filters - Initialize from URL params
+    const [searchBy, setSearchBy] = useState<SearchBy>(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get("status");
+        return {
+            routeIdOrDriverName: urlParams.get("routeIdOrDriverName") || "",
+            status:
+                status === "assigned" ||
+                status === "unassigned" ||
+                status === "in progress"
+                    ? status
+                    : "",
+            duration: urlParams.get("duration") || "",
+        };
+    });
+
     // Fetch Routes
     const {
         data: fetchedRoutesData,
@@ -38,6 +55,7 @@ const RoutesPage = () => {
     } = useGetAllRoutes({
         pageNumber: paginationInfo.pageNumber,
         limit: 10,
+        filters: searchBy,
     });
     const [routes] = useState<any[]>([]);
     // Add Route
@@ -59,11 +77,6 @@ const RoutesPage = () => {
     const { deleteRoute, isPending: isDeletingRoute } = useDeleteRoute();
     const { deleteSelectedRoutes, isPending: isBulkDeleting } =
         useDeleteSelectedRoutes();
-    const [searchBy, setSearchBy] = useState<SearchBy>({
-        routeIdOrDriverName: "",
-        status: "",
-        duration: "",
-    });
 
     // Sync modal state with URL search params
     useEffect(() => {
@@ -108,10 +121,38 @@ const RoutesPage = () => {
         }
     }, [fetchedRoutesData, error, isLoading]);
 
-    // Filter Routes based on: routeId, driverName, status, duration
+    // Update URL when filters change
     useEffect(() => {
-        // get routes from api
-        // setRoutes(newRoutes);
+        const urlParams = new URLSearchParams();
+
+        // Add filter params to URL if they have values
+        if (searchBy.routeIdOrDriverName.trim()) {
+            urlParams.set(
+                "routeIdOrDriverName",
+                searchBy.routeIdOrDriverName.trim()
+            );
+        }
+        if (searchBy.status.trim() && searchBy.status !== "all") {
+            urlParams.set("status", searchBy.status.trim());
+        }
+        if (searchBy.duration.trim() && searchBy.duration !== "any") {
+            urlParams.set("duration", searchBy.duration.trim());
+        }
+
+        // Update URL without triggering a page reload
+        const newUrl = urlParams.toString()
+            ? `${window.location.pathname}?${urlParams.toString()}`
+            : window.location.pathname;
+
+        window.history.replaceState({}, "", newUrl);
+    }, [searchBy]);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setPaginationInfo((prev) => ({
+            ...prev,
+            pageNumber: 1,
+        }));
     }, [searchBy]);
 
     // Handle Add Route Errors and Pending Status
@@ -162,11 +203,24 @@ const RoutesPage = () => {
         setSearchParams({});
     };
 
+    // Clear all filters
+    const clearFilters = () => {
+        setSearchBy({
+            routeIdOrDriverName: "",
+            status: "",
+            duration: "",
+        });
+    };
+
     // Edit Route (table action)
     const editRoute = (id: string) => {
-        const route = routes.find((r) => r.id === id);
+        const route = fetchedRoutesData?.data?.find(
+            (r: any) => r.route_id === id
+        );
         if (route) {
-            openEditRoute(route.id);
+            openEditRoute(route.route_id);
+        } else {
+            console.log("Route not found for id:", id);
         }
     };
 
@@ -244,6 +298,7 @@ const RoutesPage = () => {
                     onToggleFilters={() => setShowFilters((prev) => !prev)}
                     searchBy={searchBy}
                     setSearchBy={setSearchBy}
+                    clearFilters={clearFilters}
                 />
 
                 <main

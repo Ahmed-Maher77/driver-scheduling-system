@@ -5,7 +5,6 @@ import ModalHeader from "../RoutesPage_Components/AddRouteModal_Components/Modal
 import ModalActions from "../RoutesPage_Components/AddRouteModal_Components/ModalActions";
 import type {
     DriverForm,
-    DriverRow,
     EditDriverModalProps,
 } from "../../common/Types/Interfaces";
 import { notify } from "../../utils/functions/notify";
@@ -26,39 +25,43 @@ import {
     NotesSection,
 } from "./EditDriverModal_Components";
 import "./AddDriverModal.scss";
+import useGetDriverDetails from "../../utils/hooks/api/useGetDriverDetails";
+import LoadingPageSpinner from "../LoadingPageSpinner/LoadingPageSpinner";
+import useUpdateDriver from "../../utils/hooks/api/useUpdateDriver";
+import { uploadFile } from "../../utils/functions/uploadFile";
 
-const toForm = (d: DriverRow): DriverForm => ({
-    name: d.name,
-    picture: null, // Will be loaded from API
+const toForm = (d: any): DriverForm => ({
+    name: d.name || "",
+    picture: d.picture || null,
     phone: d.phone || "",
-    address: (d as any).address || "",
+    address: d.address || "",
     contact_channels: {
-        email: (d as any).email || "",
-        facebook: (d as any).facebook || "",
-        whatsapp: (d as any).whatsapp || "",
-        linkedin: (d as any).linkedin || "",
+        email: d.contact_channels?.email || "",
+        facebook: d.contact_channels?.facebook || "",
+        whatsapp: d.contact_channels?.whatsapp || "",
+        linkedin: d.contact_channels?.linkedin || "",
     },
-    country: (d as any).country || "",
-    city: (d as any).city || "",
+    country: d.country || "",
+    city: d.city || "",
     status: d.status === "on_route" ? "available" : d.status,
-    national_id: null, // Will be loaded from API
-    gender: (d as any).gender || "Male",
-    date_of_birth: (d as any).date_of_birth || "",
+    national_id: d.national_id || null,
+    gender: d.gender || "Male",
+    date_of_birth: d.date_of_birth || "",
     driving_license: {
-        type: d.license_type || "",
-        number: (d as any).licenseNumber || "",
-        expiration: (d as any).licenseExpiration || "",
-        image: null, // Will be loaded from API
+        type: d.driving_license?.type || "",
+        number: d.driving_license?.number || "",
+        expiration: d.driving_license?.expiration || "",
+        image: d.driving_license?.image || null,
     },
     vehicle: {
-        type: d.vehicle_type || "",
-        make: (d as any).vehicleMake || "",
-        model: (d as any).vehicleModel || "",
-        year: (d as any).vehicleYear || "",
-        color: (d as any).vehicleColor || "",
+        type: d.vehicle?.type || "",
+        make: d.vehicle?.make || "",
+        model: d.vehicle?.model || "",
+        year: d.vehicle?.year || "",
+        color: d.vehicle?.color || "",
     },
-    assignedRoute_id: d.assignedRoute?.id || "",
-    notes: (d as any).notes || "",
+    assignedRoute_id: d.assignedRoute_id || "",
+    notes: d.notes || "",
 });
 
 const EditDriverModal = ({
@@ -73,30 +76,24 @@ const EditDriverModal = ({
     const [availabilityStatus, setAvailabilityStatus] = useState<
         "unknown" | "assigned" | "unassigned" | "in progress"
     >("unknown");
+    // Fetch driver details
+    const { data: driverDetails, isLoading: isLoadingDriverDetails } =
+        useGetDriverDetails({ driverId });
+    const { updateDriver, isPending: isUpdatingDriver } = useUpdateDriver();
 
     // ================== Fetch Driver Details ==================
     useEffect(() => {
-        if (!isOpen || !driverId) return;
+        if (driverDetails) {
+            setForm(toForm(driverDetails));
+            console.log("driverDetails:", driverDetails);
+            console.log("form:", toForm(driverDetails));
+        }
+    }, [driverDetails]);
 
-        // TODO: Replace with API call
-        // const fetchDriverDetails = async () => {
-        //     setLoading(true);
-        //     try {
-        //         const response = await fetch(`/api/drivers/${driverId}`);
-        //         const driverData = await response.json();
-        //         setForm(toForm(driverData));
-        //     } catch (error) {
-        //         notify("error", "Failed to load driver details");
-        //     } finally {
-        //         setLoading(false);
-        //     }
-        // };
-        // fetchDriverDetails();
-
-        // Current: Using local data
-        const d = drivers.find((x) => x.driver_id === driverId);
-        setForm(d ? toForm(d) : null);
-    }, [driverId, drivers, isOpen]);
+    // ================== Loading State ==================
+    if (isLoadingDriverDetails) {
+        return <LoadingPageSpinner message="Loading driver details..." />;
+    }
 
     const isUnavailable = form?.status === "unavailable";
 
@@ -175,6 +172,78 @@ const EditDriverModal = ({
         });
     };
 
+    // ================== Upload Driver Files ==================
+    const uploadDriverFiles = async (form: DriverForm) => {
+        console.log(
+            "uploadDriverFiles - form.driving_license:",
+            form.driving_license
+        );
+        const filesToUpload: File[] = [];
+
+        // Collect files that need to be uploaded
+        if (form.picture && typeof form.picture === "object") {
+            console.log("Adding picture to upload:", form.picture);
+            filesToUpload.push(form.picture);
+        }
+        if (
+            form.driving_license.image &&
+            typeof form.driving_license.image === "object"
+        ) {
+            console.log(
+                "Adding license image to upload:",
+                form.driving_license.image
+            );
+            filesToUpload.push(form.driving_license.image);
+        }
+
+        console.log("Files to upload:", filesToUpload);
+
+        if (filesToUpload.length === 0) {
+            console.log("No files to upload, returning original form");
+            return form;
+        }
+
+        // Upload files and get URLs
+        const uploadedFiles = await Promise.all(
+            filesToUpload.map((file) => uploadFile(file))
+        );
+
+        console.log("Uploaded files:", uploadedFiles);
+
+        // Create updated form with file URLs
+        const updatedForm = { ...form };
+        let fileIndex = 0;
+
+        // Update picture if it was a File object
+        if (form.picture && typeof form.picture === "object") {
+            console.log(
+                `Updating picture with file index ${fileIndex}:`,
+                uploadedFiles[fileIndex]
+            );
+            updatedForm.picture = uploadedFiles[fileIndex].file.url;
+            fileIndex++;
+        }
+
+        // Update driving_license.image if it was a File object
+        if (
+            form.driving_license.image &&
+            typeof form.driving_license.image === "object"
+        ) {
+            console.log(
+                `Updating driving_license.image with file index ${fileIndex}:`,
+                uploadedFiles[fileIndex]
+            );
+            updatedForm.driving_license = {
+                ...updatedForm.driving_license,
+                image: uploadedFiles[fileIndex].file.url,
+            };
+            fileIndex++;
+        }
+
+        console.log("Updated form after upload:", updatedForm);
+        return updatedForm;
+    };
+
     // ================== Submit (Edit Driver) ==================
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -195,28 +264,39 @@ const EditDriverModal = ({
         }
         setLoading(true);
         try {
-            // TODO: Replace with API call
-            // const updatedDriverData = {
-            //     name: form.name,
-            //     phone: form.phone,
-            //     address: form.address,
-            //     country: form.country,
-            //     city: form.city,
-            //     contact_channels: form.contact_channels,
-            //     gender: form.gender,
-            //     dateOfBirth: form.date_of_birth,
-            //     drivingLicense: form.driving_license,
-            //     vehicle: form.vehicle,
-            //     assignedRoute_id: form.assignedRoute_id,
-            //     notes: form.notes,
-            //     picture: form.picture,
-            //     status: form.status,
-            // }
-            // updateDriver(updatedDriverData)
+            // Upload files if any
+            const updatedForm = await uploadDriverFiles(form);
 
-            notify("success", "Driver updated successfully");
+            const updatedDriverData = {
+                name: updatedForm.name,
+                phone: updatedForm.phone,
+                address: updatedForm.address,
+                country: updatedForm.country,
+                city: updatedForm.city,
+                contact_channels: updatedForm.contact_channels,
+                gender: updatedForm.gender,
+                date_of_birth: updatedForm.date_of_birth,
+                driving_license: { ...updatedForm.driving_license },
+                vehicle: { ...updatedForm.vehicle },
+                assignedRoute_id: updatedForm.assignedRoute_id,
+                notes: updatedForm.notes,
+                picture: updatedForm.picture,
+                status: updatedForm.status,
+            };
+
+            console.log(
+                "Sending to API - updatedDriverData:",
+                updatedDriverData
+            );
+            console.log(
+                "driving_license in API data:",
+                updatedDriverData.driving_license
+            );
+
+            await updateDriver({ driverId, driverData: updatedDriverData });
             onClose();
-        } catch {
+        } catch (error) {
+            console.error("Error updating driver:", error);
             notify("error", "Failed to update driver");
         } finally {
             setLoading(false);
@@ -287,7 +367,11 @@ const EditDriverModal = ({
                         {/* Modal Actions */}
                         <ModalActions
                             onCancel={onClose}
-                            submitLabel={loading ? "Saving..." : "Save Changes"}
+                            submitLabel={
+                                loading || isUpdatingDriver
+                                    ? "Saving..."
+                                    : "Save Changes"
+                            }
                         />
                     </FormSection>
                 </div>

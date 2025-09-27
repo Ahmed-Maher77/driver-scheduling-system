@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/Headings/PageHeader/PageHeader";
 import DriverAssignment from "../../components/RouteDetailsPage_Components/DriverAssignment";
@@ -9,52 +9,31 @@ import RouteNotes from "../../components/RouteDetailsPage_Components/RouteNotes"
 import BackButton from "../../components/BackButton/BackButton";
 import EditRouteModal from "../../components/RoutesPage_Components/EditRouteModal";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal/DeleteConfirmationModal";
+import LoadingPageSpinner from "../../components/LoadingPageSpinner/LoadingPageSpinner";
+import ErrorPage from "../../components/ErrorDetailsPage/ErrorPage";
 import { notify } from "../../utils/functions/notify";
-import type { RouteRow } from "../../common/Types/Interfaces";
-
-// Mock data - in real app, this would come from API based on routeId
-const initialRouteData: RouteRow = {
-    id: "RT001",
-    start_location: "Warehouse A",
-    end_location: "City Center",
-    status: "assigned",
-    assignedDriver: {
-        id: "DR001",
-        name: "Ethan Harper",
-    },
-    lastDriver: {
-        id: "DR002",
-        name: "ahmed",
-    },
-    createdAt: "2025-01-01",
-    updatedAt: "2025-01-02",
-    assignedAt: "2025-01-04",
-    distance: 18.4,
-    distanceUnit: "mile",
-    duration: 100,
-    timeUnit: "minutes",
-    cost: 100,
-    currency: "EGP",
-    maxSpeed: 120,
-    speedUnit: "km/h",
-    notes: "Notes",
-};
+import defaultManImage from "../../assets/images/person.png";
+import defaultWomanImage from "../../assets/images/woman.jpg";
+import useGetRouteDetails from "../../utils/hooks/api/useGetRouteDetails";
+import useDeleteRoute from "../../utils/hooks/api/useDeleteRoute";
 
 const RouteDetailsPage = () => {
     const navigate = useNavigate();
-    const { routeId } = useParams();
-    const [routeData] = useState<RouteRow>(initialRouteData);
+    const { id: routeId } = useParams();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-    // ================== Fetch Route Details ==================
-    useEffect(() => {
-        if (routeId) {
-            // get route from api
-            // setRouteData(routeData);
-            // invalidate the routes
-        }
-    }, [routeId]);
+    // Fetch route details
+    const {
+        data: routeData,
+        isLoading,
+        error,
+    } = useGetRouteDetails({
+        routeId: routeId || "",
+    });
+
+    // Delete route
+    const { deleteRoute, isPending: isDeletingRoute } = useDeleteRoute();
 
     // Handler functions
     const handleEditRoute = () => {
@@ -65,16 +44,34 @@ const RouteDetailsPage = () => {
         setShowDeleteConfirm(true);
     };
 
-    const confirmDelete = () => {
-        // In real app, this would call API to delete route
-        // deleteRouteFromApi(routeId);
-        notify("success", "Route deleted successfully");
-        navigate("/routes");
+    const confirmDelete = async () => {
+        if (!routeId) return;
+        try {
+            await deleteRoute(routeId);
+            navigate("/routes");
+        } catch {
+            notify("error", "Failed to delete route");
+        }
     };
 
     const handleCloseEditModal = () => {
         setIsEditModalOpen(false);
     };
+
+    // Show loading spinner while fetching data
+    if (isLoading) {
+        return <LoadingPageSpinner message="Loading route details..." />;
+    }
+
+    // Show error page if there's an error
+    if (error) {
+        return <ErrorPage message={error} />;
+    }
+
+    // Show error if no route data
+    if (!routeData) {
+        return <ErrorPage message="Route not found" />;
+    }
 
     return (
         <div className="route-details-page main-page py-6 pb-[60px]">
@@ -92,7 +89,7 @@ const RouteDetailsPage = () => {
                 <main className="route-details-container mt-8">
                     {/* Route Header */}
                     <RouteHeader
-                        id={routeData.id}
+                        id={routeData.route_id}
                         status={routeData.status}
                         onEdit={handleEditRoute}
                         onDelete={handleDeleteRoute}
@@ -104,13 +101,13 @@ const RouteDetailsPage = () => {
                             startLocation={routeData.start_location}
                             endLocation={routeData.end_location}
                             distance={routeData.distance || 0}
-                            distanceUnit={routeData.distanceUnit || "km"}
+                            distanceUnit={routeData.distance_unit || "km"}
                             duration={routeData.duration || 0}
-                            timeUnit={routeData.timeUnit || "minutes"}
+                            timeUnit={routeData.time_unit || "minutes"}
                             cost={routeData.cost || 0}
                             currency={routeData.currency || "EGP"}
-                            maxSpeed={routeData.maxSpeed || 0}
-                            speedUnit={routeData.speedUnit || "km/h"}
+                            maxSpeed={routeData.max_speed || 0}
+                            speedUnit={routeData.speed_unit || "km/h"}
                         />
                         <RouteNotes notes={routeData.notes} />
                     </div>
@@ -126,20 +123,16 @@ const RouteDetailsPage = () => {
                                               routeData.assignedDriver.name ||
                                               "",
                                           picture:
-                                              "https://via.placeholder.com/150",
+                                              routeData.assignedDriver
+                                                  .picture ||
+                                              routeData.assignedDriver
+                                                  .gender === "Male"
+                                                  ? defaultManImage
+                                                  : defaultWomanImage,
                                       }
                                     : null
                             }
-                            lastDriver={
-                                routeData.lastDriver
-                                    ? {
-                                          id: routeData.lastDriver.id || "",
-                                          name: routeData.lastDriver.name || "",
-                                          picture:
-                                              "https://via.placeholder.com/150",
-                                      }
-                                    : null
-                            }
+                            lastDriver={null} // API doesn't return lastDriver yet
                         />
                         <RouteActivity
                             items={[
@@ -168,7 +161,7 @@ const RouteDetailsPage = () => {
             <EditRouteModal
                 isOpen={isEditModalOpen}
                 onClose={handleCloseEditModal}
-                routeId={routeData.id}
+                routeId={routeData.route_id}
             />
 
             {/* Delete Confirmation Modal */}
@@ -177,8 +170,9 @@ const RouteDetailsPage = () => {
                 onClose={() => setShowDeleteConfirm(false)}
                 onConfirm={confirmDelete}
                 title="Confirm Delete"
-                message={`Are you sure you want to delete route ${routeData.id}? This action cannot be undone.`}
+                message={`Are you sure you want to delete route ${routeData.route_id}? This action cannot be undone.`}
                 confirmButtonText="Delete Route"
+                isLoading={isDeletingRoute}
             />
         </div>
     );

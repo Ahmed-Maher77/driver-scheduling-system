@@ -8,9 +8,13 @@ const FiltersSection = ({
     onToggleFilters,
     searchBy,
     setSearchBy,
+    clearFilters,
 }: FiltersSectionProps) => {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchBy((prev) => ({ ...prev, routeIdOrDriverName: e.target.value }));
+        setSearchBy((prev) => ({
+            ...prev,
+            routeIdOrDriverName: e.target.value,
+        }));
     };
     const handleStatusChange = (value: string) => {
         setSearchBy((prev) => ({ ...prev, status: value }));
@@ -19,8 +23,37 @@ const FiltersSection = ({
         setSearchBy((prev) => ({ ...prev, duration: value }));
     };
 
+    // Handle input blur to hide icon when content exists
+    const handleInputBlur = (inputName: string, value: string) => {
+        if (value.trim() !== "") {
+            setHiddenIcons((prev) => new Set(prev).add(inputName));
+        } else {
+            setHiddenIcons((prev) => {
+                const newSet = new Set(prev);
+                newSet.delete(inputName);
+                return newSet;
+            });
+        }
+    };
+
+    // Handle input focus to show icon again
+    const handleInputFocus = (inputName: string) => {
+        setHiddenIcons((prev) => {
+            const newSet = new Set(prev);
+            newSet.delete(inputName);
+            return newSet;
+        });
+    };
+
     const contentRef = useRef<HTMLDivElement | null>(null);
     const [maxHeight, setMaxHeight] = useState<string>("0px");
+    const [hiddenIcons, setHiddenIcons] = useState<Set<string>>(new Set());
+
+    // Check if any filters are active
+    const hasActiveFilters =
+        searchBy.routeIdOrDriverName.trim() !== "" ||
+        (searchBy.status.trim() !== "" && searchBy.status !== "all") ||
+        (searchBy.duration.trim() !== "" && searchBy.duration !== "any");
 
     useEffect(() => {
         if (contentRef.current) {
@@ -73,8 +106,19 @@ const FiltersSection = ({
                             className="main-input w-full"
                             value={searchBy.routeIdOrDriverName}
                             onChange={handleSearchChange}
+                            onBlur={(e) =>
+                                handleInputBlur(
+                                    "routeIdOrDriverName",
+                                    e.target.value
+                                )
+                            }
+                            onFocus={() =>
+                                handleInputFocus("routeIdOrDriverName")
+                            }
                         />
-                        <i className="fa-solid fa-magnifying-glass"></i>
+                        {!hiddenIcons.has("routeIdOrDriverName") && (
+                            <i className="fa-solid fa-magnifying-glass"></i>
+                        )}
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
                         <CustomSelect
@@ -102,6 +146,19 @@ const FiltersSection = ({
                             ]}
                         />
                     </div>
+
+                    {/* Clear All Button */}
+                    {hasActiveFilters && (
+                        <div className="flex justify-end pt-2 border-t border-gray-200">
+                            <button
+                                onClick={clearFilters}
+                                className="px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-200 flex items-center gap-2"
+                            >
+                                <i className="fa-solid fa-times"></i>
+                                Clear All Filters
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </>

@@ -12,12 +12,58 @@ router.get("/", async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 15;
 
+        // Parse filter params
+        const { routeIdOrDriverName, status, duration } = req.query;
+
+        // Build filter object dynamically based on provided parameters
+        const filter = {};
+
+        // Add route ID or driver name search if provided
+        if (routeIdOrDriverName && routeIdOrDriverName.trim() !== "") {
+            filter.$or = [
+                { route_id: { $regex: routeIdOrDriverName, $options: "i" } },
+                {
+                    "assignedDriver.name": {
+                        $regex: routeIdOrDriverName,
+                        $options: "i",
+                    },
+                },
+            ];
+        }
+
+        // Add status filter if provided
+        if (status && status.trim() !== "") {
+            filter.status = { $regex: status, $options: "i" };
+        }
+
+        // Add duration filter if provided
+        if (duration && duration.trim() !== "") {
+            // Parse duration range (e.g., "1-2" for 1-2 hours)
+            const durationParts = duration.split("-");
+            if (durationParts.length === 2) {
+                const minDuration = parseInt(durationParts[0]);
+                const maxDuration = parseInt(durationParts[1]);
+                if (!isNaN(minDuration) && !isNaN(maxDuration)) {
+                    filter.duration = {
+                        $gte: minDuration,
+                        $lte: maxDuration,
+                    };
+                }
+            } else {
+                // Single duration value
+                const durationValue = parseInt(duration);
+                if (!isNaN(durationValue)) {
+                    filter.duration = durationValue;
+                }
+            }
+        }
+
         // Calculate how many docs to skip
         const skip = (page - 1) * limit;
 
         // Select only needed fields from Routes
         const routes = await Routes.find(
-            {},
+            filter,
             {
                 route_id: 1,
                 start_location: 1,
@@ -72,7 +118,7 @@ router.get("/", async (req, res) => {
         }));
 
         // Calculate total pages count
-        const totalDocs = await Routes.countDocuments();
+        const totalDocs = await Routes.countDocuments(filter);
         const totalPages = Math.ceil(totalDocs / limit);
 
         res.status(200).json({

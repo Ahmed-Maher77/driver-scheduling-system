@@ -25,23 +25,39 @@ const DriversPage = () => {
         hasNextPage: false,
         hasPreviousPage: false,
     });
+
+    // Filters - Initialize from URL params
+    const [searchBy, setSearchBy] = useState<DriverSearchBy>(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get("status");
+        return {
+            driverIdOrName: urlParams.get("driverIdOrName") || "",
+            status:
+                status === "available" ||
+                status === "unavailable" ||
+                status === "on_route"
+                    ? status
+                    : "",
+            vehicleType: urlParams.get("vehicleType") || "",
+            licenseType: urlParams.get("licenseType") || "",
+        };
+    });
+
     // Fetch Drivers
     const {
         data: fetchedDriversData,
         isLoading,
         error,
-    } = useGetAllDrivers({ pageNumber: paginationInfo.pageNumber, limit: 10 });
-    const [drivers] = useState<any>([]);
+    } = useGetAllDrivers({
+        pageNumber: paginationInfo.pageNumber,
+        limit: 10,
+        filters: searchBy,
+    });
+    const [drivers, setDrivers] = useState<any>([]);
 
-    // Filters
+    // UI State
     const [showFilters, setShowFilters] = useState(true);
     const [selected, setSelected] = useState<Record<string, boolean>>({});
-    const [searchBy, setSearchBy] = useState<DriverSearchBy>({
-        driverIdOrName: "",
-        status: "",
-        vehicleType: "",
-        licenseType: "",
-    });
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [deletingDriverId, setDeletingDriverId] = useState("");
     const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = useState(false);
@@ -51,12 +67,9 @@ const DriversPage = () => {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [editingDriverId, setEditingDriverId] = useState("");
     const [isExportingCsv, setIsExportingCsv] = useState(false);
-    const {
-        deleteDriver,
-        isPending: isDeletingDriver,
-        data: deleteDriverData,
-    } = useDeleteDriver();
-    const { deleteSelectedDrivers, isPending: isBulkDeleting } = useDeleteSelectedDrivers();
+    const { deleteDriver, isPending: isDeletingDriver } = useDeleteDriver();
+    const { deleteSelectedDrivers, isPending: isBulkDeleting } =
+        useDeleteSelectedDrivers();
 
     // Sync modal state with URL search params
     useEffect(() => {
@@ -83,12 +96,13 @@ const DriversPage = () => {
     // Calculate selection state
     const selectedCount = Object.values(selected).filter(Boolean)?.length;
     const allSelected =
-        fetchedDriversData?.data?.length > 0 &&
-        fetchedDriversData.data.every((d: any) => selected[d.driver_id]);
+        drivers?.length > 0 && drivers.every((d: any) => selected[d.driver_id]);
 
     useEffect(() => {
         // get drivers from api
         if (fetchedDriversData) {
+            // Set the drivers data
+            setDrivers(fetchedDriversData.data || []);
             // Set the pagination info
             setPaginationInfo({
                 pageNumber: fetchedDriversData?.currentPage || 1,
@@ -100,16 +114,54 @@ const DriversPage = () => {
         }
     }, [fetchedDriversData, error, isLoading]);
 
-    // Filter Drivers based on: driverId, name, status, vehicleType
+    // Update URL when filters change
     useEffect(() => {
-        // get drivers from api
-        // setDrivers(newDrivers);
+        const urlParams = new URLSearchParams();
+
+        // Add filter params to URL if they have values
+        if (searchBy.driverIdOrName.trim()) {
+            urlParams.set("driverIdOrName", searchBy.driverIdOrName.trim());
+        }
+        if (searchBy.status.trim()) {
+            urlParams.set("status", searchBy.status.trim());
+        }
+        if (searchBy.vehicleType.trim()) {
+            urlParams.set("vehicleType", searchBy.vehicleType.trim());
+        }
+        if (searchBy.licenseType.trim()) {
+            urlParams.set("licenseType", searchBy.licenseType.trim());
+        }
+
+        // Update URL without triggering a page reload
+        const newUrl = urlParams.toString()
+            ? `${window.location.pathname}?${urlParams.toString()}`
+            : window.location.pathname;
+
+        window.history.replaceState({}, "", newUrl);
+    }, [searchBy]);
+
+    // Reset to page 1 when filters change
+    useEffect(() => {
+        setPaginationInfo((prev) => ({
+            ...prev,
+            pageNumber: 1,
+        }));
     }, [searchBy]);
 
     const openAddDriver = () => setSearchParams({ modal: "addDriver" });
     const openEditDriver = (id: string) =>
         setSearchParams({ modal: "editDriver", driverId: id });
     const closeModals = () => setSearchParams({});
+
+    // Clear all filters
+    const clearFilters = () => {
+        setSearchBy({
+            driverIdOrName: "",
+            status: "",
+            vehicleType: "",
+            licenseType: "",
+        });
+    };
 
     const handleDeleteDriver = (id: string) => {
         setDeletingDriverId(id);
@@ -120,7 +172,6 @@ const DriversPage = () => {
         await deleteDriver(deletingDriverId);
         setShowDeleteConfirm(false);
         setDeletingDriverId("");
-        console.log("deleteDriverData", deleteDriverData);
     };
 
     // Selection functions
@@ -189,6 +240,7 @@ const DriversPage = () => {
                     onToggleFilters={() => setShowFilters((v) => !v)}
                     searchBy={searchBy}
                     setSearchBy={setSearchBy}
+                    clearFilters={clearFilters}
                 />
 
                 {/* ================== Drivers Table ================== */}
@@ -205,7 +257,7 @@ const DriversPage = () => {
 
                     {/* Drivers Table */}
                     <DriversTable
-                        drivers={fetchedDriversData?.data || []}
+                        drivers={drivers}
                         selected={selected}
                         selectedCount={selectedCount}
                         allSelected={allSelected}
@@ -226,15 +278,19 @@ const DriversPage = () => {
                 </main>
             </div>
             {/* ================== Add Driver Modal ================== */}
-            <AddDriverModal isOpen={isAddModalOpen} onClose={closeModals} />
+            {isAddModalOpen && (
+                <AddDriverModal isOpen={isAddModalOpen} onClose={closeModals} />
+            )}
 
             {/* ================== Edit Driver Modal ================== */}
-            <EditDriverModal
-                isOpen={isEditModalOpen}
-                onClose={closeModals}
-                driverId={editingDriverId}
-                drivers={drivers as any}
-            />
+            {isEditModalOpen && (
+                <EditDriverModal
+                    isOpen={isEditModalOpen}
+                    onClose={closeModals}
+                    driverId={editingDriverId}
+                    drivers={drivers as any}
+                />
+            )}
 
             {/* ================== Delete Confirmation Modal ================== */}
             <DeleteConfirmationModal
