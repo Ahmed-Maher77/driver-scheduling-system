@@ -1,9 +1,11 @@
+import { createPortal } from "react-dom";
 import type { ImageModalProps } from "../../../common/Types/Interfaces";
 
 const ImageModal = ({ isOpen, imageUrl, title, onClose }: ImageModalProps) => {
     if (!isOpen) return null;
 
-    return (
+    // Render the modal outside of the current DOM tree using Portal
+    return createPortal(
         <div
             className="fixed inset-0 flex items-center justify-center z-[9999] p-4 top-0 left-0 w-full h-full"
             onClick={onClose}
@@ -27,7 +29,8 @@ const ImageModal = ({ isOpen, imageUrl, title, onClose }: ImageModalProps) => {
                     />
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body // Render directly to document.body
     );
 };
 

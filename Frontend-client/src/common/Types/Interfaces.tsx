@@ -775,6 +775,7 @@ export interface InfoRowProps {
     label: string;
     value?: string | number | null;
     href?: string | null;
+    to?: string | null;
 }
 
 // Calendar Types

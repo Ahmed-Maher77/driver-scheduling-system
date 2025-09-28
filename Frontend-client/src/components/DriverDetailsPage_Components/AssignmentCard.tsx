@@ -9,7 +9,7 @@ const AssignmentCard = ({ assignedRoute }: AssignmentCardProps) => {
             {assignedRoute?.route_id ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
                     {/* Route ID */}
-                    <InfoRow label="Route ID" value={assignedRoute.route_id} />
+                    <InfoRow label="Route ID" value={assignedRoute.route_id} to={`/routes/${assignedRoute.route_id}`} />
                     {/* From */}
                     <InfoRow label="From" value={assignedRoute.start_location} />
                     {/* To */}

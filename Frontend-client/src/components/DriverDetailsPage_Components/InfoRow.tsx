@@ -1,6 +1,7 @@
+import { NavLink } from "react-router-dom";
 import type { InfoRowProps } from "../../common/Types/Interfaces";
 
-const InfoRow = ({ label, value, href }: InfoRowProps) => {
+const InfoRow = ({ label, value, href, to }: InfoRowProps) => {
     return (
         <div className="flex flex-col">
             {/* Label */}
@@ -8,8 +9,12 @@ const InfoRow = ({ label, value, href }: InfoRowProps) => {
                 {label}
             </span>
 
-            {/* Value (with href if provided) */}
-            {href && value ? (
+            {/* Value - render based on priority: to > href > plain text */}
+            {to && value ? (
+                <NavLink to={to} className="text-sm social-link break-all">
+                    {String(value)}
+                </NavLink>
+            ) : href && value ? (
                 <a
                     href={href}
                     target="_blank"

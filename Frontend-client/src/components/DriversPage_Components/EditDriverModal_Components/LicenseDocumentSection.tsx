@@ -63,7 +63,7 @@ const LicenseDocumentSection = ({
                             }}
                         />
                         <div className="file-upload-text">
-                            <i className="fa-solid fa-id-card file-upload-icon"></i>
+                            <i className="fa-solid fa-id-card file-upload-icon" style={{ marginBottom: "15px" }}></i>
                             <span className="file-upload-main-text">
                                 {isExistingImage
                                     ? "Replace License"

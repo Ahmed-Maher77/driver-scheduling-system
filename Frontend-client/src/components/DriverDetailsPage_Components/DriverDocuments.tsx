@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import type { DriverDocumentsProps } from "../../common/Types/Interfaces";
 
 const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
@@ -145,32 +146,34 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
             )}
 
             {/* ================== Image Modal ================== */}
-            {selectedImage && (
-                <div
-                    className="fixed inset-0 flex items-center justify-center z-[999] p-4 "
-                    onClick={closeModal}
-                    style={{ backgroundColor: "#00000060" }}
-                >
-                    <div className="relative max-w-4xl max-h-full">
-                        <button
-                            onClick={closeModal}
-                            className="absolute cursor-pointer right-[-43px] top-[-18px] text-white hover:text-gray-300 text-[1.7rem] z-10"
-                        >
-                            <i className="fa-solid fa-times"></i>
-                        </button>
-                        <div className="bg-white rounded-lg p-4">
-                            <h3 className="text-lg font-semibold mb-4 text-center">
-                                {imageTitle}
-                            </h3>
-                            <img
-                                src={selectedImage}
-                                alt={imageTitle}
-                                className="max-w-full max-h-[80vh] object-contain rounded"
-                            />
+            {selectedImage &&
+                createPortal(
+                    <div
+                        className="fixed inset-0 flex items-center justify-center z-[9999] p-4 "
+                        onClick={closeModal}
+                        style={{ backgroundColor: "#00000060" }}
+                    >
+                        <div className="relative max-w-4xl max-h-full">
+                            <button
+                                onClick={closeModal}
+                                className="absolute cursor-pointer right-[-43px] top-[-18px] text-white hover:text-gray-300 text-[1.7rem] z-10"
+                            >
+                                <i className="fa-solid fa-times"></i>
+                            </button>
+                            <div className="bg-white rounded-lg p-4">
+                                <h3 className="text-lg font-semibold mb-4 text-center">
+                                    {imageTitle}
+                                </h3>
+                                <img
+                                    src={selectedImage}
+                                    alt={imageTitle}
+                                    className="max-w-full max-h-[80vh] object-contain rounded"
+                                />
+                            </div>
                         </div>
-                    </div>
-                </div>
-            )}
+                    </div>,
+                    document.body
+                )}
         </section>
     );
 };

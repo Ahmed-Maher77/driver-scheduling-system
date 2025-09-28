@@ -52,7 +52,7 @@ const PictureUploadSection = ({ form, update }: PictureUploadSectionProps) => {
                             }}
                         />
                         <div className="file-upload-text">
-                            <i className="fa-solid fa-camera file-upload-icon"></i>
+                            <i className="fa-solid fa-camera file-upload-icon" style={{ marginBottom: "15px" }}></i>
                             <span className="file-upload-main-text">
                                 {isExistingImage
                                     ? "Replace Picture"
