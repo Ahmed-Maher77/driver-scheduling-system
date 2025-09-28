@@ -1,0 +1,85 @@
+/* File Info Styles */
+.file-info {
+    @apply flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg;
+}
+
+.file-info-icon {
+    @apply text-lg flex-shrink-0;
+}
+
+.file-info-details {
+    @apply flex-1 min-w-0;
+}
+
+.file-info-name {
+    @apply block text-sm font-medium text-gray-700 truncate;
+}
+
+.file-info-size {
+    @apply block text-xs text-gray-500;
+}
+
+/* File Info with Remove Button */
+.file-info-with-remove .file-info {
+    @apply pr-2; /* Add padding for the remove button */
+}
+
+/* File Upload Container States */
+.file-upload-container {
+    @apply relative;
+}
+
+.file-upload-container.upload-success {
+    @apply border-green-500;
+}
+
+.file-upload-container.upload-error {
+    @apply border-red-500 bg-red-50;
+}
+
+/* File Upload Label */
+.file-upload-label {
+    @apply block cursor-pointer;
+}
+
+.file-upload-border {
+    @apply border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors;
+}
+
+.file-upload-input {
+    @apply absolute inset-0 w-full h-full opacity-0 cursor-pointer;
+}
+
+.file-upload-text {
+    @apply space-y-2;
+}
+
+.file-upload-icon {
+    @apply text-4xl text-gray-400 mb-2;
+}
+
+.file-upload-main-text {
+    @apply block text-sm font-medium text-gray-700;
+}
+
+.file-upload-sub-text {
+    @apply block text-xs text-gray-500;
+}
+
+/* Picture Upload Specific */
+.picture-upload .file-upload-border {
+    @apply p-6;
+}
+
+/* Document Upload Specific */
+.document-upload .file-upload-border {
+    @apply p-6;
+}
+
+.required-upload .file-upload-border {
+    @apply border-blue-300;
+}
+
+.required-upload:hover .file-upload-border {
+    @apply border-blue-400;
+}

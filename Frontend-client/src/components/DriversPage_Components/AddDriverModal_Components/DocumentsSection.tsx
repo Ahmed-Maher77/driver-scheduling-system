@@ -1,4 +1,5 @@
 import type { DriverForm } from "../../../common/Types/Interfaces";
+import { FileInfoWithRemove } from "../../FileUpload";
 
 interface DocumentsSectionProps {
     form: DriverForm;
@@ -63,20 +64,13 @@ const DocumentsSection = ({ form, errors, update }: DocumentsSectionProps) => {
                                 </span>
                             </div>
                         </label>
-                        {/* File Info */}
+                        {/* File Info with Remove Button */}
                         {form.national_id && (
-                            <div className="file-info">
-                                <i className="fa-solid fa-check-circle file-info-icon text-green-500"></i>
-                                <span className="file-info-name">
-                                    {(form.national_id as File).name}
-                                </span>
-                                <span className="file-info-size">
-                                    {Math.round(
-                                        (form.national_id as File).size / 1024
-                                    )}{" "}
-                                    KB
-                                </span>
-                            </div>
+                            <FileInfoWithRemove
+                                file={form.national_id as File}
+                                onRemove={() => update("national_id", null)}
+                                className="mt-2"
+                            />
                         )}
                     </div>
                     {errors["national_id"] && (
@@ -140,20 +134,13 @@ const DocumentsSection = ({ form, errors, update }: DocumentsSectionProps) => {
                                 </span>
                             </div>
                         </label>
-                        {/* File Info */}
+                        {/* File Info with Remove Button */}
                         {form.picture && (
-                            <div className="file-info">
-                                <i className="fa-solid fa-check-circle file-info-icon text-green-500"></i>
-                                <span className="file-info-name">
-                                    {(form.picture as File).name}
-                                </span>
-                                <span className="file-info-size">
-                                    {Math.round(
-                                        (form.picture as File).size / 1024
-                                    )}{" "}
-                                    KB
-                                </span>
-                            </div>
+                            <FileInfoWithRemove
+                                file={form.picture as File}
+                                onRemove={() => update("picture", null)}
+                                className="mt-2"
+                            />
                         )}
                     </div>
                 </div>

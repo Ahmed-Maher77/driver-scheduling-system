@@ -18,20 +18,12 @@ import store from "./utils/redux-toolkit/store";
 const AboutPage = lazy(() => import("./pages/AboutPage/AboutPage"));
 const DriversPage = lazy(() => import("./pages/DriversPage/DriversPage"));
 const RoutesPage = lazy(() => import("./pages/RoutesPage/RoutesPage"));
-const DriverDetailsPage = lazy(
-    () => import("./pages/DriverDetailsPage/DriverDetailsPage")
-);
-const RouteDetailsPage = lazy(
-    () => import("./pages/RouteDetailsPage/RouteDetailsPage")
-);
+const DriverDetailsPage = lazy(() => import("./pages/DriverDetailsPage/DriverDetailsPage"));
+const RouteDetailsPage = lazy(() => import("./pages/RouteDetailsPage/RouteDetailsPage"));
 const CalendarPage = lazy(() => import("./pages/CalendarPage/CalendarPage"));
-const AdminPanelPage = lazy(
-    () => import("./pages/AdminPanelPage/AdminPanelPage")
-);
+const AdminPanelPage = lazy(() => import("./pages/AdminPanelPage/AdminPanelPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage/ContactPage"));
-const ActivityFeedsPage = lazy(
-    () => import("./pages/ActivityFeedsPage/ActivityFeedsPage")
-);
+const ActivityFeedsPage = lazy(() => import("./pages/ActivityFeedsPage/ActivityFeedsPage"));
 
 function App() {
     const router = createBrowserRouter([
@@ -130,15 +122,6 @@ function App() {
                         </Suspense>
                     ),
                 },
-
-                // {
-                //     path: "/about",
-                //     element: (
-                //         <Suspense fallback={<PageLoader />}>
-                //             <About />
-                //         </Suspense>
-                //     ),
-                // },
 
                 // Not Found
                 { path: "*", element: <NotFound /> },

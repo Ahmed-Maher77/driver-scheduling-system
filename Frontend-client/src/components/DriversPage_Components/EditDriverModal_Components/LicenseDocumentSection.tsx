@@ -1,4 +1,5 @@
 import type { LicenseDocumentSectionProps } from "../../../common/Types/Interfaces";
+import { FileInfoWithRemove } from "../../FileUpload";
 
 const LicenseDocumentSection = ({
     form,
@@ -78,21 +79,15 @@ const LicenseDocumentSection = ({
                         </div>
                     </label>
 
-                    {/* File Info */}
+                    {/* File Info with Remove Button */}
                     {isNewFile && (
-                        <div className="file-info">
-                            <i className="fa-solid fa-check-circle file-info-icon text-green-500"></i>
-                            <span className="file-info-name">
-                                {(form.driving_license.image as File).name}
-                            </span>
-                            <span className="file-info-size">
-                                {(
-                                    (form.driving_license.image as File).size /
-                                    1024
-                                ).toFixed(1)}{" "}
-                                KB
-                            </span>
-                        </div>
+                        <FileInfoWithRemove
+                            file={form.driving_license.image as File}
+                            onRemove={() =>
+                                update("driving_license.image", null)
+                            }
+                            className="mt-2"
+                        />
                     )}
                 </div>
             </div>

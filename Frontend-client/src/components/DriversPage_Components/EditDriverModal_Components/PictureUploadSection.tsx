@@ -1,4 +1,5 @@
 import type { PictureUploadSectionProps } from "../../../common/Types/Interfaces";
+import { FileInfoWithRemove } from "../../FileUpload";
 
 const PictureUploadSection = ({ form, update }: PictureUploadSectionProps) => {
     const isExistingImage = form.picture && typeof form.picture === "string";
@@ -67,20 +68,13 @@ const PictureUploadSection = ({ form, update }: PictureUploadSectionProps) => {
                         </div>
                     </label>
 
-                    {/* File Info */}
+                    {/* File Info with Remove Button */}
                     {isNewFile && (
-                        <div className="file-info">
-                            <i className="fa-solid fa-check-circle file-info-icon text-green-500"></i>
-                            <span className="file-info-name">
-                                {(form.picture as File).name}
-                            </span>
-                            <span className="file-info-size">
-                                {((form.picture as File).size / 1024).toFixed(
-                                    1
-                                )}{" "}
-                                KB
-                            </span>
-                        </div>
+                        <FileInfoWithRemove
+                            file={form.picture as File}
+                            onRemove={() => update("picture", null)}
+                            className="mt-2"
+                        />
                     )}
                 </div>
             </div>
