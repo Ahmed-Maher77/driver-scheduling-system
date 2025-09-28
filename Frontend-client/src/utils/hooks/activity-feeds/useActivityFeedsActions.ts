@@ -82,12 +82,12 @@ const useActivityFeedsActions = ({
     };
 
     const handleFilterChange = (newFilters: ActivityFeedFilters) => {
-        // TODO: Implement filtering logic
+        // This is handled by the parent component
         console.log("Filter changed:", newFilters);
     };
 
     const handleClearFilters = () => {
-        // TODO: Implement clear filters logic
+        // This is handled by the parent component
         console.log("Clear filters");
     };
 

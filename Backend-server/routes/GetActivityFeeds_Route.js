@@ -4,24 +4,67 @@ const router = express.Router();
 // Import Models
 const ActivityFeeds = require("../models/ActivityFeedsModel");
 
-// Get All Activity Feeds => /activity-feeds?page=1&limit=15
+// Get All Activity Feeds => /activity-feeds?page=1&limit=15&status=assigned&driverName=John&dateFrom=2024-01-01&dateTo=2024-12-31
+// driverName searches: driver name, driver ID, and route ID
 router.get("/", async (req, res) => {
     try {
         // Convert query params to numbers, fallback to defaults
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 15;
 
+        // Extract filter parameters
+        const { status, driverName, dateFrom, dateTo } = req.query;
+
+        // Build filter object
+        const filter = {};
+
+        // Status filter (case insensitive)
+        if (status && status.trim()) {
+            filter.status = { $regex: new RegExp(`^${status.trim()}$`, "i") };
+        }
+
+        // Search filter (driver name, driver ID, route ID)
+        if (driverName && driverName.trim()) {
+            const searchTerm = driverName.trim();
+            filter.$or = [
+                // Search in driver names
+                { "driver.name": { $regex: searchTerm, $options: "i" } },
+                { "last_driver.name": { $regex: searchTerm, $options: "i" } },
+                // Search in driver IDs
+                { "driver.id": { $regex: searchTerm, $options: "i" } },
+                { "last_driver.id": { $regex: searchTerm, $options: "i" } },
+                { driver_id: { $regex: searchTerm, $options: "i" } },
+                { last_driver_id: { $regex: searchTerm, $options: "i" } },
+                // Search in route ID
+                { route_id: { $regex: searchTerm, $options: "i" } },
+            ];
+        }
+
+        // Date range filter
+        if (dateFrom || dateTo) {
+            filter.action_time = {};
+            if (dateFrom) {
+                filter.action_time.$gte = new Date(dateFrom);
+            }
+            if (dateTo) {
+                // Add one day to include the entire "to" date
+                const toDate = new Date(dateTo);
+                toDate.setDate(toDate.getDate() + 1);
+                filter.action_time.$lt = toDate;
+            }
+        }
+
         // Calculate how many docs to skip
         const skip = (page - 1) * limit;
 
-        // Fetch data with pagination
-        const activityFeeds = await ActivityFeeds.find()
+        // Fetch data with pagination and filters
+        const activityFeeds = await ActivityFeeds.find(filter)
             .skip(skip)
             .limit(limit)
             .sort({ action_time: -1 }); // optional: latest first
 
-        // Calculate total pages count
-        const totalDocs = await ActivityFeeds.countDocuments();
+        // Calculate total pages count with filters
+        const totalDocs = await ActivityFeeds.countDocuments(filter);
         const totalPages = Math.ceil(totalDocs / limit);
 
         res.status(200).json({

@@ -13,11 +13,21 @@ const ActivityFeedsFilters = ({
     const contentRef = useRef<HTMLDivElement | null>(null);
     const [maxHeight, setMaxHeight] = useState<string>("0px");
 
-    const [filters, setFilters] = useState<ActivityFeedFilters>({
-        status: "",
-        driverName: "",
-        dateFrom: "",
-        dateTo: "",
+    // Initialize filters from URL params
+    const [filters, setFilters] = useState<ActivityFeedFilters>(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const status = urlParams.get("status");
+        return {
+            status:
+                status === "assigned" ||
+                status === "unassigned" ||
+                status === "in progress"
+                    ? status
+                    : "",
+            driverName: urlParams.get("driverName") || "",
+            dateFrom: urlParams.get("dateFrom") || "",
+            dateTo: urlParams.get("dateTo") || "",
+        };
     });
 
     useEffect(() => {
@@ -27,13 +37,26 @@ const ActivityFeedsFilters = ({
         }
     }, [showFilters]);
 
+    // Debounce for driver name input
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            onFilterChange(filters);
+        }, 300); // 300ms delay
+
+        return () => clearTimeout(timeoutId);
+    }, [filters, onFilterChange]);
+
     const handleFilterChange = (
         key: keyof ActivityFeedFilters,
         value: string
     ) => {
         const newFilters = { ...filters, [key]: value };
         setFilters(newFilters);
-        onFilterChange(newFilters);
+
+        // For non-text inputs, update immediately
+        if (key !== "driverName") {
+            onFilterChange(newFilters);
+        }
     };
 
     const handleClearFilters = () => {
@@ -58,7 +81,7 @@ const ActivityFeedsFilters = ({
         >
             <div
                 ref={contentRef}
-                className="activity-feeds-filters white-bg px-1 rounded-lg rounded-b-none shadow-md flex flex-col gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
+                className="activity-feeds-filters relative white-bg px-1 pt-3 rounded-lg rounded-b-none shadow-md flex flex-col gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
                 style={{
                     transform: showFilters
                         ? "translateY(0)"
@@ -67,28 +90,28 @@ const ActivityFeedsFilters = ({
             >
                 {/* Clear All Button */}
                 {hasActiveFilters && (
-                    <div className="flex justify-end w-full">
+                    <div className="absolute right-[8px] top-0 border-gray-200 z-10">
                         <button
                             onClick={handleClearFilters}
-                            className="text-sm text-blue-600 hover:text-blue-800 underline"
+                            className="px-2 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-200 flex items-center gap-1 cursor-pointer"
+                            title="Clear All Filters"
                         >
+                            <i className="fa-solid fa-times"></i>
                             Clear All Filters
                         </button>
                     </div>
                 )}
 
-                {/* Driver Name Filter */}
+                {/* Search Filter */}
                 <div className="flex flex-col gap-2 main-input-container w-full lg:min-w-[400px]">
-                    <label className="block gray-c-d text-sm">
-                        Driver Name
-                    </label>
+                    <label className="block gray-c-d text-sm">Search</label>
                     <input
                         type="text"
                         value={filters.driverName}
                         onChange={(e) =>
                             handleFilterChange("driverName", e.target.value)
                         }
-                        placeholder="Search by driver name..."
+                        placeholder="Search by driver name, driver ID, or route ID..."
                         className="main-input w-full"
                     />
                 </div>

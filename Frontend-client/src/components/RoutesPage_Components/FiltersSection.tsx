@@ -89,7 +89,7 @@ const FiltersSection = ({
             >
                 <div
                     ref={contentRef}
-                    className="routes-filters-actions white-bg p-4 py-6 pb-2 rounded-lg rounded-b-none shadow-md flex flex-col xl:flex-row gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
+                    className="routes-filters-actions relative white-bg p-4 py-6 pb-2 rounded-lg rounded-b-none shadow-md flex flex-col xl:flex-row gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
                     style={{
                         transform: showFilters
                             ? "translateY(0)"
@@ -149,16 +149,18 @@ const FiltersSection = ({
 
                     {/* Clear All Button */}
                     {hasActiveFilters && (
-                        <div className="flex justify-end pt-2 border-t border-gray-200">
+                        <div className="absolute right-[8px] top-0 pt-2 border-t border-gray-200">
                             <button
                                 onClick={clearFilters}
-                                className="px-4 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-200 flex items-center gap-2"
+                                className="px-2 py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-200 flex items-center gap-1 cursor-pointer"
+                                title="Clear All Filters"
                             >
                                 <i className="fa-solid fa-times"></i>
                                 Clear All Filters
                             </button>
                         </div>
                     )}
+                    
                 </div>
             </div>
         </>

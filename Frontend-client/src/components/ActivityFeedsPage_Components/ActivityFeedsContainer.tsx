@@ -14,6 +14,14 @@ const ActivityFeedsContainer = ({
     pageNumber,
     limit,
     onPageChange,
+    filters = {
+        status: "",
+        driverName: "",
+        dateFrom: "",
+        dateTo: "",
+    },
+    onFilterChange,
+    onClearFilters,
 }: ActivityFeedsContainerProps) => {
     // Fetch activity feeds
     const {
@@ -24,6 +32,7 @@ const ActivityFeedsContainer = ({
     } = useGetActivityFeeds({
         pageNumber,
         limit,
+        filters,
     });
 
     const [renderedActivityFeeds, setRenderedActivityFeeds] = useState<
@@ -36,6 +45,7 @@ const ActivityFeedsContainer = ({
         hasNextPage: false,
         hasPreviousPage: false,
     });
+    const [hasInitiallyLoaded, setHasInitiallyLoaded] = useState(false);
 
     // Update data when API response changes
     useEffect(() => {
@@ -48,6 +58,7 @@ const ActivityFeedsContainer = ({
                 hasNextPage: activityFeedsData.hasNextPage || false,
                 hasPreviousPage: activityFeedsData.hasPreviousPage || false,
             });
+            setHasInitiallyLoaded(true);
         }
     }, [activityFeedsData]);
 
@@ -57,8 +68,8 @@ const ActivityFeedsContainer = ({
         refetch,
     });
 
-    // Loading state
-    if (isLoading) {
+    // Loading state - only show on initial load, not on filter changes
+    if (isLoading && !hasInitiallyLoaded) {
         return <ActivityFeedsLoading message="Loading activity feeds..." />;
     }
 
@@ -70,14 +81,14 @@ const ActivityFeedsContainer = ({
     return (
         <ActivityFeedsContent
             activityFeeds={renderedActivityFeeds}
-            isRefreshing={actions.isRefreshing}
+            isRefreshing={isLoading && hasInitiallyLoaded}
             paginationInfo={paginationInfo}
             onViewRoute={actions.handleViewRoute}
             onViewDriver={actions.handleViewDriver}
             onExport={actions.handleExport}
             onRefresh={actions.handleRefresh}
-            onFilterChange={actions.handleFilterChange}
-            onClearFilters={actions.handleClearFilters}
+            onFilterChange={onFilterChange || actions.handleFilterChange}
+            onClearFilters={onClearFilters || actions.handleClearFilters}
             onPageChange={onPageChange}
         />
     );

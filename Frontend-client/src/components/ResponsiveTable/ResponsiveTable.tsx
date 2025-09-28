@@ -7,6 +7,7 @@ import type {
 import AssignedDriverCell from "./AssignedDriverCell";
 import DetailsCell from "./DetailsCell";
 import DefaultCell from "./DefaultCell";
+import { useLocation } from "react-router-dom";
 
 function buildColumns<T extends Record<string, unknown>>({
     columns,
@@ -37,13 +38,14 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
     isLoading = false,
     error = null,
 }: ResponsiveTableProps<T>) => {
+    const isActivityFeedsPage = useLocation().pathname.includes("/activity-feeds");
     const effectiveColumns = buildColumns<T>({ columns, headers, rows });
     return (
         <div
             className={`responsive-table-wrapper table-responsive mt-4 ${className}`}
         >
             {/* ================== Loading ================== */}
-            {isLoading && (
+            {isLoading && !isActivityFeedsPage && (
                 <div className="loading-spinner text-center py-6 gray-c text-lg">
                     <i className="fa-solid fa-spinner fa-spin"></i>
                 </div>

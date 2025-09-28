@@ -997,7 +997,7 @@ export interface ActivityFeedsFiltersProps {
 // Activity Feed Filters
 export interface ActivityFeedFilters {
     status: string;
-    driverName: string;
+    driverName: string; // Now searches driver name, driver ID, and route ID
     dateFrom: string;
     dateTo: string;
 }
@@ -1063,6 +1063,9 @@ export interface ActivityFeedsContainerProps {
     pageNumber: number;
     limit: number;
     onPageChange?: (page: number) => void;
+    filters?: ActivityFeedFilters;
+    onFilterChange?: (filters: ActivityFeedFilters) => void;
+    onClearFilters?: () => void;
 }
 // Activity Feeds Table Props
 export interface ActivityFeedsTableProps {

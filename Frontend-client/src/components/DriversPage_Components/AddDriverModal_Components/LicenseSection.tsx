@@ -151,16 +151,7 @@ const LicenseSection = ({ form, errors, update }: LicenseSectionProps) => {
                         </label>
                         {form.driving_license.image && (
                             <div className="file-info">
-                                <svg
-                                    className="file-info-icon text-green-500"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                >
-                                    <path d="M9 12l2 2 4-4" />
-                                    <circle cx="12" cy="12" r="10" />
-                                </svg>
+                                <i className="fa-solid fa-check-circle file-info-icon text-green-500"></i>
                                 <span className="file-info-name">
                                     {(form.driving_license.image as File).name}
                                 </span>
