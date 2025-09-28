@@ -10,6 +10,12 @@ router.put("/:id", async (req, res) => {
         const { id } = req.params;
         const data = req.body;
 
+        console.log("🔍 EditRoute Debug - Starting route update for:", id);
+        console.log(
+            "🔍 EditRoute Debug - Request data:",
+            JSON.stringify(data, null, 2)
+        );
+
         // Check if the route_id is provided
         if (!id) {
             return res.status(400).json({ message: "route_id is required" });
@@ -57,6 +63,8 @@ router.put("/:id", async (req, res) => {
 
         // Updatable fields whitelist (excluding system-managed fields)
         const updatableFields = [
+            "assignedDriver_id",
+            "lastDriver_id",
             "start_location",
             "end_location",
             "status",
@@ -71,9 +79,155 @@ router.put("/:id", async (req, res) => {
             "notes",
         ];
 
-        // Update the route [only the fields have changed]
+        // Handle driver assignment changes BEFORE general field updates
+        console.log("🔍 EditRoute Debug - data:", data);
+        console.log(
+            "🔍 EditRoute Debug - has assignedDriver_id:",
+            Object.prototype.hasOwnProperty.call(data, "assignedDriver_id")
+        );
+        console.log(
+            "🔍 EditRoute Debug - assignedDriver_id value:",
+            data.assignedDriver_id
+        );
+        console.log(
+            "🔍 EditRoute Debug - original assignedDriver_id:",
+            route.assignedDriver_id
+        );
+
+        if (Object.prototype.hasOwnProperty.call(data, "assignedDriver_id")) {
+            const incomingAssignedDriverId = data.assignedDriver_id;
+            const originalAssignedDriverId = route.assignedDriver_id;
+
+            // If assigning a new driver
+            if (
+                incomingAssignedDriverId &&
+                incomingAssignedDriverId !== originalAssignedDriverId
+            ) {
+                console.log(
+                    "🚀 EditRoute Debug - Assigning new driver:",
+                    incomingAssignedDriverId
+                );
+                console.log(
+                    "🚀 EditRoute Debug - Original driver:",
+                    originalAssignedDriverId
+                );
+
+                // Save current driver as last driver before assigning new one
+                if (originalAssignedDriverId) {
+                    route.lastDriver_id = originalAssignedDriverId;
+                    updatedFields.lastDriver_id = route.lastDriver_id;
+                    console.log(
+                        "🚀 EditRoute Debug - Set lastDriver_id to:",
+                        originalAssignedDriverId
+                    );
+                }
+
+                // Validate the new driver
+                const driver = await Drivers.findOne({
+                    driver_id: incomingAssignedDriverId,
+                });
+                if (!driver) {
+                    return res.status(404).json({
+                        message: "Driver not found",
+                        error: "DRIVER_NOT_FOUND",
+                        details: {
+                            suggestion: "Please provide a valid driver ID",
+                        },
+                    });
+                }
+
+                // Check if driver is available
+                if (driver.status !== "available") {
+                    return res.status(400).json({
+                        message: `Driver is ${driver.status}`,
+                        error: "DRIVER_NOT_AVAILABLE",
+                    });
+                }
+
+                // Check if driver is already assigned to another route
+                if (driver.assignedRoute_id && driver.assignedRoute_id !== id) {
+                    return res.status(400).json({
+                        message: "Driver is already assigned to another route",
+                        error: "DRIVER_ALREADY_ASSIGNED",
+                        details: { currentRouteId: driver.assignedRoute_id },
+                    });
+                }
+
+                // Update the driver
+                driver.assignedRoute_id = id;
+                driver.assigned_at = new Date();
+                driver.updated_at = new Date();
+                driver.status = "on_route";
+                await driver.save();
+                console.log(
+                    "🚀 EditRoute Debug - Updated driver:",
+                    driver.driver_id,
+                    "with route:",
+                    id
+                );
+
+                // Update route
+                route.assignedDriver_id = incomingAssignedDriverId;
+                route.status = "assigned";
+                route.assigned_at = new Date();
+                updatedFields.assignedDriver_id = route.assignedDriver_id;
+                updatedFields.status = route.status;
+                updatedFields.assigned_at = route.assigned_at;
+
+                // Log activity feed (assigned)
+                const activity = new ActivityFeeds({
+                    route_id: id,
+                    driver_id: incomingAssignedDriverId,
+                    status: "assigned",
+                    action_time: new Date(),
+                });
+                await activity.save();
+                console.log(
+                    "🚀 EditRoute Debug - Created activity feed for assignment"
+                );
+            }
+            // If unassigning driver
+            else if (!incomingAssignedDriverId && originalAssignedDriverId) {
+                // Get the current driver before unassigning
+                const currentDriver = await Drivers.findOne({
+                    driver_id: originalAssignedDriverId,
+                });
+
+                // Save current driver as last driver before unassigning
+                route.lastDriver_id = originalAssignedDriverId;
+                updatedFields.lastDriver_id = route.lastDriver_id;
+
+                // Update the driver
+                if (currentDriver) {
+                    currentDriver.assignedRoute_id = null;
+                    currentDriver.status = "available";
+                    currentDriver.updated_at = new Date();
+                    await currentDriver.save();
+                }
+
+                // Update route
+                route.assignedDriver_id = null;
+                route.status = "unassigned";
+                updatedFields.assignedDriver_id = route.assignedDriver_id;
+                updatedFields.status = route.status;
+
+                // Log activity feed (unassigned)
+                const activity = new ActivityFeeds({
+                    route_id: id,
+                    last_driver_id: originalAssignedDriverId,
+                    status: "unassigned",
+                    action_time: new Date(),
+                });
+                await activity.save();
+            }
+        }
+
+        // Update the route [only the fields have changed] - EXCLUDE assignedDriver_id as it's handled above
         updatableFields.forEach((field) => {
-            if (Object.prototype.hasOwnProperty.call(data, field)) {
+            if (
+                Object.prototype.hasOwnProperty.call(data, field) &&
+                field !== "assignedDriver_id"
+            ) {
                 if (data[field] !== route[field]) {
                     route[field] = data[field];
                     updatedFields[field] = route[field];
@@ -125,11 +279,12 @@ router.put("/:id", async (req, res) => {
             await newActivityFeed.save();
         }
 
-        // Update the driver if status changed to assigned
+        // Update the driver if status changed to assigned (only if not already handled above)
         if (
             route.assignedDriver_id &&
             route.status === "assigned" &&
-            data.status === "assigned"
+            data.status === "assigned" &&
+            !Object.prototype.hasOwnProperty.call(data, "assignedDriver_id")
         ) {
             const driver = await Drivers.findOne({
                 driver_id: route.assignedDriver_id,
@@ -142,28 +297,88 @@ router.put("/:id", async (req, res) => {
                 });
             }
 
+            console.log("🔍 EditRoute Debug - Driver found:", driver.driver_id);
+            console.log(
+                "🔍 EditRoute Debug - Driver's current pastAssignedRoutes:",
+                JSON.stringify(driver.pastAssignedRoutes, null, 2)
+            );
+
             // Only update driver if they're not already assigned to this route
             if (driver.assignedRoute_id !== id) {
                 if (driver.status === "available") {
                     // Move current assignment to past if exists
                     if (driver.assignedRoute_id) {
-                        const pastAssignedRoute =
-                            driver.pastAssignedRoutes.find(
-                                (route) =>
-                                    route.route_id === driver.assignedRoute_id
-                            );
-                        driver.pastAssignedRoutes.push({
+                        // Get the current route details before unassigning
+                        const currentRoute = await Routes.findOne({
+                            route_id: driver.assignedRoute_id,
+                        });
+
+                        console.log(
+                            "🔍 EditRoute Debug - Before cleanup, pastAssignedRoutes:",
+                            JSON.stringify(driver.pastAssignedRoutes, null, 2)
+                        );
+
+                        // Simple initialization - no validation
+                        driver.pastAssignedRoutes =
+                            driver.pastAssignedRoutes || [];
+
+                        console.log(
+                            "🔍 EditRoute Debug - After cleanup, pastAssignedRoutes:",
+                            JSON.stringify(driver.pastAssignedRoutes, null, 2)
+                        );
+
+                        const newEntry = {
                             route_id: driver.assignedRoute_id,
                             startLocation:
-                                pastAssignedRoute.start_location || null,
-                            endLocation: pastAssignedRoute.end_location || null,
-                        });
+                                currentRoute?.start_location || "Unknown",
+                            endLocation:
+                                currentRoute?.end_location || "Unknown",
+                            assigned_at: driver.assigned_at
+                                ? new Date(driver.assigned_at)
+                                : new Date(),
+                            unassigned_at: new Date(),
+                        };
+
+                        console.log(
+                            "🔍 EditRoute Debug - New entry to add:",
+                            JSON.stringify(newEntry, null, 2)
+                        );
+
+                        driver.pastAssignedRoutes.push(newEntry);
+
+                        console.log(
+                            "🔍 EditRoute Debug - After adding new entry, pastAssignedRoutes:",
+                            JSON.stringify(driver.pastAssignedRoutes, null, 2)
+                        );
                     }
                     driver.assignedRoute_id = id;
                     driver.assigned_at = new Date();
                     driver.updated_at = new Date();
                     driver.status = "on_route";
-                    await driver.save();
+
+                    console.log(
+                        "🔍 EditRoute Debug - Final pastAssignedRoutes before save:",
+                        JSON.stringify(driver.pastAssignedRoutes, null, 2)
+                    );
+
+                    // No validation - just save the driver
+
+                    try {
+                        await driver.save();
+                        console.log(
+                            "🔍 EditRoute Debug - Driver saved successfully"
+                        );
+                    } catch (saveError) {
+                        console.log(
+                            "🔍 EditRoute Debug - Error saving driver:",
+                            saveError.message
+                        );
+                        console.log(
+                            "🔍 EditRoute Debug - Driver data that failed to save:",
+                            JSON.stringify(driver, null, 2)
+                        );
+                        throw saveError;
+                    }
                 } else if (driver.status === "on_route") {
                     return res.status(400).json({
                         message: "Driver is already on a route",

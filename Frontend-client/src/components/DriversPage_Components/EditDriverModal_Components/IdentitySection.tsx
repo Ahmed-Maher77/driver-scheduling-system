@@ -1,66 +1,101 @@
+import { useState } from "react";
 import type { IdentitySectionProps } from "../../../common/Types/Interfaces";
+import DocumentImageDisplay from "./DocumentImageDisplay";
+import ImageModal from "./ImageModal";
+import FormField from "./FormField";
+import SelectField from "./SelectField";
 
 const IdentitySection = ({ form, update }: IdentitySectionProps) => {
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [imageTitle, setImageTitle] = useState<string>("");
+
+    const handleImageClick = (imageUrl: string, title: string) => {
+        setSelectedImage(imageUrl);
+        setImageTitle(title);
+    };
+
+    const closeModal = () => {
+        setSelectedImage(null);
+        setImageTitle("");
+    };
+
+    // Field configuration for form inputs
+    const formFields = [
+        {
+            key: "gender",
+            label: "Gender",
+            type: "select",
+            value: form.gender || "",
+            options: [
+                { value: "Male", label: "Male" },
+                { value: "Female", label: "Female" },
+            ],
+            onChange: (value: string) => update("gender", value),
+        },
+        {
+            key: "date_of_birth",
+            label: "Date of Birth",
+            type: "date",
+            value: form.date_of_birth
+                ? new Date(form.date_of_birth).toISOString().split("T")[0]
+                : "",
+            onChange: (value: string) => update("date_of_birth", value),
+        },
+    ];
+
     return (
         <section className="mt-9">
             <h4 className="font-semibold mb-2">Identity Information</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {/* ================== National ID (Readonly) ================== */}
-                <div className="main-input-container">
-                    <label className="block gray-c-d text-sm mb-2">
-                        National ID
-                    </label>
-                    <input
-                        className="main-input bg-gray-100 cursor-not-allowed w-full"
-                        value={
+
+            <div className="flex flex-col gap-4">
+                {/* ================== National ID (Image Display) ================== */}
+                <FormField label="National ID">
+                    <DocumentImageDisplay
+                        imageUrl={
+                            form.national_id &&
                             typeof form.national_id === "string"
                                 ? form.national_id
-                                : ""
+                                : null
                         }
-                        readOnly
-                        disabled
+                        title="National ID"
+                        placeholderIcon="fa-solid fa-file-image"
+                        placeholderText="No National ID uploaded"
+                        onImageClick={handleImageClick}
                     />
-                </div>
+                </FormField>
 
-                {/* ================== Gender ================== */}
-                <div className="main-input-container">
-                    <label className="block gray-c-d text-sm mb-2">
-                        Gender
-                    </label>
-                    <div className="relative">
-                        <select
-                            className="main-input appearance-none pr-8 w-full"
-                            value={form.gender || ""}
-                            onChange={(e) => update("gender", e.target.value)}
-                        >
-                            <option value="Male">Male</option>
-                            <option value="Female">Female</option>
-                        </select>
-                        <i className="fa-solid fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                    </div>
-                </div>
-
-                {/* ================== Date of Birth ================== */}
-                <div className="main-input-container">
-                    <label className="block gray-c-d text-sm mb-2">
-                        Date of Birth
-                    </label>
-                    <input
-                        className="main-input w-full"
-                        type="date"
-                        value={
-                            form.date_of_birth
-                                ? new Date(form.date_of_birth)
-                                      .toISOString()
-                                      .split("T")[0]
-                                : ""
-                        }
-                        onChange={(e) =>
-                            update("date_of_birth", e.target.value)
-                        }
-                    />
+                {/* ================== Form Fields ================== */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {formFields.map((field) => (
+                        <FormField key={field.key} label={field.label}>
+                            {field.type === "select" ? (
+                                <SelectField
+                                    value={field.value}
+                                    onChange={field.onChange}
+                                    options={field.options || []}
+                                />
+                            ) : (
+                                <input
+                                    className="main-input w-full"
+                                    type={field.type}
+                                    value={field.value}
+                                    onChange={(e) =>
+                                        field.onChange(e.target.value)
+                                    }
+                                />
+                            )}
+                        </FormField>
+                    ))}
                 </div>
             </div>
+
+            {/* ================== Image Modal ================== */}
+            <ImageModal
+                isOpen={!!selectedImage}
+                imageUrl={selectedImage || ""}
+                title={imageTitle}
+                onClose={closeModal}
+            />
         </section>
     );
 };

@@ -76,22 +76,8 @@ export const validateEditForm = (formData: RouteRow): EditValidationErrors => {
         errors.status = "Please select a valid status";
     }
 
-    // Assigned Driver validation - Only required when status is "assigned"
-    if (formData.status === "assigned") {
-        if (!formData.assignedDriver?.id?.trim()) {
-            errors.assignedDriver =
-                "Assigned driver ID is required for assigned routes";
-        } else if (formData.assignedDriver.id.trim().length < 2) {
-            errors.assignedDriver = "Driver ID must be at least 2 characters";
-        }
-
-        if (!formData.assignedDriver?.name?.trim()) {
-            errors.assignedDriver =
-                "Assigned driver name is required for assigned routes";
-        } else if (formData.assignedDriver.name.trim().length < 2) {
-            errors.assignedDriver = "Driver name must be at least 2 characters";
-        }
-    }
+    // Assigned Driver validation - Optional field, no validation required
+    // Note: Driver name is readonly and comes from API, so no validation needed
 
     // Last Driver validation (optional but if provided, must be valid)
     if (formData.lastDriver?.id || formData.lastDriver?.name) {

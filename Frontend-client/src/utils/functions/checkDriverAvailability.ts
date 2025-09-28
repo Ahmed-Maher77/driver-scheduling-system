@@ -4,15 +4,19 @@ export type DriverAvailability = "available" | "unavailable" | "on_route";
 
 interface DriverAvailabilityResponse {
     driverStatus: DriverAvailability;
+    reason?: string;
 }
 
 // API call to check driver availability by ID
 export async function checkDriverAvailability(
-    driverId: string
+    driverId: string,
+    routeId?: string
 ): Promise<DriverAvailability> {
     try {
+        const params = routeId ? { routeId } : {};
         const response = await axiosInstance.get(
-            `/check-driver-availability/${driverId}`
+            `/check-driver-availability/${driverId}`,
+            { params }
         );
         const data: DriverAvailabilityResponse = response.data;
         return data.driverStatus;

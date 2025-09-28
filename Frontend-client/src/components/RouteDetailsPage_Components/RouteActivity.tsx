@@ -1,4 +1,6 @@
 import type { RouteActivityProps } from "../../common/Types/Interfaces";
+import { extractDate } from "../../utils/functions/formatDate";
+import { formatTime } from "../../utils/functions/formatTime";
 
 
 const RouteActivity = ({ items = [] }: RouteActivityProps) => {
@@ -17,11 +19,11 @@ const RouteActivity = ({ items = [] }: RouteActivityProps) => {
                             <div className="text-xs text-gray-500 flex items-center gap-3">
                                 <span className="day flex items-center gap-1">
                                     <i className="fa-solid fa-calendar time-icon-color"></i>
-                                    {a.time.split(" ")[0]} 
+                                    {extractDate(a.time)} 
                                 </span>
                                 <span className="time flex items-center gap-1">
                                     <i className="fa-solid fa-clock time-icon-color"></i>
-                                    {a.time.split(" ")[1]}
+                                    {formatTime(a.time)}
                                 </span>
                             </div>
                             <div className="text-sm font-medium mt-2">

@@ -7,7 +7,11 @@ const RouteHeader = ({ id, status, onEdit, onDelete }: RouteHeaderProps) => {
             <div className="flex gap-7 flex-col">
                 {/* Route ID + Status Badge */}
                 <div className="flex items-center gap-3 justify-between">
-                    <h2 className="text-xl font-semibold">Route {id}</h2>
+                    <h2 className="text-xl font-semibold">
+                        <span className="gray-c">Route</span> {" "}
+                        <i className="fa-solid fa-arrow-right text-xs gray-c translate-y-[-1.5px]"></i> {" "}
+                        {id}
+                    </h2>
                     <StatusBadge status={status} />
                 </div>
 

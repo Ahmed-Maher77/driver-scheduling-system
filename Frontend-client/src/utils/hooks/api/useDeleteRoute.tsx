@@ -19,7 +19,7 @@ const useDeleteRoute = () => {
         mutationFn: (routeId: string) =>
             axiosInstance.delete(`/delete-route/${routeId}`),
 
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             notify("success", "Route deleted successfully");
             // Invalidate relevant queries to refresh data
             queryClient.invalidateQueries({ queryKey: ["routes"] });
@@ -30,6 +30,10 @@ const useDeleteRoute = () => {
             queryClient.invalidateQueries({ queryKey: ["activityFeeds"] });
             queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
+            // Invalidate specific route details
+            queryClient.invalidateQueries({
+                queryKey: ["route-details", variables],
+            });
         },
 
         onError: (error) => {

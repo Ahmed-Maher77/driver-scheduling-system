@@ -3,9 +3,9 @@ import { extractDate } from "../../utils/functions/formatDate";
 
 
 const getStatusBadgeClass = (status: string) => {
-    if (status === "available") return "green-bg";
-    if (status === "on_route") return "yellow-bg";
-    return "red-bg";
+    if (status === "available") return "status-assigned";
+    if (status === "on_route") return "status-inProgress";
+    return "status-unassigned";
 };
 
 const HeaderSummary = ({

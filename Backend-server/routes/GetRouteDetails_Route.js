@@ -22,6 +22,7 @@ router.get("/:id", async (req, res) => {
                 end_location: 1,
                 status: 1,
                 assignedDriver_id: 1,
+                lastDriver_id: 1,
                 assigned_at: 1,
                 distance: 1,
                 distance_unit: 1,
@@ -40,8 +41,8 @@ router.get("/:id", async (req, res) => {
         // Check if the route exists
         if (!route) return res.status(404).json({ message: "Route not found" });
 
-        // Get the driver
-        const driver = await Drivers.findOne(
+        // Get the assigned driver
+        const assignedDriver = await Drivers.findOne(
             {
                 driver_id: route.assignedDriver_id,
             },
@@ -53,18 +54,42 @@ router.get("/:id", async (req, res) => {
             }
         ).lean();
 
+        // Get the last driver (if exists)
+        let lastDriver = null;
+        if (route.lastDriver_id) {
+            lastDriver = await Drivers.findOne(
+                {
+                    driver_id: route.lastDriver_id,
+                },
+                {
+                    _id: 0,
+                    driver_id: 1,
+                    name: 1,
+                    picture: 1,
+                }
+            ).lean();
+        }
+
         // Build clean response
         const response = {
             ...route,
-            assignedDriver: driver
+            assignedDriver: assignedDriver
                 ? {
-                      id: driver.driver_id,
-                      name: driver.name,
-                      picture: driver.picture,
+                      id: assignedDriver.driver_id,
+                      name: assignedDriver.name,
+                      picture: assignedDriver.picture,
+                  }
+                : null,
+            lastDriver: lastDriver
+                ? {
+                      id: lastDriver.driver_id,
+                      name: lastDriver.name,
+                      picture: lastDriver.picture,
                   }
                 : null,
         };
         delete response.assignedDriver_id;
+        delete response.lastDriver_id;
 
         return res.status(200).json(response);
     } catch (error) {

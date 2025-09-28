@@ -10,22 +10,12 @@ const VehicleSection = ({ form, update }: VehicleSectionProps) => {
                     <label className="block gray-c-d text-sm mb-2">
                         Vehicle Type
                     </label>
-                    <div className="relative">
-                        <select
-                            className="main-input appearance-none pr-8 w-full"
-                            value={form.vehicle.type}
-                            onChange={(e) =>
-                                update("vehicle.type", e.target.value)
-                            }
-                        >
-                            <option value="">Select Type</option>
-                            <option value="Car">Car</option>
-                            <option value="Truck">Truck</option>
-                            <option value="Motorcycle">Motorcycle</option>
-                            <option value="Van">Van</option>
-                        </select>
-                        <i className="fa-solid fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                    </div>
+                    <input
+                        className="main-input w-full"
+                        placeholder="Enter vehicle type"
+                        value={form.vehicle.type}
+                        onChange={(e) => update("vehicle.type", e.target.value)}
+                    />
                 </div>
 
                 {/* ================== Vehicle Make ================== */}

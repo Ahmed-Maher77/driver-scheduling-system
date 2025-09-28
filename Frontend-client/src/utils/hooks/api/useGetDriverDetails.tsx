@@ -11,7 +11,8 @@ function useGetDriverDetails({ driverId }: UseGetDriverDetailsProps) {
             return res.data;
         } catch (error: any) {
             throw new Error(
-                error.response.data.message || `An Error occured while fetching driver details: ${error.message}`
+                error.response.data.message ||
+                    `An Error occured while fetching driver details: ${error.message}`
             );
         }
     };
@@ -20,6 +21,7 @@ function useGetDriverDetails({ driverId }: UseGetDriverDetailsProps) {
         queryKey: ["driver-details", driverId],
         queryFn: fetchDriverDetails,
         staleTime: 10000, // Data stays fresh for 10 seconds
+        enabled: !!driverId, // Only run query if driverId exists
     });
 
     return { data, isLoading, error: error?.message };

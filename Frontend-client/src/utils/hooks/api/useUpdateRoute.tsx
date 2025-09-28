@@ -1,7 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "./axios-utils";
 import { notify } from "../../functions/notify";
-import type { RouteRow, UpdateRouteResponse } from "../../../common/Types/Interfaces";
+import type {
+    RouteRow,
+    UpdateRouteResponse,
+} from "../../../common/Types/Interfaces";
 
 const useUpdateRoute = () => {
     const queryClient = useQueryClient();
@@ -9,12 +12,17 @@ const useUpdateRoute = () => {
     const { mutateAsync, isPending, error, data } = useMutation<
         UpdateRouteResponse,
         Error,
-        { routeId: string | undefined, routeData: RouteRow }
+        { routeId: string | undefined; routeData: RouteRow }
     >({
-        mutationFn: ({ routeId, routeData }: { routeId: string | undefined, routeData: RouteRow }) =>
-            axiosInstance.put(`/edit-route/${routeId}`, routeData),
+        mutationFn: ({
+            routeId,
+            routeData,
+        }: {
+            routeId: string | undefined;
+            routeData: RouteRow;
+        }) => axiosInstance.put(`/edit-route/${routeId}`, routeData),
 
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             notify("success", "Route updated successfully");
             // Invalidate relevant queries to refresh data
             queryClient.invalidateQueries({ queryKey: ["routes"] });
@@ -25,6 +33,10 @@ const useUpdateRoute = () => {
             });
             queryClient.invalidateQueries({ queryKey: ["activityFeeds"] });
             queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+            // Invalidate specific route details
+            queryClient.invalidateQueries({
+                queryKey: ["route-details", variables.routeId],
+            });
         },
 
         onError: (error) => {

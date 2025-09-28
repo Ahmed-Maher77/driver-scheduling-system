@@ -51,11 +51,33 @@ router.delete("/", async (req, res) => {
         const unassignedRoutes = [];
         for (const driver of driversToDelete) {
             if (driver.assignedRoute_id) {
+                // Get route details before unassigning
+                const route = await Routes.findOne({
+                    assignedDriver_id: driver.driver_id,
+                });
+
+                // Add to pastAssignedRoutes before unassigning
+                driver.pastAssignedRoutes = driver.pastAssignedRoutes || [];
+
+                // No validation needed
+
+                driver.pastAssignedRoutes.push({
+                    route_id: driver.assignedRoute_id,
+                    startLocation: route?.start_location || "Unknown",
+                    endLocation: route?.end_location || "Unknown",
+                    assigned_at: driver.assigned_at
+                        ? new Date(driver.assigned_at)
+                        : new Date(),
+                    unassigned_at: new Date(),
+                });
+                await driver.save();
+
                 // Unassign driver from route
                 const routeUpdate = await Routes.updateMany(
                     { assignedDriver_id: driver.driver_id },
                     {
                         $set: {
+                            lastDriver_id: driver.driver_id,
                             assignedDriver_id: null,
                             status: "unassigned",
                             updated_at: new Date(),

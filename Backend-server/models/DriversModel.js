@@ -18,7 +18,18 @@ const driverSchema = new Schema({
     driving_license: { type: Object, required: true }, // type, number, expiration, image
     vehicle: { type: Object, required: true }, // type, make, model, year, color
     assignedRoute_id: { type: String }, // optional
-    pastAssignedRoutes: { type: Array }, // optional => id, startLocation, endLocation
+    pastAssignedRoutes: {
+        type: [
+            {
+                route_id: { type: String },
+                startLocation: { type: String },
+                endLocation: { type: String },
+                assigned_at: { type: Date },
+                unassigned_at: { type: Date },
+            },
+        ],
+        default: [],
+    }, // optional => route_id, startLocation, endLocation, assigned_at, unassigned_at
     notes: { type: String }, // optional
     joined_at: { type: Date, default: Date.now },
     updated_at: { type: Date, default: Date.now },

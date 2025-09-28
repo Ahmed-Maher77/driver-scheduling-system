@@ -5,7 +5,6 @@ const DriverSection: React.FC<DriverSectionProps> = ({
     assignedDriver,
     lastDriver,
     onAssignedDriverChange,
-    onLastDriverChange,
     assignedDriverError,
     lastDriverError,
     status,
@@ -13,6 +12,30 @@ const DriverSection: React.FC<DriverSectionProps> = ({
     availabilityStatus = "unknown",
     isCheckingAvailability = false,
 }) => {
+    // Track if driver ID has changed from the original API value
+    const [hasDriverChanged, setHasDriverChanged] = React.useState(false);
+    const [originalDriverId, setOriginalDriverId] = React.useState(
+        assignedDriver?.id || ""
+    );
+    const [isInitialized, setIsInitialized] = React.useState(false);
+
+    // Initialize with API data
+    React.useEffect(() => {
+        if (assignedDriver?.id && !isInitialized) {
+            setOriginalDriverId(assignedDriver.id);
+            setIsInitialized(true);
+            setHasDriverChanged(false);
+        }
+    }, [assignedDriver?.id, isInitialized]);
+
+    // Track changes after initialization
+    React.useEffect(() => {
+        if (isInitialized && assignedDriver?.id !== originalDriverId) {
+            setHasDriverChanged(true);
+        } else if (isInitialized && assignedDriver?.id === originalDriverId) {
+            setHasDriverChanged(false);
+        }
+    }, [assignedDriver?.id, originalDriverId, isInitialized]);
     return (
         <div className="grid grid-cols-1 gap-4 w-full">
             {/* ================== Assigned Driver [Only show when status is "assigned"] ================== */}
@@ -38,19 +61,16 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                             }
                             className="main-input flex-1"
                         />
-                        {/* Driver Name */}
-                        <input
-                            type="text"
-                            placeholder="Driver Name"
-                            value={assignedDriver?.name || ""}
-                            onChange={(e) =>
-                                onAssignedDriverChange({
-                                    id: assignedDriver?.id || "",
-                                    name: e.target.value,
-                                })
-                            }
-                            className="main-input flex-1"
-                        />
+                        {/* Driver Name - Only show if driver hasn't changed AND has a name from API */}
+                        {!hasDriverChanged && assignedDriver?.name && (
+                            <input
+                                type="text"
+                                placeholder="Driver Name"
+                                value={assignedDriver.name}
+                                readOnly
+                                className="main-input flex-1 bg-gray-100 cursor-not-allowed read-only-input"
+                            />
+                        )}
                         {/* Check Availability Button */}
                         <button
                             type="button"
@@ -92,49 +112,41 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                 </div>
             )}
 
-            {/* ================== Last Driver ================== */}
-            <div className="main-input-container w-full">
-                {/* Last Driver Label */}
-                <label className="block gray-c-d text-sm mb-2">
-                    Last Driver
-                </label>
+            {/* ================== Last Driver - Only show if there's a fetched value ================== */}
+            {lastDriver?.id && (
+                <div className="main-input-container w-full">
+                    {/* Last Driver Label */}
+                    <label className="block gray-c-d text-sm mb-2">
+                        Last Driver
+                    </label>
 
-                {/* Driver ID and Name */}
-                <div className="flex gap-4 w-full flex-wrap">
-                    {/* Driver ID */}
-                    <input
-                        type="text"
-                        placeholder="Driver ID"
-                        value={lastDriver?.id || ""}
-                        onChange={(e) =>
-                            onLastDriverChange?.({
-                                id: e.target.value,
-                                name: lastDriver?.name || "",
-                            })
-                        }
-                        className="main-input flex-1"
-                    />
-                    {/* Driver Name */}
-                    <input
-                        type="text"
-                        placeholder="Driver Name"
-                        value={lastDriver?.name || ""}
-                        onChange={(e) =>
-                            onLastDriverChange?.({
-                                id: lastDriver?.id || "",
-                                name: e.target.value,
-                            })
-                        }
-                        className="main-input flex-1"
-                    />
+                    {/* Driver ID and Name */}
+                    <div className="flex gap-4 w-full flex-wrap">
+                        {/* Driver ID */}
+                        <input
+                            type="text"
+                            placeholder="Driver ID"
+                            value={lastDriver?.id || ""}
+                            readOnly
+                            className="main-input flex-1 bg-gray-100 cursor-not-allowed read-only-input"
+                        />
+                        {/* Driver Name */}
+                        <input
+                            type="text"
+                            placeholder="Driver Name"
+                            value={lastDriver?.name || ""}
+                            readOnly
+                            className="main-input flex-1 bg-gray-100 cursor-not-allowed read-only-input"
+                        />
+                    </div>
+                    {/* Last Driver Error */}
+                    {lastDriverError && (
+                        <p className="text-red-500 text-xs mt-1">
+                            {lastDriverError}
+                        </p>
+                    )}
                 </div>
-                {/* Last Driver Error */}
-                {lastDriverError && (
-                    <p className="text-red-500 text-xs mt-1">
-                        {lastDriverError}
-                    </p>
-                )}
-            </div>
+            )}
         </div>
     );
 };

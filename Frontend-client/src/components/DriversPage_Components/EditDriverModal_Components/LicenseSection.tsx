@@ -10,22 +10,14 @@ const LicenseSection = ({ form, update }: LicenseSectionProps) => {
                     <label className="block gray-c-d text-sm mb-2">
                         License Type
                     </label>
-                    <div className="relative">
-                        <select
-                            className="main-input appearance-none pr-8 w-full"
-                            value={form.driving_license.type}
-                            onChange={(e) =>
-                                update("driving_license.type", e.target.value)
-                            }
-                        >
-                            <option value="">Select Type</option>
-                            <option value="A">A - Motorcycle</option>
-                            <option value="B">B - Car</option>
-                            <option value="C">C - Truck</option>
-                            <option value="D">D - Bus</option>
-                        </select>
-                        <i className="fa-solid fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-                    </div>
+                    <input
+                        className="main-input w-full"
+                        placeholder="Enter license type"
+                        value={form.driving_license.type}
+                        onChange={(e) =>
+                            update("driving_license.type", e.target.value)
+                        }
+                    />
                 </div>
 
                 {/* ================== License Number ================== */}

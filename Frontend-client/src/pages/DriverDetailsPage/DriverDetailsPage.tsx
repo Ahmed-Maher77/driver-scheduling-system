@@ -84,9 +84,9 @@ const DriverDetailsPage = () => {
                         status={driverData?.status}
                         joinedAt={driverData?.joined_at}
                         pictureUrl={
-                            driverData?.picture || driverData?.gender === "Male"
+                            driverData?.picture || (driverData?.gender === "Male"
                                 ? defaultManImage
-                                : defaultWomanImage
+                                : defaultWomanImage)
                         }
                         onEdit={handleEdit}
                         onDelete={handleDelete}

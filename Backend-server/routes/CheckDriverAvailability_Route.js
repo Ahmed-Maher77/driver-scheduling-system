@@ -3,10 +3,11 @@ const router = express.Router();
 // Import Models
 const Drivers = require("../models/DriversModel");
 
-// Check Driver Availability => /check-driver-availability/:id (id is custom driver_id like DR001)
+// Check Driver Availability => /check-driver-availability/:id?routeId=RT001 (id is custom driver_id like DR001)
 router.get("/:id", async (req, res) => {
     try {
         const { id } = req.params;
+        const { routeId } = req.query;
 
         // Check if the driver ID is provided
         if (!id) {
@@ -16,7 +17,7 @@ router.get("/:id", async (req, res) => {
         // Check if the driver exists
         const driver = await Drivers.findOne(
             { driver_id: id },
-            { _id: 0, status: 1 }
+            { _id: 0, status: 1, assignedRoute_id: 1 }
         ).lean();
         if (!driver) {
             return res.status(404).json({ message: "Driver not found" });
@@ -27,6 +28,16 @@ router.get("/:id", async (req, res) => {
             return res
                 .status(404)
                 .json({ message: "Driver status is unknown" });
+        }
+
+        // If routeId is provided and driver is already assigned to the same route, return available
+        if (routeId && driver.assignedRoute_id === routeId) {
+            return res.status(200).json({
+                message: "Driver found",
+                driverId: id,
+                driverStatus: "available",
+                reason: "Driver is already assigned to this route",
+            });
         }
 
         // Return the driver status

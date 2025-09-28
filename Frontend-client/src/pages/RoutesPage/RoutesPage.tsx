@@ -341,11 +341,13 @@ const RoutesPage = () => {
             </div>
 
             {/* ================== Edit Route Modal ================== */}
-            <EditRouteModal
-                isOpen={isEditModalOpen}
-                onClose={handleCloseEditModal}
-                routeId={editingRouteId}
-            />
+            {editingRouteId && (
+                <EditRouteModal
+                    isOpen={isEditModalOpen}
+                    onClose={handleCloseEditModal}
+                    routeId={editingRouteId}
+                />
+            )}
 
             {/* ================== Add Route Modal ================== */}
             <AddRouteModal

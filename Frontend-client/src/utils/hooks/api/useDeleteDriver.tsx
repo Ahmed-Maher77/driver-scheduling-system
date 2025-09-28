@@ -14,7 +14,7 @@ const useDeleteDriver = () => {
         mutationFn: (driverId: string) =>
             axiosInstance.delete(`/delete-driver/${driverId}`),
 
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             notify("success", "Driver deleted successfully");
             // Invalidate relevant queries to refresh data
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
@@ -25,6 +25,10 @@ const useDeleteDriver = () => {
             });
             queryClient.invalidateQueries({ queryKey: ["activityFeeds"] });
             queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+            // Invalidate specific driver details
+            queryClient.invalidateQueries({
+                queryKey: ["driver-details", variables],
+            });
         },
 
         onError: (error) => {

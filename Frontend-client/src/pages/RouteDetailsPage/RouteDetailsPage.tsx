@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/Headings/PageHeader/PageHeader";
 import DriverAssignment from "../../components/RouteDetailsPage_Components/DriverAssignment";
@@ -12,8 +12,6 @@ import DeleteConfirmationModal from "../../components/DeleteConfirmationModal/De
 import LoadingPageSpinner from "../../components/LoadingPageSpinner/LoadingPageSpinner";
 import ErrorPage from "../../components/ErrorDetailsPage/ErrorPage";
 import { notify } from "../../utils/functions/notify";
-import defaultManImage from "../../assets/images/person.png";
-import defaultWomanImage from "../../assets/images/woman.jpg";
 import useGetRouteDetails from "../../utils/hooks/api/useGetRouteDetails";
 import useDeleteRoute from "../../utils/hooks/api/useDeleteRoute";
 
@@ -28,9 +26,16 @@ const RouteDetailsPage = () => {
         data: routeData,
         isLoading,
         error,
+        refetch: refetchRouteDetails,
     } = useGetRouteDetails({
         routeId: routeId || "",
     });
+
+    useEffect(() => {
+        if (routeData) {
+            console.log(routeData);
+        }
+    }, [routeData]);
 
     // Delete route
     const { deleteRoute, isPending: isDeletingRoute } = useDeleteRoute();
@@ -123,32 +128,27 @@ const RouteDetailsPage = () => {
                                               routeData.assignedDriver.name ||
                                               "",
                                           picture:
-                                              routeData.assignedDriver
-                                                  .picture ||
-                                              routeData.assignedDriver
-                                                  .gender === "Male"
-                                                  ? defaultManImage
-                                                  : defaultWomanImage,
+                                              routeData.assignedDriver?.picture,
                                       }
                                     : null
                             }
-                            lastDriver={null} // API doesn't return lastDriver yet
+                            lastDriver={routeData.lastDriver || null}
                         />
                         <RouteActivity
                             items={[
                                 {
                                     id: "1",
-                                    time: "2025-01-01 09:00",
+                                    time: routeData?.created_at || "",
                                     description: "Route created",
                                 },
                                 {
                                     id: "2",
-                                    time: "2025-01-04 10:15",
+                                    time: routeData?.assigned_at || "",
                                     description: "Driver assigned",
                                 },
                                 {
                                     id: "3",
-                                    time: "2025-01-05 11:30",
+                                    time: routeData?.updated_at || "",
                                     description: "Route updated",
                                 },
                             ]}
@@ -162,6 +162,7 @@ const RouteDetailsPage = () => {
                 isOpen={isEditModalOpen}
                 onClose={handleCloseEditModal}
                 routeId={routeData.route_id}
+                onRouteUpdated={refetchRouteDetails}
             />
 
             {/* Delete Confirmation Modal */}

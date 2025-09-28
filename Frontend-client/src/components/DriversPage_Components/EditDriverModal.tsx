@@ -6,12 +6,10 @@ import ModalActions from "../RoutesPage_Components/AddRouteModal_Components/Moda
 import type {
     DriverForm,
     EditDriverModalProps,
+    RouteAvailability,
 } from "../../common/Types/Interfaces";
 import { notify } from "../../utils/functions/notify";
-import {
-    checkRouteAvailability,
-    type RouteAvailability,
-} from "../../utils/functions/checkRouteAvailability";
+import { checkRouteAvailability } from "../../utils/functions/checkRouteAvailability";
 import {
     BasicInfoSection,
     PictureUploadSection,
@@ -60,7 +58,11 @@ const toForm = (d: any): DriverForm => ({
         year: d.vehicle?.year || "",
         color: d.vehicle?.color || "",
     },
-    assignedRoute_id: d.assignedRoute_id || "",
+    assignedRoute_id:
+        d?.assignedRoute?.route_id ||
+        d?.assignedRoute_id ||
+        d?.assignedRoute ||
+        "",
     notes: d.notes || "",
 });
 
@@ -76,6 +78,24 @@ const EditDriverModal = ({
     const [availabilityStatus, setAvailabilityStatus] = useState<
         "unknown" | "assigned" | "unassigned" | "in progress"
     >("unknown");
+    const [wasUpdated, setWasUpdated] = useState(false);
+
+    // Reset function to clear all form data and states
+    const resetModal = () => {
+        setForm(null);
+        setLoading(false);
+        setIsCheckingAvailability(false);
+        setAvailabilityStatus("unknown");
+    };
+
+    // Custom close handler that only resets loading states when closing without updating
+    const handleClose = () => {
+        setLoading(false);
+        setIsCheckingAvailability(false);
+        setAvailabilityStatus("unknown");
+        onClose();
+    };
+
     // Fetch driver details
     const { data: driverDetails, isLoading: isLoadingDriverDetails } =
         useGetDriverDetails({ driverId });
@@ -89,6 +109,14 @@ const EditDriverModal = ({
             console.log("form:", toForm(driverDetails));
         }
     }, [driverDetails]);
+
+    // ================== Reset Modal on Close ==================
+    useEffect(() => {
+        if (!isOpen && wasUpdated) {
+            resetModal();
+            setWasUpdated(false);
+        }
+    }, [isOpen, wasUpdated]);
 
     // ================== Loading State ==================
     if (isLoadingDriverDetails) {
@@ -107,7 +135,10 @@ const EditDriverModal = ({
         try {
             setIsCheckingAvailability(true);
             setAvailabilityStatus("unknown");
-            const status = await checkRouteAvailability(form.assignedRoute_id);
+            const status = await checkRouteAvailability(
+                form.assignedRoute_id,
+                driverId
+            );
             if (status === "unassigned") {
                 setAvailabilityStatus("unassigned");
                 notify("success", "Route is available for assignment");
@@ -140,7 +171,7 @@ const EditDriverModal = ({
         return (
             <ModalWrapper isOpen={isOpen}>
                 <div className="p-6">
-                    <ModalHeader title="Edit Driver" onClose={onClose} />
+                    <ModalHeader title="Edit Driver" onClose={handleClose} />
                     <div className="flex items-center justify-center py-12">
                         <div className="text-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -289,8 +320,11 @@ const EditDriverModal = ({
         if (!form.name || !form.phone)
             return notify("warning", "Name and Phone are required");
         // check if route is available
-        if (!isUnavailable && form.assignedRoute_id) {
-            const status = await checkRouteAvailability(form.assignedRoute_id);
+        if (!isUnavailable && form.assignedRoute_id?.trim()) {
+            const status = await checkRouteAvailability(
+                form.assignedRoute_id,
+                driverId
+            );
             if (status === "in progress") {
                 return notify("error", "Route is currently in progress");
             } else if (status === "assigned") {
@@ -321,13 +355,19 @@ const EditDriverModal = ({
                 date_of_birth: updatedForm.date_of_birth,
                 driving_license: { ...updatedForm.driving_license },
                 vehicle: { ...updatedForm.vehicle },
-                assignedRoute_id: updatedForm.assignedRoute_id,
+                // Only send assignedRoute_id if driver is not unavailable
+                ...(updatedForm.status !== "unavailable" && {
+                    assignedRoute_id: updatedForm.assignedRoute_id,
+                }),
                 notes: updatedForm.notes,
                 picture: updatedForm.picture,
                 status: updatedForm.status,
             });
 
+            console.log("updatedDriverData:", updatedDriverData);
+
             await updateDriver({ driverId, driverData: updatedDriverData });
+            setWasUpdated(true);
             onClose();
         } catch (error: any) {
             console.error("Error updating driver:", error);
@@ -352,7 +392,7 @@ const EditDriverModal = ({
         <ModalWrapper isOpen={isOpen}>
             <div className="p-6">
                 {/* ================== Modal Header ================== */}
-                <ModalHeader title="Edit Driver" onClose={onClose} />
+                <ModalHeader title="Edit Driver" onClose={handleClose} />
 
                 {/* ================== Modal Content ================== */}
                 <div className="add-driver-modal-wrapper">
@@ -411,7 +451,7 @@ const EditDriverModal = ({
 
                         {/* Modal Actions */}
                         <ModalActions
-                            onCancel={onClose}
+                            onCancel={handleClose}
                             submitLabel={
                                 loading || isUpdatingDriver
                                     ? "Saving..."

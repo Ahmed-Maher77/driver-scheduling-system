@@ -25,7 +25,12 @@ import useUpdateRoute from "../../utils/hooks/api/useUpdateRoute";
 import useGetRouteDetails from "../../utils/hooks/api/useGetRouteDetails";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
 
-const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
+const EditRouteModal = ({
+    isOpen,
+    onClose,
+    routeId,
+    onRouteUpdated,
+}: EditRouteModalProps) => {
     const [formData, setFormData] = useState<RouteRow>({
         id: "",
         start_location: "",
@@ -54,6 +59,8 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
         "unknown" | "available" | "unavailable" | "on_route"
     >("unknown");
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
+    const [wasUpdated, setWasUpdated] = useState(false);
+
     // Update Route
     const { updateRoute, isPending: isUpdatingRoute } = useUpdateRoute();
     const { data: routeDetails, isLoading: isLoadingRouteDetails } =
@@ -85,6 +92,37 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
         }
     }, [routeDetails]);
 
+    // Reset Modal on Close
+    useEffect(() => {
+        if (!isOpen && wasUpdated) {
+            setFormData({
+                id: "",
+                start_location: "",
+                end_location: "",
+                status: "unassigned",
+                assignedDriver: undefined,
+                lastDriver: undefined,
+                createdAt: "",
+                updatedAt: null,
+                assignedAt: "",
+                distance: 0,
+                distanceUnit: "km",
+                duration: 0,
+                timeUnit: "minutes",
+                cost: 0,
+                currency: "EGP",
+                maxSpeed: 0,
+                speedUnit: "km/h",
+                notes: "",
+            });
+            setValidationErrors({});
+            setIsSubmitting(false);
+            setIsCheckingAvailability(false);
+            setAvailabilityStatus("unknown");
+            setWasUpdated(false);
+        }
+    }, [isOpen, wasUpdated]);
+
     // Handle Submit (Edit Route)
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
@@ -102,55 +140,98 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
             return;
         }
 
-        // If assigning, verify availability via API at submit time
-        try {
-            setIsCheckingAvailability(true);
-            const status = await checkDriverAvailability(
-                formData.assignedDriver?.id || ""
-            );
-            setAvailabilityStatus(status);
-            if (status === "available") {
-                // save route to api
-                const updatedRouteData = {
-                    start_location: formData.start_location,
-                    end_location: formData.end_location,
-                    status: formData.status,
-                    assignedDriver: formData.assignedDriver,
-                    lastDriver: formData.lastDriver || undefined,
-                    created_at: formData.createdAt,
-                    updated_at: formData.updatedAt,
-                    assigned_at: formData.assignedAt,
-                    distance: formData.distance,
-                    distance_unit: formData.distanceUnit,
-                    duration: formData.duration,
-                    time_unit: formData.timeUnit,
-                    cost: formData.cost,
-                    currency: formData.currency,
-                    max_speed: formData.maxSpeed,
-                    speed_unit: formData.speedUnit,
-                    notes: formData.notes,
-                };
-                await updateRoute({
-                    routeId: formData.id,
-                    routeData: updatedRouteData,
-                });
-                onClose();
-            } else if (status === "unavailable") {
-                notify("error", "This driver is unavailable");
-                setIsSubmitting(false);
-                setIsCheckingAvailability(false);
-                return;
-            } else if (status === "on_route") {
-                notify(
-                    "error",
-                    "This driver currently has another route assigned"
+        // If assigning, verify availability via API at submit time (only if driver ID is provided)
+        if (
+            formData.status === "assigned" &&
+            formData.assignedDriver?.id?.trim()
+        ) {
+            try {
+                setIsCheckingAvailability(true);
+                const status = await checkDriverAvailability(
+                    formData.assignedDriver.id,
+                    formData.id
                 );
-                setIsSubmitting(false);
+                setAvailabilityStatus(status);
+                if (status === "available") {
+                    // save route to api
+                    const updatedRouteData = {
+                        start_location: formData.start_location,
+                        end_location: formData.end_location,
+                        status: formData.status,
+                        assignedDriver_id: formData.assignedDriver?.id || null,
+                        lastDriver_id: formData.lastDriver?.id || null,
+                        created_at: formData.createdAt,
+                        updated_at: formData.updatedAt,
+                        assigned_at: formData.assignedAt,
+                        distance: formData.distance,
+                        distance_unit: formData.distanceUnit,
+                        duration: formData.duration,
+                        time_unit: formData.timeUnit,
+                        cost: formData.cost,
+                        currency: formData.currency,
+                        max_speed: formData.maxSpeed,
+                        speed_unit: formData.speedUnit,
+                        notes: formData.notes,
+                    };
+                    await updateRoute({
+                        routeId: formData.id,
+                        routeData: updatedRouteData,
+                    });
+                    onRouteUpdated?.();
+                    setWasUpdated(true);
+                    onClose();
+                } else if (status === "unavailable") {
+                    notify("error", "This driver is unavailable");
+                    setIsSubmitting(false);
+                    setIsCheckingAvailability(false);
+                    return;
+                } else if (status === "on_route") {
+                    notify(
+                        "error",
+                        "This driver currently has another route assigned"
+                    );
+                    setIsSubmitting(false);
+                    setIsCheckingAvailability(false);
+                    return;
+                }
+            } finally {
                 setIsCheckingAvailability(false);
-                return;
             }
-        } finally {
-            setIsCheckingAvailability(false);
+        } else {
+            // No driver assignment or empty driver ID - proceed without availability check
+            // If status is "assigned" but no driver ID, change to "unassigned"
+            const finalStatus =
+                formData.status === "assigned" &&
+                !formData.assignedDriver?.id?.trim()
+                    ? "unassigned"
+                    : formData.status;
+
+            const updatedRouteData = {
+                start_location: formData.start_location,
+                end_location: formData.end_location,
+                status: finalStatus,
+                assignedDriver_id: formData.assignedDriver?.id || null,
+                lastDriver_id: formData.lastDriver?.id || null,
+                created_at: formData.createdAt,
+                updated_at: formData.updatedAt,
+                assigned_at: formData.assignedAt,
+                distance: formData.distance,
+                distance_unit: formData.distanceUnit,
+                duration: formData.duration,
+                time_unit: formData.timeUnit,
+                cost: formData.cost,
+                currency: formData.currency,
+                max_speed: formData.maxSpeed,
+                speed_unit: formData.speedUnit,
+                notes: formData.notes,
+            };
+            await updateRoute({
+                routeId: formData.id,
+                routeData: updatedRouteData,
+            });
+            onRouteUpdated?.();
+            setWasUpdated(true);
+            onClose();
         }
     };
 
@@ -174,7 +255,7 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
         }
     };
 
-    if (!isOpen || !routeId) return null;
+    if (!isOpen) return null;
 
     return (
         <ModalWrapper isOpen={isOpen}>
@@ -260,11 +341,17 @@ const EditRouteModal = ({ isOpen, onClose, routeId }: EditRouteModalProps) => {
                             setIsCheckingAvailability(true);
                             try {
                                 const status = await checkDriverAvailability(
-                                    driverId
+                                    driverId,
+                                    formData.id
                                 );
                                 setAvailabilityStatus(status);
                                 if (status === "unavailable") {
                                     notify("error", "Driver is unavailable");
+                                } else if (status === "on_route") {
+                                    notify(
+                                        "error",
+                                        "Driver is currently on a route"
+                                    );
                                 } else {
                                     notify("success", "Driver is available");
                                 }

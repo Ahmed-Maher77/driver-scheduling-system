@@ -10,16 +10,20 @@ function useGetRouteDetails({ routeId }: UseGetRouteDetailsProps) {
             );
             return res.data;
         } catch (error: any) {
-            throw new Error(error.response.data.message || `An Error occured while fetching route details: ${error.message}`);
+            throw new Error(
+                error.response.data.message ||
+                    `An Error occured while fetching route details: ${error.message}`
+            );
         }
     };
 
-    const { data, isLoading, error } = useQuery({
+    const { data, isLoading, error, refetch } = useQuery({
         queryKey: ["route-details", routeId],
         queryFn: fetchRouteDetails,
         staleTime: 10000, // Data stays fresh for 10 seconds
+        enabled: !!routeId, // Only run query if routeId exists
     });
 
-    return { data, isLoading, error: error?.message };
+    return { data, isLoading, error: error?.message, refetch };
 }
 export default useGetRouteDetails;

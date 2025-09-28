@@ -8,15 +8,19 @@ export type RouteAvailability =
 
 interface RouteAvailabilityResponse {
     routeStatus: RouteAvailability;
+    reason?: string;
 }
 
 // API call to check route availability by ID
 export async function checkRouteAvailability(
-    routeId: string
+    routeId: string,
+    driverId?: string
 ): Promise<RouteAvailability> {
     try {
+        const params = driverId ? { driverId } : {};
         const response = await axiosInstance.get(
-            `/check-route-availability/${routeId}`
+            `/check-route-availability/${routeId}`,
+            { params }
         );
         const data: RouteAvailabilityResponse = response.data;
         return data.routeStatus;

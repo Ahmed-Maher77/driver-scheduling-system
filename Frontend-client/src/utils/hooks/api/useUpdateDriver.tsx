@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "./axios-utils";
-import type { DriverForm, UpdateDriverResponse } from "../../../common/Types/Interfaces";
+import type {
+    DriverForm,
+    UpdateDriverResponse,
+} from "../../../common/Types/Interfaces";
 import { notify } from "../../functions/notify";
-
 
 const useUpdateDriver = () => {
     const queryClient = useQueryClient();
@@ -10,12 +12,17 @@ const useUpdateDriver = () => {
     const { mutateAsync, isPending, error, data } = useMutation<
         UpdateDriverResponse,
         Error,
-        { driverId: string, driverData: DriverForm }
+        { driverId: string; driverData: DriverForm }
     >({
-        mutationFn: ({ driverId, driverData }: { driverId: string, driverData: DriverForm }) =>
-            axiosInstance.put(`/edit-driver/${driverId}`, driverData),
+        mutationFn: ({
+            driverId,
+            driverData,
+        }: {
+            driverId: string;
+            driverData: DriverForm;
+        }) => axiosInstance.put(`/edit-driver/${driverId}`, driverData),
 
-        onSuccess: () => {
+        onSuccess: (_, variables) => {
             notify("success", "Driver updated successfully");
             // Invalidate relevant queries to refresh data
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
@@ -26,6 +33,10 @@ const useUpdateDriver = () => {
             });
             queryClient.invalidateQueries({ queryKey: ["activityFeeds"] });
             queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
+            // Invalidate specific driver details
+            queryClient.invalidateQueries({
+                queryKey: ["driver-details", variables.driverId],
+            });
         },
 
         onError: (error) => {

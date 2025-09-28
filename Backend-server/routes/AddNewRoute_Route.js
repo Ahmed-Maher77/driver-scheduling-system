@@ -104,11 +104,17 @@ router.post("/", async (req, res) => {
                     const currentRoute = await Routes.findOne({
                         route_id: driver.assignedRoute_id,
                     });
+
+                    // No validation needed
+
                     driver.pastAssignedRoutes.push({
                         route_id: driver.assignedRoute_id,
-                        startLocation: currentRoute?.start_location || null,
-                        endLocation: currentRoute?.end_location || null,
-                        assigned_at: driver.assigned_at || null,
+                        startLocation:
+                            currentRoute?.start_location || "Unknown",
+                        endLocation: currentRoute?.end_location || "Unknown",
+                        assigned_at: driver.assigned_at
+                            ? new Date(driver.assigned_at)
+                            : new Date(),
                         unassigned_at: new Date(),
                     });
 

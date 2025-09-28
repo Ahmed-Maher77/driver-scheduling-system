@@ -32,7 +32,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
                     </span>
                     {nationalId ? (
                         <div
-                            className="relative driver-document-container group cursor-pointer border-2 border-gray-300 rounded overflow-hidden"
+                            className="relative driver-document-container group cursor-pointer border-3 border-gray-300 rounded overflow-hidden"
                             onClick={() =>
                                 handleImageClick(nationalId, "National ID")
                             }
@@ -40,7 +40,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
                             <img
                                 src={nationalId}
                                 alt="National ID"
-                                className="w-full h-32 object-cover hover:scale-105 transition-transform duration-200"
+                                className="w-full h-[300px]  hover:scale-105 transition-transform duration-200"
                                 onError={(e) => {
                                     console.error(
                                         "National ID image failed to load:",
@@ -52,7 +52,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
                                         e.currentTarget.parentElement;
                                     if (parent) {
                                         parent.innerHTML = `
-                                            <div class="w-full h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50">
+                                            <div class="w-full h-[300px] border-3 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50">
                                                 <div class="text-center">
                                                     <i class="fa-solid fa-file-image text-gray-400 text-2xl mb-2"></i>
                                                     <p class="text-gray-500 text-sm">Image failed to load</p>
@@ -67,7 +67,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
                             </div>
                         </div>
                     ) : (
-                        <div className="w-full h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50">
+                        <div className="w-full h-[300px] border-3 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50">
                             <div className="text-center">
                                 <i className="fa-solid fa-file-image text-gray-400 text-2xl mb-2"></i>
                                 <p className="text-gray-500 text-sm">
@@ -85,7 +85,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
                     </span>
                     {license ? (
                         <div
-                            className="relative driver-document-container group cursor-pointer border-2 border-gray-300 rounded overflow-hidden"
+                            className="relative driver-document-container group cursor-pointer border-3 border-gray-300 rounded overflow-hidden"
                             onClick={() =>
                                 handleImageClick(license, "Driving License")
                             }
@@ -93,7 +93,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
                             <img
                                 src={license}
                                 alt="Driving License"
-                                className="w-full h-32 object-cover hover:scale-105 transition-transform duration-200"
+                                className="w-full h-[300px]  hover:scale-105 transition-transform duration-200"
                                 onError={(e) => {
                                     console.error(
                                         "Driving License image failed to load:",
@@ -105,7 +105,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
                                         e.currentTarget.parentElement;
                                     if (parent) {
                                         parent.innerHTML = `
-                                            <div class="w-full h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50">
+                                            <div class="w-full h-[300px] border-3 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50">
                                                 <div class="text-center">
                                                     <i class="fa-solid fa-id-card text-gray-400 text-2xl mb-2"></i>
                                                     <p class="text-gray-500 text-sm">Image failed to load</p>
@@ -120,7 +120,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
                             </div>
                         </div>
                     ) : (
-                        <div className="w-full h-32 border-2 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50">
+                        <div className="w-full h-[300px] border-3 border-dashed border-gray-300 rounded flex items-center justify-center bg-gray-50">
                             <div className="text-center">
                                 <i className="fa-solid fa-id-card text-gray-400 text-2xl mb-2"></i>
                                 <p className="text-gray-500 text-sm">

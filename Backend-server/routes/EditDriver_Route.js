@@ -85,6 +85,62 @@ router.put("/:id", async (req, res) => {
             }
         });
 
+        // Handle status change to unavailable - unassign from current route
+        if (data.status === "unavailable" && driver.assignedRoute_id) {
+            // Get the current route before unassigning
+            const currentRoute = await Routes.findOne({
+                route_id: driver.assignedRoute_id,
+            });
+
+            if (currentRoute) {
+                // Save current driver as last driver before unassigning
+                currentRoute.lastDriver_id = driver.driver_id;
+                currentRoute.assignedDriver_id = null;
+                currentRoute.status = "unassigned";
+                currentRoute.updated_at = new Date();
+                await currentRoute.save();
+
+                // Add to pastAssignedRoutes
+                driver.pastAssignedRoutes = driver.pastAssignedRoutes || [];
+
+                // Clean up any corrupted entries in pastAssignedRoutes
+                driver.pastAssignedRoutes = driver.pastAssignedRoutes.filter(
+                    (entry) =>
+                        entry &&
+                        entry.route_id &&
+                        entry.startLocation &&
+                        entry.endLocation &&
+                        entry.assigned_at &&
+                        entry.unassigned_at
+                );
+
+                driver.pastAssignedRoutes.push({
+                    route_id: driver.assignedRoute_id,
+                    startLocation: currentRoute.start_location || "Unknown",
+                    endLocation: currentRoute.end_location || "Unknown",
+                    assigned_at: driver.assigned_at
+                        ? new Date(driver.assigned_at)
+                        : new Date(),
+                    unassigned_at: new Date(),
+                });
+
+                // Log activity feed (unassigned due to unavailability)
+                const activity = new ActivityFeeds({
+                    route_id: currentRoute.route_id,
+                    last_driver_id: driver.driver_id,
+                    status: "unassigned",
+                    action_time: new Date(),
+                });
+                await activity.save();
+            }
+
+            // Unassign driver from route
+            driver.assignedRoute_id = null;
+            driver.assigned_at = null;
+            updatedFields.assignedRoute_id = driver.assignedRoute_id;
+            updatedFields.assigned_at = driver.assigned_at;
+        }
+
         // Handle assignment changes if requested
         if (incomingAssignedRouteId !== undefined) {
             // Assign to a route
@@ -121,15 +177,33 @@ router.put("/:id", async (req, res) => {
                     originalAssignedRouteId &&
                     originalAssignedRouteId !== incomingAssignedRouteId
                 ) {
+                    // Get the current route details before unassigning
+                    const currentRoute = await Routes.findOne({
+                        route_id: originalAssignedRouteId,
+                    });
+
                     driver.pastAssignedRoutes = driver.pastAssignedRoutes || [];
+
                     driver.pastAssignedRoutes.push({
                         route_id: originalAssignedRouteId,
-                        assigned_at: driver.assigned_at || null,
+                        startLocation:
+                            currentRoute?.start_location || "Unknown",
+                        endLocation: currentRoute?.end_location || "Unknown",
+                        assigned_at: driver.assigned_at
+                            ? new Date(driver.assigned_at)
+                            : new Date(),
                         unassigned_at: new Date(),
                     });
                 }
 
                 // Apply assignment
+                // Save current driver as last driver before assigning new one
+                if (
+                    route.assignedDriver_id &&
+                    route.assignedDriver_id !== driver.driver_id
+                ) {
+                    route.lastDriver_id = route.assignedDriver_id;
+                }
                 route.assignedDriver_id = driver.driver_id;
                 route.status = "assigned";
                 route.assigned_at = new Date();
@@ -159,6 +233,10 @@ router.put("/:id", async (req, res) => {
                         route_id: originalAssignedRouteId,
                     });
                     if (route) {
+                        // Save current driver as last driver before unassigning
+                        if (route.assignedDriver_id) {
+                            route.lastDriver_id = route.assignedDriver_id;
+                        }
                         route.assignedDriver_id = null;
                         route.status = "pending";
                         await route.save();
@@ -174,9 +252,14 @@ router.put("/:id", async (req, res) => {
                     }
 
                     driver.pastAssignedRoutes = driver.pastAssignedRoutes || [];
+
                     driver.pastAssignedRoutes.push({
                         route_id: originalAssignedRouteId,
-                        assigned_at: driver.assigned_at || null,
+                        startLocation: route?.start_location || "Unknown",
+                        endLocation: route?.end_location || "Unknown",
+                        assigned_at: driver.assigned_at
+                            ? new Date(driver.assigned_at)
+                            : new Date(),
                         unassigned_at: new Date(),
                     });
                 }

@@ -4,7 +4,7 @@ const InfoRow = ({ label, value, href }: InfoRowProps) => {
     return (
         <div className="flex flex-col">
             {/* Label */}
-            <span className="gray-c-d text-xs md:text-sm lg:text-base">
+            <span className="gray-c-d text-xs md:text-sm lg:text-base font-medium">
                 {label}
             </span>
 

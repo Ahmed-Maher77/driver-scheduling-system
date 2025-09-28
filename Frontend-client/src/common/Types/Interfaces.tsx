@@ -237,6 +237,7 @@ export interface EditRouteModalProps {
     onClose: () => void;
     routeId: string;
     onSave?: (route: RouteRow) => void;
+    onRouteUpdated?: () => void;
 }
 
 // Add Route Modal Props
@@ -303,6 +304,7 @@ export type DriverRow = {
         duration?: number | string;
         timeUnit?: string;
     } | null;
+    pastAssignedRoutes?: PastRouteItem[];
     vehicle_type?: string;
     status: DriverStatus;
     license_type?: string;
@@ -352,6 +354,7 @@ export type DriverForm = {
     city?: string;
     status: Exclude<DriverStatus, "on_route">; // available | unavailable
     assignedRoute_id?: string;
+    assignedRoute?: string;
     notes?: string;
     national_id?: File | null | string;
     gender: "Male" | "Female" | "Other";
@@ -498,7 +501,12 @@ export type ContactMapProps = {
 };
 
 // Driver
-export type Driver = { id: string; name: string; picture?: string };
+export type Driver = {
+    id: string;
+    name: string;
+    picture?: string;
+    gender?: string;
+};
 export type DriverAssignmentProps = {
     assignedDriver?: Driver | null;
     lastDriver?: Driver | null;
@@ -685,12 +693,18 @@ export interface ContactsSectionProps {
 export interface AssignmentCardProps {
     assignedRoute?: {
         id?: string;
+        route_id?: string;
         startLocation?: string;
+        start_location?: string;
         endLocation?: string;
+        end_location?: string;
         assignedAt?: string;
+        assigned_at?: string;
         distance?: number | string;
         distanceUnit?: string;
+        distance_unit?: string;
         duration?: number | string;
+        time_unit?: string;
         timeUnit?: string;
     } | null;
 }
@@ -701,9 +715,11 @@ export interface PastRoutesTimelineProps {
 }
 // Past Route Item
 export interface PastRouteItem {
-    id: string;
+    route_id: string;
     startLocation: string;
     endLocation: string;
+    assigned_at: string;
+    unassigned_at: string;
 }
 
 // Vehicle Card Props
@@ -887,6 +903,24 @@ export interface DriverFilters {
     licenseType?: string;
 }
 
+// Driver Availability
+export type DriverAvailability = "available" | "unavailable" | "on_route";
+export interface DriverAvailabilityResponse {
+    driverStatus: DriverAvailability;
+    reason?: string;
+}
+
+// Route Availability
+export type RouteAvailability =
+    | "assigned"
+    | "unassigned"
+    | "in progress"
+    | "unknown";
+export interface RouteAvailabilityResponse {
+    routeStatus: RouteAvailability;
+    reason?: string;
+}
+
 // ============================== Pagination Types ==============================
 export interface PaginationInfo {
     pageNumber: number;
@@ -1047,4 +1081,37 @@ export interface UseActivityFeedsPageStateReturn {
 export interface UseActivityFeedsPageStateProps {
     pageNumber: number;
     limit: number;
+}
+
+// Document Image Display Props
+export interface DocumentImageDisplayProps {
+    imageUrl: string | null;
+    title: string;
+    placeholderIcon: string;
+    placeholderText: string;
+    onImageClick: (imageUrl: string, title: string) => void;
+    className?: string;
+}
+
+// Form Field Props
+export interface FormFieldProps {
+    label: string;
+    children: React.ReactNode;
+    className?: string;
+}
+
+// Select Field Props
+export interface SelectFieldProps {
+    value: string;
+    onChange: (value: string) => void;
+    options: { value: string; label: string }[];
+    className?: string;
+}
+
+// Image Modal Props
+export interface ImageModalProps {
+    isOpen: boolean;
+    imageUrl: string;
+    title: string;
+    onClose: () => void;
 }
