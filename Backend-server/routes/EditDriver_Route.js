@@ -41,8 +41,10 @@ router.put("/:id", async (req, res) => {
         //     });
         // }
 
-        // Fetch driver
-        const driver = await Drivers.findOne({ driver_id: id });
+        // Fetch driver (case-insensitive)
+        const driver = await Drivers.findOne({
+            driver_id: { $regex: new RegExp(`^${id}$`, "i") },
+        });
         if (!driver) {
             return res.status(404).json({ message: "Driver not found" });
         }

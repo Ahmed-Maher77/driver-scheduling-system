@@ -14,9 +14,9 @@ router.get("/:id", async (req, res) => {
             return res.status(400).json({ message: "Driver ID is required" });
         }
 
-        // Check if the driver exists
+        // Check if the driver exists (case-insensitive)
         const driver = await Drivers.findOne(
-            { driver_id: id },
+            { driver_id: { $regex: new RegExp(`^${id}$`, "i") } },
             { _id: 0, status: 1, assignedRoute_id: 1 }
         ).lean();
         if (!driver) {

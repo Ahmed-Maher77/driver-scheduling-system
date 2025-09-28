@@ -14,7 +14,7 @@ router.get("/:id", async (req, res) => {
             return res.status(400).json({ message: "route_id is required" });
 
         const route = await Routes.findOne(
-            { route_id: id },
+            { route_id: { $regex: new RegExp(`^${id}$`, "i") } },
             {
                 _id: 0,
                 route_id: 1,
@@ -41,10 +41,12 @@ router.get("/:id", async (req, res) => {
         // Check if the route exists
         if (!route) return res.status(404).json({ message: "Route not found" });
 
-        // Get the assigned driver
+        // Get the assigned driver (case-insensitive)
         const assignedDriver = await Drivers.findOne(
             {
-                driver_id: route.assignedDriver_id,
+                driver_id: {
+                    $regex: new RegExp(`^${route.assignedDriver_id}$`, "i"),
+                },
             },
             {
                 _id: 0,
@@ -59,7 +61,9 @@ router.get("/:id", async (req, res) => {
         if (route.lastDriver_id) {
             lastDriver = await Drivers.findOne(
                 {
-                    driver_id: route.lastDriver_id,
+                    driver_id: {
+                        $regex: new RegExp(`^${route.lastDriver_id}$`, "i"),
+                    },
                 },
                 {
                     _id: 0,

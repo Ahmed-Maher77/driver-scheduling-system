@@ -17,7 +17,9 @@ router.delete("/:id", async (req, res) => {
         }
 
         // Check driver existence
-        const existing = await Drivers.findOne({ driver_id: id }).lean();
+        const existing = await Drivers.findOne({
+            driver_id: { $regex: new RegExp(`^${id}$`, "i") },
+        }).lean();
         if (!existing) {
             return res.status(404).json({ message: "Driver not found" });
         }

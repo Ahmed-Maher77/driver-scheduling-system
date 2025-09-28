@@ -13,9 +13,9 @@ router.get("/:id", async (req, res) => {
         if (!id)
             return res.status(400).json({ message: "driver_id is required" });
 
-        // Get driver with a clean projection
+        // Get driver with a clean projection (case-insensitive)
         const driver = await Drivers.findOne(
-            { driver_id: id },
+            { driver_id: { $regex: new RegExp(`^${id}$`, "i") } },
             {
                 _id: 0,
                 driver_id: 1,
@@ -51,7 +51,11 @@ router.get("/:id", async (req, res) => {
         let assignedRoute = null;
         if (driver.assignedRoute_id) {
             const route = await Routes.findOne(
-                { route_id: driver.assignedRoute_id },
+                {
+                    route_id: {
+                        $regex: new RegExp(`^${driver.assignedRoute_id}$`, "i"),
+                    },
+                },
                 {
                     _id: 0,
                     route_id: 1,

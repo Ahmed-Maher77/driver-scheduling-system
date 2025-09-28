@@ -14,9 +14,9 @@ router.get("/:id", async (req, res) => {
             return res.status(400).json({ message: "Route ID is required" });
         }
 
-        // Check if the route exists
+        // Check if the route exists (case-insensitive)
         const route = await Routes.findOne(
-            { route_id: id },
+            { route_id: { $regex: new RegExp(`^${id}$`, "i") } },
             { _id: 0, status: 1, assignedDriver_id: 1 }
         ).lean();
         if (!route) {

@@ -53,7 +53,9 @@ router.put("/:id", async (req, res) => {
         // }
 
         // Check if the route exists
-        const route = await Routes.findOne({ route_id: id });
+        const route = await Routes.findOne({
+            route_id: { $regex: new RegExp(`^${id}$`, "i") },
+        });
         if (!route) {
             return res.status(404).json({ message: "Route not found" });
         }

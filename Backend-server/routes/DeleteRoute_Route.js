@@ -13,11 +13,15 @@ router.delete("/:id", async (req, res) => {
             return res.status(400).json({ message: "Route ID is required" });
 
         // Check if the route exists
-        const route = await Routes.findOne({ route_id: id });
+        const route = await Routes.findOne({
+            route_id: { $regex: new RegExp(`^${id}$`, "i") },
+        });
         if (!route) return res.status(404).json({ message: "Route not found" });
 
-        // Delete the route
-        const deletedRoute = await Routes.findOneAndDelete({ route_id: id });
+        // Delete the route (case-insensitive)
+        const deletedRoute = await Routes.findOneAndDelete({
+            route_id: { $regex: new RegExp(`^${id}$`, "i") },
+        });
 
         if (!deletedRoute)
             return res.status(404).json({ message: "Route not found" });
