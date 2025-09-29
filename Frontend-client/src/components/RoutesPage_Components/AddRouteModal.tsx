@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import type {
     AddRouteModalProps,
     ValidationErrors,
@@ -19,6 +19,8 @@ import {
     hasValidationErrors,
 } from "./AddRouteModal_Components/validation";
 import { checkDriverAvailability } from "../../utils/functions/checkDriverAvailability";
+import useUnsavedChanges from "../../utils/hooks/useUnsavedChanges";
+import { UnsavedChangesDialog } from "../UnsavedChangesDialog";
 
 const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
     const [formData, setFormData] = useState({
@@ -50,6 +52,49 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+
+    // Check if form has unsaved changes (any field filled)
+    const hasUnsavedChanges = useMemo(() => {
+        if (!formData) return false;
+
+        // Check if any field has been filled (not empty or default values)
+        const hasStartLocation = Boolean(
+            formData.start_location && formData.start_location.trim() !== ""
+        );
+        const hasEndLocation = Boolean(
+            formData.end_location && formData.end_location.trim() !== ""
+        );
+        const hasAssignedDriver = Boolean(
+            formData.assignedDriver?.id &&
+                formData.assignedDriver.id.trim() !== ""
+        );
+        const hasDistance = Boolean(formData.distance && formData.distance > 0);
+        const hasDuration = Boolean(formData.duration && formData.duration > 0);
+        const hasCost = Boolean(formData.cost && formData.cost > 0);
+        const hasMaxSpeed = Boolean(formData.maxSpeed && formData.maxSpeed > 0);
+        const hasNotes = Boolean(
+            formData.notes && formData.notes.trim() !== ""
+        );
+
+        return (
+            hasStartLocation ||
+            hasEndLocation ||
+            hasAssignedDriver ||
+            hasDistance ||
+            hasDuration ||
+            hasCost ||
+            hasMaxSpeed ||
+            hasNotes
+        );
+    }, [formData]);
+
+    // Unsaved changes hook
+    const { showConfirmDialog, handleExitAttempt, confirmExit, cancelExit } =
+        useUnsavedChanges({
+            hasUnsavedChanges,
+            message:
+                "You have filled some fields. Are you sure you want to leave?",
+        });
 
     // Scroll to top when error is displayed
     useEffect(() => {
@@ -218,31 +263,33 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
 
     // Close Modal
     const handleClose = () => {
-        // Reset form data and validation errors when closing
-        setFormData({
-            start_location: "",
-            end_location: "",
-            status: "unassigned",
-            assignedDriver: { id: "" } as {
-                id?: string;
-                name?: string;
-            },
-            distance: 0,
-            distanceUnit: "km",
-            duration: 0,
-            timeUnit: "minutes",
-            cost: 0,
-            currency: "EGP",
-            maxSpeed: 0,
-            speedUnit: "km/h",
-            notes: "",
+        handleExitAttempt(() => {
+            // Reset form data and validation errors when closing
+            setFormData({
+                start_location: "",
+                end_location: "",
+                status: "unassigned",
+                assignedDriver: { id: "" } as {
+                    id?: string;
+                    name?: string;
+                },
+                distance: 0,
+                distanceUnit: "km",
+                duration: 0,
+                timeUnit: "minutes",
+                cost: 0,
+                currency: "EGP",
+                maxSpeed: 0,
+                speedUnit: "km/h",
+                notes: "",
+            });
+            setValidationErrors({});
+            setIsSubmitting(false);
+            setAvailabilityStatus("unknown");
+            setIsCheckingAvailability(false);
+            setSubmitError(null);
+            onClose();
         });
-        setValidationErrors({});
-        setIsSubmitting(false);
-        setAvailabilityStatus("unknown");
-        setIsCheckingAvailability(false);
-        setSubmitError(null);
-        onClose();
     };
 
     // Clear validation errors when user starts typing
@@ -265,202 +312,224 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
     if (!isOpen) return null;
 
     return (
-        <ModalWrapper isOpen={isOpen}>
-            <div ref={modalRef} className="p-6">
-                <ModalHeader title="Add New Route" onClose={handleClose} />
+        <>
+            <ModalWrapper isOpen={isOpen}>
+                <div ref={modalRef} className="p-6">
+                    <ModalHeader title="Add New Route" onClose={handleClose} />
 
-                {/* ================== Error Display ================== */}
-                {submitError && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                        <div className="flex items-center">
-                            <i className="fa-solid fa-exclamation-triangle text-red-500 mr-2"></i>
-                            <p className="text-red-700 text-sm font-medium">
-                                {submitError === "Duplicate entry detected"
-                                    ? "A route with the same start and end location already exists"
-                                    : submitError}
-                            </p>
+                    {/* ================== Error Display ================== */}
+                    {submitError && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                            <div className="flex items-center">
+                                <i className="fa-solid fa-exclamation-triangle text-red-500 mr-2"></i>
+                                <p className="text-red-700 text-sm font-medium">
+                                    {submitError === "Duplicate entry detected"
+                                        ? "A route with the same start and end location already exists"
+                                        : submitError}
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
-                <FormSection onSubmit={handleSubmit}>
-                    {/* ================== Basic Info Section ================== */}
-                    <BasicInfoSection
-                        status={formData.status}
-                        onStatusChange={(value) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                status: value,
-                            }));
-                            clearFieldError("status");
-                        }}
-                        statusError={validationErrors.status}
-                    />
+                    <FormSection onSubmit={handleSubmit}>
+                        {/* ================== Basic Info Section ================== */}
+                        <BasicInfoSection
+                            status={formData.status}
+                            onStatusChange={(value) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    status: value,
+                                }));
+                                clearFieldError("status");
+                            }}
+                            statusError={validationErrors.status}
+                        />
 
-                    {/* ================== Note for user ================== */}
-                    <p className="text-sm gray-c italic mb-5 mt-[-10px]">
-                        <span className="font-semibold">Note:</span> Assigned
-                        Driver fields only appear when status is "assigned"
-                    </p>
+                        {/* ================== Note for user ================== */}
+                        <p className="text-sm gray-c italic mb-5 mt-[-10px]">
+                            <span className="font-semibold">Note:</span>{" "}
+                            Assigned Driver fields only appear when status is
+                            "assigned"
+                        </p>
 
-                    {/* ================== Location Section ================== */}
-                    <LocationSection
-                        startLocation={formData.start_location}
-                        endLocation={formData.end_location}
-                        onStartLocationChange={(value) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                start_location: value,
-                            }));
-                            clearFieldError("startLocation");
-                            clearSubmitError();
-                        }}
-                        onEndLocationChange={(value) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                end_location: value,
-                            }));
-                            clearFieldError("endLocation");
-                            clearSubmitError();
-                        }}
-                        startLocationError={validationErrors.startLocation}
-                        endLocationError={validationErrors.endLocation}
-                    />
+                        {/* ================== Location Section ================== */}
+                        <LocationSection
+                            startLocation={formData.start_location}
+                            endLocation={formData.end_location}
+                            onStartLocationChange={(value) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    start_location: value,
+                                }));
+                                clearFieldError("startLocation");
+                                clearSubmitError();
+                            }}
+                            onEndLocationChange={(value) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    end_location: value,
+                                }));
+                                clearFieldError("endLocation");
+                                clearSubmitError();
+                            }}
+                            startLocationError={validationErrors.startLocation}
+                            endLocationError={validationErrors.endLocation}
+                        />
 
-                    {/* ================== Driver Section ================== */}
-                    <DriverSection
-                        assignedDriver={formData.assignedDriver}
-                        onAssignedDriverChange={(driver) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                assignedDriver: driver,
-                            }));
-                            clearFieldError("assignedDriver");
-                            clearSubmitError();
-                            setAvailabilityStatus("unknown");
-                        }}
-                        assignedDriverError={validationErrors.assignedDriver}
-                        status={formData.status}
-                        onCheckAvailability={async (driverId) => {
-                            if (!driverId) return;
-                            setIsCheckingAvailability(true);
-                            try {
-                                const status = await checkDriverAvailability(
-                                    driverId
-                                );
-                                setAvailabilityStatus(status);
-                                if (
-                                    status === "unavailable" ||
-                                    status === "on_route"
-                                ) {
-                                    notify(
-                                        "error",
-                                        status === "unavailable"
-                                            ? "Driver is unavailable"
-                                            : "Driver is currently on a route"
-                                    );
-                                } else {
-                                    notify("success", "Driver is available");
-                                }
-                            } finally {
-                                setIsCheckingAvailability(false);
+                        {/* ================== Driver Section ================== */}
+                        <DriverSection
+                            assignedDriver={formData.assignedDriver}
+                            onAssignedDriverChange={(driver) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    assignedDriver: driver,
+                                }));
+                                clearFieldError("assignedDriver");
+                                clearSubmitError();
+                                setAvailabilityStatus("unknown");
+                            }}
+                            assignedDriverError={
+                                validationErrors.assignedDriver
                             }
-                        }}
-                        availabilityStatus={availabilityStatus}
-                        isCheckingAvailability={isCheckingAvailability}
-                    />
+                            status={formData.status}
+                            onCheckAvailability={async (driverId) => {
+                                if (!driverId) return;
+                                setIsCheckingAvailability(true);
+                                try {
+                                    const status =
+                                        await checkDriverAvailability(driverId);
+                                    setAvailabilityStatus(status);
+                                    if (
+                                        status === "unavailable" ||
+                                        status === "on_route"
+                                    ) {
+                                        notify(
+                                            "error",
+                                            status === "unavailable"
+                                                ? "Driver is unavailable"
+                                                : "Driver is currently on a route"
+                                        );
+                                    } else {
+                                        notify(
+                                            "success",
+                                            "Driver is available"
+                                        );
+                                    }
+                                } finally {
+                                    setIsCheckingAvailability(false);
+                                }
+                            }}
+                            availabilityStatus={availabilityStatus}
+                            isCheckingAvailability={isCheckingAvailability}
+                        />
 
-                    {/* ================== Distance Duration Section ================== */}
-                    <DistanceDurationSection
-                        distance={formData.distance}
-                        distanceUnit={formData.distanceUnit}
-                        duration={formData.duration}
-                        timeUnit={formData.timeUnit}
-                        onDistanceChange={(value) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                distance: value,
-                            }));
-                            clearFieldError("distance");
-                        }}
-                        onDistanceUnitChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                distanceUnit: value,
-                            }))
-                        }
-                        onDurationChange={(value) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                duration: value,
-                            }));
-                            clearFieldError("duration");
-                        }}
-                        onTimeUnitChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                timeUnit: value,
-                            }))
-                        }
-                        distanceError={validationErrors.distance}
-                        durationError={validationErrors.duration}
-                    />
+                        {/* ================== Distance Duration Section ================== */}
+                        <DistanceDurationSection
+                            distance={formData.distance}
+                            distanceUnit={formData.distanceUnit}
+                            duration={formData.duration}
+                            timeUnit={formData.timeUnit}
+                            onDistanceChange={(value) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    distance: value,
+                                }));
+                                clearFieldError("distance");
+                            }}
+                            onDistanceUnitChange={(value) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    distanceUnit: value,
+                                }))
+                            }
+                            onDurationChange={(value) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    duration: value,
+                                }));
+                                clearFieldError("duration");
+                            }}
+                            onTimeUnitChange={(value) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    timeUnit: value,
+                                }))
+                            }
+                            distanceError={validationErrors.distance}
+                            durationError={validationErrors.duration}
+                        />
 
-                    {/* ================== Cost Speed Section ================== */}
-                    <CostSpeedSection
-                        cost={formData.cost}
-                        currency={formData.currency}
-                        maxSpeed={formData.maxSpeed}
-                        speedUnit={formData.speedUnit}
-                        onCostChange={(value) => {
-                            setFormData((prev) => ({ ...prev, cost: value }));
-                            clearFieldError("cost");
-                        }}
-                        onCurrencyChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                currency: value,
-                            }))
-                        }
-                        onMaxSpeedChange={(value) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                maxSpeed: value,
-                            }));
-                            clearFieldError("maxSpeed");
-                        }}
-                        onSpeedUnitChange={(value) =>
-                            setFormData((prev) => ({
-                                ...prev,
-                                speedUnit: value,
-                            }))
-                        }
-                        costError={validationErrors.cost}
-                        maxSpeedError={validationErrors.maxSpeed}
-                    />
+                        {/* ================== Cost Speed Section ================== */}
+                        <CostSpeedSection
+                            cost={formData.cost}
+                            currency={formData.currency}
+                            maxSpeed={formData.maxSpeed}
+                            speedUnit={formData.speedUnit}
+                            onCostChange={(value) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    cost: value,
+                                }));
+                                clearFieldError("cost");
+                            }}
+                            onCurrencyChange={(value) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    currency: value,
+                                }))
+                            }
+                            onMaxSpeedChange={(value) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    maxSpeed: value,
+                                }));
+                                clearFieldError("maxSpeed");
+                            }}
+                            onSpeedUnitChange={(value) =>
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    speedUnit: value,
+                                }))
+                            }
+                            costError={validationErrors.cost}
+                            maxSpeedError={validationErrors.maxSpeed}
+                        />
 
-                    {/* ================== Notes Section ================== */}
-                    <NotesSection
-                        notes={formData.notes}
-                        onNotesChange={(value) => {
-                            setFormData((prev) => ({
-                                ...prev,
-                                notes: value,
-                            }));
-                            clearFieldError("notes");
-                        }}
-                        notesError={validationErrors.notes}
-                    />
+                        {/* ================== Notes Section ================== */}
+                        <NotesSection
+                            notes={formData.notes}
+                            onNotesChange={(value) => {
+                                setFormData((prev) => ({
+                                    ...prev,
+                                    notes: value,
+                                }));
+                                clearFieldError("notes");
+                            }}
+                            notesError={validationErrors.notes}
+                        />
 
-                    {/* ================== Modal Actions ================== */}
-                    <ModalActions
-                        onCancel={handleClose}
-                        submitLabel={isSubmitting ? "Adding..." : "Add Route"}
-                        isSubmitting={isSubmitting}
-                    />
-                </FormSection>
-            </div>
-        </ModalWrapper>
+                        {/* ================== Modal Actions ================== */}
+                        <ModalActions
+                            onCancel={handleClose}
+                            submitLabel={
+                                isSubmitting ? "Adding..." : "Add Route"
+                            }
+                            isSubmitting={isSubmitting}
+                        />
+                    </FormSection>
+                </div>
+            </ModalWrapper>
+
+            {/* Unsaved Changes Dialog */}
+            <UnsavedChangesDialog
+                isOpen={showConfirmDialog}
+                onConfirm={confirmExit}
+                onCancel={cancelExit}
+                message="You have filled some fields. Are you sure you want to leave?"
+                confirmText="Leave"
+                cancelText="Stay"
+            />
+        </>
     );
 };
 

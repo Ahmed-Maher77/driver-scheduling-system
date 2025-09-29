@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import ModalWrapper from "../RoutesPage_Components/SharedModalComponents/ModalWrapper";
 import FormSection from "../RoutesPage_Components/SharedModalComponents/FormSection";
 import ModalHeader from "../RoutesPage_Components/AddRouteModal_Components/ModalHeader";
@@ -25,6 +25,8 @@ import {
 } from "./AddDriverModal_Components";
 import "./AddDriverModal.scss";
 import useAddNewDriver from "../../utils/hooks/api/useAddNewDriver";
+import useUnsavedChanges from "../../utils/hooks/useUnsavedChanges";
+import { UnsavedChangesDialog } from "../UnsavedChangesDialog";
 
 const initialForm: DriverForm = {
     name: "",
@@ -59,6 +61,93 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+
+    // Check if form has unsaved changes (any field filled)
+    const hasUnsavedChanges = useMemo(() => {
+        if (!form) return false;
+
+        // Check if any field has been filled (not empty or null)
+        const hasName = Boolean(form.name && form.name.trim() !== "");
+        const hasPhone = Boolean(form.phone && form.phone.trim() !== "");
+        const hasAddress = Boolean(form.address && form.address.trim() !== "");
+        const hasEmail = Boolean(
+            form.contact_channels?.email &&
+                form.contact_channels.email.trim() !== ""
+        );
+        const hasFacebook = Boolean(
+            form.contact_channels?.facebook &&
+                form.contact_channels.facebook.trim() !== ""
+        );
+        const hasWhatsapp = Boolean(
+            form.contact_channels?.whatsapp &&
+                form.contact_channels.whatsapp.trim() !== ""
+        );
+        const hasLinkedin = Boolean(
+            form.contact_channels?.linkedin &&
+                form.contact_channels.linkedin.trim() !== ""
+        );
+        const hasPicture = form.picture !== null;
+        const hasNationalId = form.national_id !== null;
+        const hasLicenseImage = form.driving_license?.image !== null;
+        const hasLicenseType = Boolean(
+            form.driving_license?.type &&
+                form.driving_license.type.trim() !== ""
+        );
+        const hasLicenseNumber = Boolean(
+            form.driving_license?.number &&
+                form.driving_license.number.trim() !== ""
+        );
+        const hasVehicleType = Boolean(
+            form.vehicle?.type && form.vehicle.type.trim() !== ""
+        );
+        const hasVehicleMake = Boolean(
+            form.vehicle?.make && form.vehicle.make.trim() !== ""
+        );
+        const hasVehicleModel = Boolean(
+            form.vehicle?.model && form.vehicle.model.trim() !== ""
+        );
+        const hasVehicleYear = Boolean(
+            form.vehicle?.year && form.vehicle.year.trim() !== ""
+        );
+        const hasVehicleColor = Boolean(
+            form.vehicle?.color && form.vehicle.color.trim() !== ""
+        );
+        const hasNotes = Boolean(form.notes && form.notes.trim() !== "");
+        const hasAssignedRoute = Boolean(
+            form.assignedRoute_id && form.assignedRoute_id.trim() !== ""
+        );
+
+        return (
+            hasName ||
+            hasPhone ||
+            hasAddress ||
+            hasEmail ||
+            hasFacebook ||
+            hasWhatsapp ||
+            hasLinkedin ||
+            hasPicture ||
+            hasNationalId ||
+            hasLicenseImage ||
+            hasLicenseType ||
+            hasLicenseNumber ||
+            hasVehicleType ||
+            hasVehicleMake ||
+            hasVehicleModel ||
+            hasVehicleYear ||
+            hasVehicleColor ||
+            hasNotes ||
+            hasAssignedRoute
+        );
+    }, [form]);
+
+    // Unsaved changes hook
+    const { showConfirmDialog, handleExitAttempt, confirmExit, cancelExit } =
+        useUnsavedChanges({
+            hasUnsavedChanges,
+            message:
+                "You have filled some fields. Are you sure you want to leave?",
+        });
+
     // Add Driver
     const { addDriver, isPending: isSubmitting } = useAddNewDriver();
 
@@ -291,106 +380,124 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
 
     // ================== Close Modal ==================
     const handleClose = () => {
-        setSubmitError(null);
-        onClose();
+        handleExitAttempt(() => {
+            setSubmitError(null);
+            onClose();
+        });
     };
 
     return (
-        <ModalWrapper isOpen={isOpen}>
-            <div ref={modalRef} className="p-6">
-                <ModalHeader title="Add Driver" onClose={handleClose} />
+        <>
+            <ModalWrapper isOpen={isOpen}>
+                <div ref={modalRef} className="p-6">
+                    <ModalHeader title="Add Driver" onClose={handleClose} />
 
-                {/* ================== Error Display ================== */}
-                {submitError && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-                        <div className="flex items-center">
-                            <i className="fa-solid fa-exclamation-triangle text-red-500 mr-2"></i>
-                            <p className="text-red-700 text-sm font-medium">
-                                {submitError === "Duplicate entry detected"
-                                    ? "A driver with the same information already exists"
-                                    : submitError}
-                            </p>
+                    {/* ================== Error Display ================== */}
+                    {submitError && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                            <div className="flex items-center">
+                                <i className="fa-solid fa-exclamation-triangle text-red-500 mr-2"></i>
+                                <p className="text-red-700 text-sm font-medium">
+                                    {submitError === "Duplicate entry detected"
+                                        ? "A driver with the same information already exists"
+                                        : submitError}
+                                </p>
+                            </div>
                         </div>
+                    )}
+
+                    <div className="add-driver-modal-wrapper">
+                        <FormSection onSubmit={submit} className="space-y-6">
+                            {/* ================== Basic Information ================== */}
+                            <BasicInfoSection
+                                form={form}
+                                errors={errors}
+                                update={update}
+                            />
+
+                            {/* ================== Note for user ================== */}
+                            <p className="text-sm gray-c italic mb-5 mt-[-10px]">
+                                <span className="font-semibold">Note:</span>{" "}
+                                "Assign to Route" only appears when status is
+                                "available" and the route is available.
+                            </p>
+
+                            {/* ================== Address ================== */}
+                            <AddressSection form={form} update={update} />
+
+                            {/* ================== Contacts ================== */}
+                            <ContactsSection form={form} update={update} />
+
+                            {/* ================== Documents ================== */}
+                            <DocumentsSection
+                                form={form}
+                                errors={errors}
+                                update={update}
+                            />
+
+                            {/* ================== Driving License ================== */}
+                            <LicenseSection
+                                form={form}
+                                errors={errors}
+                                update={update}
+                            />
+
+                            {/* ================== Vehicle ================== */}
+                            <VehicleSection
+                                form={form}
+                                errors={errors}
+                                update={update}
+                            />
+
+                            {/* ================== Assign to Route ================== */}
+                            <RouteAssignmentSection
+                                form={form}
+                                isUnavailable={isUnavailable}
+                                isCheckingAvailability={isCheckingAvailability}
+                                routeAvailabilityStatus={
+                                    routeAvailabilityStatus
+                                }
+                                update={update}
+                                onCheckAvailability={
+                                    handleCheckRouteAvailability
+                                }
+                                onRouteIdChange={() =>
+                                    setRouteAvailabilityStatus("unknown")
+                                }
+                            />
+
+                            {/* ================== Notes ================== */}
+                            <NotesSection form={form} update={update} />
+
+                            {/* ================== Modal Actions ================== */}
+                            <ModalActions
+                                onCancel={handleClose}
+                                submitLabel={
+                                    isSubmitting || isCheckingAvailability
+                                        ? isCheckingAvailability
+                                            ? "Checking..."
+                                            : "Adding Driver..."
+                                        : "Add Driver"
+                                }
+                                isSubmitting={
+                                    isSubmitting || isCheckingAvailability
+                                }
+                            />
+                        </FormSection>
                     </div>
-                )}
-
-                <div className="add-driver-modal-wrapper">
-                    <FormSection onSubmit={submit} className="space-y-6">
-                        {/* ================== Basic Information ================== */}
-                        <BasicInfoSection
-                            form={form}
-                            errors={errors}
-                            update={update}
-                        />
-
-                        {/* ================== Note for user ================== */}
-                        <p className="text-sm gray-c italic mb-5 mt-[-10px]">
-                            <span className="font-semibold">Note:</span> "Assign
-                            to Route" only appears when status is "available"
-                            and the route is available.
-                        </p>
-
-                        {/* ================== Address ================== */}
-                        <AddressSection form={form} update={update} />
-
-                        {/* ================== Contacts ================== */}
-                        <ContactsSection form={form} update={update} />
-
-                        {/* ================== Documents ================== */}
-                        <DocumentsSection
-                            form={form}
-                            errors={errors}
-                            update={update}
-                        />
-
-                        {/* ================== Driving License ================== */}
-                        <LicenseSection
-                            form={form}
-                            errors={errors}
-                            update={update}
-                        />
-
-                        {/* ================== Vehicle ================== */}
-                        <VehicleSection
-                            form={form}
-                            errors={errors}
-                            update={update}
-                        />
-
-                        {/* ================== Assign to Route ================== */}
-                        <RouteAssignmentSection
-                            form={form}
-                            isUnavailable={isUnavailable}
-                            isCheckingAvailability={isCheckingAvailability}
-                            routeAvailabilityStatus={routeAvailabilityStatus}
-                            update={update}
-                            onCheckAvailability={handleCheckRouteAvailability}
-                            onRouteIdChange={() =>
-                                setRouteAvailabilityStatus("unknown")
-                            }
-                        />
-
-                        {/* ================== Notes ================== */}
-                        <NotesSection form={form} update={update} />
-
-                        {/* ================== Modal Actions ================== */}
-                        <ModalActions
-                            onCancel={handleClose}
-                            submitLabel={
-                                isSubmitting || isCheckingAvailability
-                                    ? isCheckingAvailability
-                                        ? "Checking..."
-                                        : "Adding Driver..."
-                                    : "Add Driver"
-                            }
-                            isSubmitting={
-                                isSubmitting || isCheckingAvailability
-                            }
-                        />
-                    </FormSection>
                 </div>
-            </div>
-        </ModalWrapper>
+            </ModalWrapper>
+
+            {/* Unsaved Changes Dialog */}
+            <UnsavedChangesDialog
+                isOpen={showConfirmDialog}
+                onConfirm={confirmExit}
+                onCancel={cancelExit}
+                message="You have filled some fields. Are you sure you want to leave?"
+                confirmText="Leave"
+                cancelText="Stay"
+            />
+        </>
     );
 };
 

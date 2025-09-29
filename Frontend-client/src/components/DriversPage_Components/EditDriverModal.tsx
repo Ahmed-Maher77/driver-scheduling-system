@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import ModalWrapper from "../RoutesPage_Components/SharedModalComponents/ModalWrapper";
 import FormSection from "../RoutesPage_Components/SharedModalComponents/FormSection";
 import ModalHeader from "../RoutesPage_Components/AddRouteModal_Components/ModalHeader";
@@ -27,6 +27,8 @@ import useGetDriverDetails from "../../utils/hooks/api/useGetDriverDetails";
 import LoadingPageSpinner from "../LoadingPageSpinner/LoadingPageSpinner";
 import useUpdateDriver from "../../utils/hooks/api/useUpdateDriver";
 import { uploadFile } from "../../utils/functions/uploadFile";
+import useUnsavedChanges from "../../utils/hooks/useUnsavedChanges";
+import { UnsavedChangesDialog } from "../UnsavedChangesDialog";
 
 const toForm = (d: any): DriverForm => ({
     name: d.name || "",
@@ -79,21 +81,39 @@ const EditDriverModal = ({
         "unknown" | "assigned" | "unassigned" | "in progress"
     >("unknown");
     const [wasUpdated, setWasUpdated] = useState(false);
+    const [originalForm, setOriginalForm] = useState<DriverForm | null>(null);
+
+    // Check if form has unsaved changes
+    const hasUnsavedChanges = useMemo(() => {
+        if (!form || !originalForm) return false;
+        return JSON.stringify(form) !== JSON.stringify(originalForm);
+    }, [form, originalForm]);
+
+    // Unsaved changes hook
+    const { showConfirmDialog, handleExitAttempt, confirmExit, cancelExit } =
+        useUnsavedChanges({
+            hasUnsavedChanges,
+            message:
+                "You have unsaved changes. Are you sure you want to leave?",
+        });
 
     // Reset function to clear all form data and states
     const resetModal = () => {
         setForm(null);
+        setOriginalForm(null);
         setLoading(false);
         setIsCheckingAvailability(false);
         setAvailabilityStatus("unknown");
     };
 
-    // Custom close handler that only resets loading states when closing without updating
+    // Custom close handler with unsaved changes check
     const handleClose = () => {
-        setLoading(false);
-        setIsCheckingAvailability(false);
-        setAvailabilityStatus("unknown");
-        onClose();
+        handleExitAttempt(() => {
+            setLoading(false);
+            setIsCheckingAvailability(false);
+            setAvailabilityStatus("unknown");
+            onClose();
+        });
     };
 
     // Fetch driver details
@@ -104,9 +124,11 @@ const EditDriverModal = ({
     // ================== Fetch Driver Details ==================
     useEffect(() => {
         if (driverDetails) {
-            setForm(toForm(driverDetails));
+            const formData = toForm(driverDetails);
+            setForm(formData);
+            setOriginalForm(formData); // Set original form for comparison
             console.log("driverDetails:", driverDetails);
-            console.log("form:", toForm(driverDetails));
+            console.log("form:", formData);
         }
     }, [driverDetails]);
 
@@ -389,79 +411,99 @@ const EditDriverModal = ({
     };
 
     return (
-        <ModalWrapper isOpen={isOpen}>
-            <div className="p-6">
-                {/* ================== Modal Header ================== */}
-                <ModalHeader title="Edit Driver" onClose={handleClose} />
+        <>
+            <ModalWrapper isOpen={isOpen}>
+                <div className="p-6">
+                    {/* ================== Modal Header ================== */}
+                    <ModalHeader title="Edit Driver" onClose={handleClose} />
 
-                {/* ================== Modal Content ================== */}
-                <div className="add-driver-modal-wrapper">
-                    <FormSection onSubmit={submit} className="space-y-6">
-                        {/* Basic Info Section */}
-                        <BasicInfoSection
-                            driver={driver}
-                            form={form}
-                            update={update}
-                        />
+                    {/* ================== Modal Content ================== */}
+                    <div className="add-driver-modal-wrapper">
+                        <FormSection onSubmit={submit} className="space-y-6">
+                            {/* Basic Info Section */}
+                            <BasicInfoSection
+                                driver={driver}
+                                form={form}
+                                update={update}
+                            />
 
-                        {/* Picture Upload Section */}
-                        <PictureUploadSection form={form} update={update} />
+                            {/* Picture Upload Section */}
+                            <PictureUploadSection form={form} update={update} />
 
-                        {/* Address Section */}
-                        <AddressSection form={form} update={update} />
+                            {/* Address Section */}
+                            <AddressSection form={form} update={update} />
 
-                        {/* Contact Channels Section */}
-                        <ContactChannelsSection form={form} update={update} />
+                            {/* Contact Channels Section */}
+                            <ContactChannelsSection
+                                form={form}
+                                update={update}
+                            />
 
-                        {/* Identity Section */}
-                        <IdentitySection form={form} update={update} />
+                            {/* Identity Section */}
+                            <IdentitySection form={form} update={update} />
 
-                        {/* National ID Document Section */}
-                        {/* <NationalIdDocumentSection
+                            {/* National ID Document Section */}
+                            {/* <NationalIdDocumentSection
                             form={form}
                             update={update}
                         /> */}
 
-                        {/* License Section */}
-                        <LicenseSection form={form} update={update} />
+                            {/* License Section */}
+                            <LicenseSection form={form} update={update} />
 
-                        {/* License Document Section */}
-                        <LicenseDocumentSection form={form} update={update} />
+                            {/* License Document Section */}
+                            <LicenseDocumentSection
+                                form={form}
+                                update={update}
+                            />
 
-                        {/* Vehicle Section */}
-                        <VehicleSection form={form} update={update} />
+                            {/* Vehicle Section */}
+                            <VehicleSection form={form} update={update} />
 
-                        {/* Route Assignment Section */}
-                        <RouteAssignmentSection
-                            form={form}
-                            isUnavailable={isUnavailable}
-                            isCheckingAvailability={isCheckingAvailability}
-                            routeAvailabilityStatus={
-                                availabilityStatus as RouteAvailability
-                            }
-                            update={update}
-                            onCheckAvailability={handleCheckRouteAvailability}
-                            onRouteIdChange={() =>
-                                setAvailabilityStatus("unknown")
-                            }
-                        />
+                            {/* Route Assignment Section */}
+                            <RouteAssignmentSection
+                                form={form}
+                                isUnavailable={isUnavailable}
+                                isCheckingAvailability={isCheckingAvailability}
+                                routeAvailabilityStatus={
+                                    availabilityStatus as RouteAvailability
+                                }
+                                update={update}
+                                onCheckAvailability={
+                                    handleCheckRouteAvailability
+                                }
+                                onRouteIdChange={() =>
+                                    setAvailabilityStatus("unknown")
+                                }
+                            />
 
-                        {/* Notes Section */}
-                        <NotesSection form={form} update={update} />
+                            {/* Notes Section */}
+                            <NotesSection form={form} update={update} />
 
-                        {/* Modal Actions */}
-                        <ModalActions
-                            onCancel={handleClose}
-                            submitLabel={
-                                loading || isUpdatingDriver
-                                    ? "Saving..."
-                                    : "Save Changes"
-                            }
-                        />
-                    </FormSection>
+                            {/* Modal Actions */}
+                            <ModalActions
+                                onCancel={handleClose}
+                                submitLabel={
+                                    loading || isUpdatingDriver
+                                        ? "Saving..."
+                                        : "Save Changes"
+                                }
+                            />
+                        </FormSection>
+                    </div>
                 </div>
-            </div>
-        </ModalWrapper>
+            </ModalWrapper>
+
+            {/* Unsaved Changes Dialog */}
+            <UnsavedChangesDialog
+                isOpen={showConfirmDialog}
+                onConfirm={confirmExit}
+                onCancel={cancelExit}
+                message="You have unsaved changes. Are you sure you want to leave?"
+                confirmText="Leave"
+                cancelText="Stay"
+            />
+        </>
     );
 };
 

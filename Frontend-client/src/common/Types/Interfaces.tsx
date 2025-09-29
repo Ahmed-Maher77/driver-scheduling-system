@@ -1119,3 +1119,20 @@ export interface ImageModalProps {
     title: string;
     onClose: () => void;
 }
+
+// Unsaved Changes Dialog Props
+export interface UnsavedChangesDialogProps {
+    isOpen: boolean;
+    onConfirm: () => void;
+    onCancel: () => void;
+    message?: string;
+    confirmText?: string;
+    cancelText?: string;
+}
+
+// Use Unsaved Changes Options
+export interface UseUnsavedChangesOptions {
+    hasUnsavedChanges: boolean;
+    onConfirmExit?: () => void;
+    message?: string;
+}
