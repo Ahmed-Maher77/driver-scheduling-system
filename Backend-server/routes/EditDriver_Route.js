@@ -240,7 +240,7 @@ router.put("/:id", async (req, res) => {
                             route.lastDriver_id = route.assignedDriver_id;
                         }
                         route.assignedDriver_id = null;
-                        route.status = "pending";
+                        route.status = "unassigned";
                         await route.save();
 
                         // Log activity feed (unassigned)

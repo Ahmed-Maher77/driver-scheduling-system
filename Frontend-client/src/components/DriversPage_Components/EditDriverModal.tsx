@@ -127,8 +127,6 @@ const EditDriverModal = ({
             const formData = toForm(driverDetails);
             setForm(formData);
             setOriginalForm(formData); // Set original form for comparison
-            console.log("driverDetails:", driverDetails);
-            console.log("form:", formData);
         }
     }, [driverDetails]);
 
@@ -230,12 +228,7 @@ const EditDriverModal = ({
         const cleaned = { ...data };
 
         // Remove localhost URLs from picture
-        if (
-            cleaned.picture &&
-            typeof cleaned.picture === "string" &&
-            cleaned.picture.includes("localhost")
-        ) {
-            console.log("Removing localhost picture URL:", cleaned.picture);
+        if (cleaned.picture && typeof cleaned.picture === "string" && cleaned.picture.includes("localhost")) {
             delete cleaned.picture;
         }
 
@@ -245,55 +238,30 @@ const EditDriverModal = ({
             typeof cleaned.driving_license.image === "string" &&
             cleaned.driving_license.image.includes("localhost")
         ) {
-            console.log(
-                "Removing localhost license image URL:",
-                cleaned.driving_license.image
-            );
             delete cleaned.driving_license.image;
         }
-
-        console.log("Cleaned data for API:", cleaned);
         return cleaned;
     };
 
     // ================== Upload Driver Files ==================
     const uploadDriverFiles = async (form: DriverForm) => {
         try {
-            console.log("uploadDriverFiles - Starting file upload process");
-            console.log(
-                "form.picture:",
-                form.picture,
-                "type:",
-                typeof form.picture
-            );
-            console.log(
-                "form.driving_license.image:",
-                form.driving_license.image,
-                "type:",
-                typeof form.driving_license.image
-            );
-
             const filesToUpload: { file: File; field: string }[] = [];
 
             // Collect files that need to be uploaded with field mapping
             if (form.picture && typeof form.picture === "object") {
-                console.log("Adding picture to upload queue");
                 filesToUpload.push({ file: form.picture, field: "picture" });
             }
             if (
                 form.driving_license.image &&
                 typeof form.driving_license.image === "object"
             ) {
-                console.log("Adding driving_license.image to upload queue");
                 filesToUpload.push({
                     file: form.driving_license.image,
                     field: "driving_license.image",
                 });
             }
-
-            console.log("Files to upload:", filesToUpload.length);
             if (filesToUpload.length === 0) {
-                console.log("No files to upload, returning original form");
                 return form;
             }
 
@@ -358,13 +326,8 @@ const EditDriverModal = ({
         }
         setLoading(true);
         try {
-            console.log("Submit - Starting file upload process");
             // Upload files if any
             const updatedForm = await uploadDriverFiles(form);
-            console.log(
-                "Submit - File upload completed, updatedForm:",
-                updatedForm
-            );
 
             const updatedDriverData = cleanDataForAPI({
                 name: updatedForm.name,
@@ -385,8 +348,6 @@ const EditDriverModal = ({
                 picture: updatedForm.picture,
                 status: updatedForm.status,
             });
-
-            console.log("updatedDriverData:", updatedDriverData);
 
             await updateDriver({ driverId, driverData: updatedDriverData });
             setWasUpdated(true);

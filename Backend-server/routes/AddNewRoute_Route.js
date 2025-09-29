@@ -121,7 +121,7 @@ router.post("/", async (req, res) => {
                     // Unassign driver from current route
                     if (currentRoute) {
                         currentRoute.assignedDriver_id = null;
-                        currentRoute.status = "pending";
+                        currentRoute.status = "unassigned";
                         await currentRoute.save();
                     }
                 }

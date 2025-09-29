@@ -102,11 +102,6 @@ router.post("/", upload.single("image"), async (req, res) => {
         const fileExtension = path.extname(originalname);
         const filename = `${timestamp}-${randomSuffix}${fileExtension}`;
 
-        // Log successful upload for monitoring
-        console.log(
-            `File uploaded successfully: ${originalname} (${size} bytes)`
-        );
-
         // Return success response with comprehensive file information
         res.status(200).json({
             success: true,

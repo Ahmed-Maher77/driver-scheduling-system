@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import PageHeader from "../../components/Headings/PageHeader/PageHeader";
 import DriverAssignment from "../../components/RouteDetailsPage_Components/DriverAssignment";
@@ -30,12 +30,6 @@ const RouteDetailsPage = () => {
     } = useGetRouteDetails({
         routeId: routeId || "",
     });
-
-    useEffect(() => {
-        if (routeData) {
-            console.log(routeData);
-        }
-    }, [routeData]);
 
     // Delete route
     const { deleteRoute, isPending: isDeletingRoute } = useDeleteRoute();

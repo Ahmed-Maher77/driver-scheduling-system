@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import type {
     ActivityFeedRow,
-    ActivityFeedFilters,
     UseActivityFeedsActionsProps,
     UseActivityFeedsActionsReturn,
 } from "../../../common/Types/Interfaces";
@@ -81,24 +80,12 @@ const useActivityFeedsActions = ({
         }
     };
 
-    const handleFilterChange = (newFilters: ActivityFeedFilters) => {
-        // This is handled by the parent component
-        console.log("Filter changed:", newFilters);
-    };
-
-    const handleClearFilters = () => {
-        // This is handled by the parent component
-        console.log("Clear filters");
-    };
-
     return {
         isRefreshing,
         handleViewRoute,
         handleViewDriver,
         handleExport,
         handleRefresh,
-        handleFilterChange,
-        handleClearFilters,
     };
 };
 

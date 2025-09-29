@@ -1048,8 +1048,6 @@ export interface UseActivityFeedsActionsReturn {
     handleViewDriver: (driverId: string) => void;
     handleExport: () => void;
     handleRefresh: () => Promise<void>;
-    handleFilterChange: (filters: ActivityFeedFilters) => void;
-    handleClearFilters: () => void;
 }
 // Activity Feeds Layout Props
 export interface ActivityFeedsLayoutProps {

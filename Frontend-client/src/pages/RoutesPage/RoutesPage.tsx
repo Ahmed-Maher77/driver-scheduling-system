@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import PageHeader from "../../components/Headings/PageHeader/PageHeader";
-import type {
-    AddRouteItemProps,
-    SearchBy,
-} from "../../common/Types/Interfaces";
+import type { AddRouteItemProps, SearchBy } from "../../common/Types/Interfaces";
 import EditRouteModal from "../../components/RoutesPage_Components/EditRouteModal";
 import AddRouteModal from "../../components/RoutesPage_Components/AddRouteModal";
 import { exportCsv } from "../../components/RoutesPage_Components/exportCsv";
@@ -220,7 +217,7 @@ const RoutesPage = () => {
         if (route) {
             openEditRoute(route.route_id);
         } else {
-            console.log("Route not found for id:", id);
+            notify("error", `Route not found for id: ${id}`);
         }
     };
 

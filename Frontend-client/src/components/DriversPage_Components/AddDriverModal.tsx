@@ -372,7 +372,6 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
                 : error?.response?.data?.message ||
                   error?.message ||
                   "Failed to add driver";
-            console.log("errorMessage", errorMessage);
             setSubmitError(errorMessage);
             return;
         }

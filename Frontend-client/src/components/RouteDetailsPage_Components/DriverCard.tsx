@@ -6,7 +6,6 @@ import defaultWomanImage from "../../assets/images/woman.jpg";
 
 const DriverCard = ({ driver, title }: DriverCardProps) => {
     const navigate = useNavigate();
-    console.log("driver", driver);
     
     return (
         <div
