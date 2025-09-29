@@ -39,8 +39,14 @@ const useUpdateRoute = () => {
             });
         },
 
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("Error updating route:", error.message);
+            // Extract error message from backend response
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to update route";
+            notify("error", errorMessage);
         },
     });
 

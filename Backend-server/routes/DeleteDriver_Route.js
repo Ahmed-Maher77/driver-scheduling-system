@@ -48,11 +48,14 @@ router.delete("/:id", async (req, res) => {
         try {
             if (existing.assignedRoute_id) {
                 const newActivityFeed = new ActivityFeeds({
-                    route_id: deleteResult.assignedRoute_id,
+                    route_id: existing.assignedRoute_id,
                     status: "unassigned",
-                    last_driver_id: deleteResult.driver_id,
                     action_time: new Date(),
                 });
+                newActivityFeed.last_driver = {
+                    id: existing.driver_id,
+                    name: existing.name,
+                };
                 await newActivityFeed.save();
             }
         } catch (feedErr) {

@@ -31,8 +31,14 @@ const useDeleteDriver = () => {
             });
         },
 
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("Error deleting driver:", error.message);
+            // Extract error message from backend response
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to delete driver";
+            notify("error", errorMessage);
         },
     });
 

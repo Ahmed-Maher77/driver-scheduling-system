@@ -45,10 +45,10 @@ router.delete("/:id", async (req, res) => {
         // Update activity feed
         try {
             if (deletedRoute.assignedDriver_id) {
-                // Get driver details for last assignment
-                const lastDriver = await Drivers.findById(
-                    deletedRoute.assignedDriver_id
-                );
+                // Get driver details for last assignment by custom driver_id
+                const lastDriver = await Drivers.findOne({
+                    driver_id: deletedRoute.assignedDriver_id,
+                }).lean();
                 const newActivityFeed = new ActivityFeeds({
                     route_id: deletedRoute.route_id,
                     status: "unassigned",

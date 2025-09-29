@@ -42,8 +42,14 @@ const useUpdateDriver = () => {
             });
         },
 
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("Error updating driver:", error.message);
+            // Extract error message from backend response
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to update driver";
+            notify("error", errorMessage);
         },
     });
 

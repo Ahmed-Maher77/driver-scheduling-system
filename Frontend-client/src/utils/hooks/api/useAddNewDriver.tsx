@@ -33,8 +33,14 @@ const useAddNewDriver = () => {
             queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
         },
 
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("Error creating driver:", error.message);
+            // Extract error message from backend response
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to create driver";
+            notify("error", errorMessage);
         },
     });
 

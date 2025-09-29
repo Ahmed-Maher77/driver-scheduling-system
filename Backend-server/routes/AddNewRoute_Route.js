@@ -144,8 +144,10 @@ router.post("/", async (req, res) => {
         // Update activity feed
         try {
             if (data.assignedDriver_id) {
-                // Get driver details for assignment
-                const driver = await Drivers.findById(data.assignedDriver_id);
+                // Get driver details for assignment by custom driver_id
+                const driver = await Drivers.findOne({
+                    driver_id: data.assignedDriver_id,
+                }).lean();
                 const newActivityFeed = new ActivityFeeds({
                     route_id: routeId,
                     status: "assigned",

@@ -258,8 +258,10 @@ router.put("/:id", async (req, res) => {
             });
 
             if (route.status === "assigned") {
-                // Get driver details for current assignment
-                const driver = await Drivers.findById(route.assignedDriver_id);
+                // Get driver details for current assignment by custom driver_id
+                const driver = await Drivers.findOne({
+                    driver_id: route.assignedDriver_id,
+                }).lean();
                 if (driver) {
                     newActivityFeed.driver = {
                         id: driver.driver_id,
@@ -267,10 +269,10 @@ router.put("/:id", async (req, res) => {
                     };
                 }
             } else if (route.status === "unassigned") {
-                // Get driver details for last assignment
-                const lastDriver = await Drivers.findById(
-                    route.assignedDriver_id
-                );
+                // Get driver details for last assignment by custom driver_id
+                const lastDriver = await Drivers.findOne({
+                    driver_id: route.assignedDriver_id,
+                }).lean();
                 if (lastDriver) {
                     newActivityFeed.last_driver = {
                         id: lastDriver.driver_id,

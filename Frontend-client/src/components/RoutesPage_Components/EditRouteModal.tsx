@@ -194,13 +194,21 @@ const EditRouteModal = ({
                         speed_unit: formData.speedUnit,
                         notes: formData.notes,
                     };
-                    await updateRoute({
-                        routeId: formData.id,
-                        routeData: updatedRouteData,
-                    });
-                    onRouteUpdated?.();
-                    setWasUpdated(true);
-                    onClose();
+                    try {
+                        await updateRoute({
+                            routeId: formData.id,
+                            routeData: updatedRouteData,
+                        });
+                        onRouteUpdated?.();
+                        setWasUpdated(true);
+                        onClose();
+                    } catch {
+                        // Error is already handled by the mutation hook's onError
+                        // Just reset the submitting state
+                        setIsSubmitting(false);
+                        setIsCheckingAvailability(false);
+                        return;
+                    }
                 } else if (status === "unavailable") {
                     notify("error", "This driver is unavailable");
                     setIsSubmitting(false);
@@ -246,13 +254,20 @@ const EditRouteModal = ({
                 speed_unit: formData.speedUnit,
                 notes: formData.notes,
             };
-            await updateRoute({
-                routeId: formData.id,
-                routeData: updatedRouteData,
-            });
-            onRouteUpdated?.();
-            setWasUpdated(true);
-            onClose();
+            try {
+                await updateRoute({
+                    routeId: formData.id,
+                    routeData: updatedRouteData,
+                });
+                onRouteUpdated?.();
+                setWasUpdated(true);
+                onClose();
+            } catch {
+                // Error is already handled by the mutation hook's onError
+                // Just reset the submitting state
+                setIsSubmitting(false);
+                return;
+            }
         }
     };
 

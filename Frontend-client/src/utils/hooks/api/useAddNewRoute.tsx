@@ -1,8 +1,10 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axiosInstance from "./axios-utils";
-import type { AddRouteItemProps, AddRouteResponse } from "../../../common/Types/Interfaces";
+import type {
+    AddRouteItemProps,
+    AddRouteResponse,
+} from "../../../common/Types/Interfaces";
 import { notify } from "../../functions/notify";
-
 
 const useAddNewRoute = () => {
     const queryClient = useQueryClient();
@@ -28,8 +30,14 @@ const useAddNewRoute = () => {
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
         },
 
-        onError: (error) => {
+        onError: (error: any) => {
             console.error("Error creating route:", error.message);
+            // Extract error message from backend response
+            const errorMessage =
+                error.response?.data?.message ||
+                error.message ||
+                "Failed to create route";
+            notify("error", errorMessage);
         },
     });
 
