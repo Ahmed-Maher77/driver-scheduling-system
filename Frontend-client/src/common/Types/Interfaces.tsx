@@ -707,6 +707,7 @@ export interface AssignmentCardProps {
         time_unit?: string;
         timeUnit?: string;
     } | null;
+    driverId?: string;
 }
 
 // Past Routes Timeline Props

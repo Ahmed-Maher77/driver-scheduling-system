@@ -12,7 +12,7 @@ const useUpdateDriver = () => {
     const { mutateAsync, isPending, error, data } = useMutation<
         UpdateDriverResponse,
         Error,
-        { driverId: string; driverData: DriverForm }
+        { driverId: string; driverData: DriverForm; showNotification?: boolean }
     >({
         mutationFn: ({
             driverId,
@@ -23,7 +23,10 @@ const useUpdateDriver = () => {
         }) => axiosInstance.put(`/edit-driver/${driverId}`, driverData),
 
         onSuccess: (_, variables) => {
-            notify("success", "Driver updated successfully");
+            // Only show notification if showNotification is not explicitly set to false
+            if (variables.showNotification !== false) {
+                notify("success", "Driver updated successfully");
+            }
             // Invalidate relevant queries to refresh data
             queryClient.invalidateQueries({ queryKey: ["drivers"] });
             queryClient.invalidateQueries({ queryKey: ["routes"] });

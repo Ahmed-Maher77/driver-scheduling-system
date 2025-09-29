@@ -33,12 +33,12 @@ const UnsavedChangesDialog: React.FC<UnsavedChangesDialogProps> = ({
                             </h3>
                         </div>
                     </div>
-                    
+
                     {/* ========================= Message ========================= */}
                     <div className="mb-6">
                         <p className="text-sm text-gray-600">{message}</p>
                     </div>
-                    
+
                     {/* ========================= Buttons ========================= */}
                     <div className="flex justify-end space-x-3">
                         {/* Cancel Button */}

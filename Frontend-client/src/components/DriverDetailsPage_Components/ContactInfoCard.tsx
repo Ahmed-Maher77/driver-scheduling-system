@@ -20,6 +20,45 @@ const ContactInfoCard = ({
     linkedin,
     facebook,
 }: ContactInfoCardProps) => {
+    // Filter out empty contact channels
+    const contactChannels = [
+        {
+            key: "phone",
+            label: "Phone",
+            value: phone,
+            href: null,
+        },
+        {
+            key: "email",
+            label: "Email",
+            value: email,
+            href: email ? `mailto:${email}` : null,
+        },
+        {
+            key: "whatsapp",
+            label: "WhatsApp",
+            value: whatsapp,
+            href: toWhatsAppLink(whatsapp),
+        },
+        {
+            key: "linkedin",
+            label: "LinkedIn",
+            value: linkedin,
+            href: toAbsoluteUrl(linkedin),
+        },
+        {
+            key: "facebook",
+            label: "Facebook",
+            value: facebook,
+            href: toAbsoluteUrl(facebook),
+        },
+    ].filter((channel) => channel.value && channel.value.trim() !== "");
+
+    // Don't render the card if no contact channels exist
+    if (contactChannels.length === 0) {
+        return null;
+    }
+
     return (
         <div className="white-bg p-4 rounded-lg shadow-md">
             {/* ================== Title ================== */}
@@ -29,32 +68,14 @@ const ContactInfoCard = ({
 
             {/* ================== Info Rows ================== */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3">
-                {/* Phone */}
-                <InfoRow label="Phone" value={phone || "-"} />
-                {/* Email */}
-                <InfoRow
-                    label="Email"
-                    value={email || "-"}
-                    href={email ? `mailto:${email}` : null}
-                />
-                {/* WhatsApp */}
-                <InfoRow
-                    label="WhatsApp"
-                    value={whatsapp || "-"}
-                    href={toWhatsAppLink(whatsapp)}
-                />
-                {/* LinkedIn */}
-                <InfoRow
-                    label="LinkedIn"
-                    value={linkedin || "-"}
-                    href={toAbsoluteUrl(linkedin)}
-                />
-                {/* Facebook */}
-                <InfoRow
-                    label="Facebook"
-                    value={facebook || "-"}
-                    href={toAbsoluteUrl(facebook)}
-                />
+                {contactChannels.map((channel) => (
+                    <InfoRow
+                        key={channel.key}
+                        label={channel.label}
+                        value={channel.value}
+                        href={channel.href}
+                    />
+                ))}
             </div>
         </div>
     );
