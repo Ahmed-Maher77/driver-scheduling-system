@@ -7,9 +7,9 @@ const ContactInfo = ({
     linkedin = "https://www.linkedin.com/in/ahmed-maher-algohary",
     facebook = "https://web.facebook.com/profile.php?id=100012154268952",
 }: ContactInfoProps) => {
-    const formattedWhatsApp = `+20 ${whatsapp
-        .replace("+20", "")
-        .replace(/^(20)?/, "")}`;
+    const formattedWhatsApp = whatsapp.startsWith("+20")
+        ? whatsapp
+        : `+20${whatsapp.replace(/^20/, "")}`;
 
     type Item = {
         key: string;
@@ -38,7 +38,7 @@ const ContactInfo = ({
             icon: "💬",
             label: "WhatsApp",
             value: formattedWhatsApp,
-            href: `https://wa.me/${whatsapp}`,
+            href: `https://wa.me/${whatsapp.replace(/[^\d]/g, "")}`,
         },
         {
             key: "linkedin",
@@ -67,7 +67,7 @@ const ContactInfo = ({
                             <span className="label">{label}</span>
                             {href ? (
                                 <a
-                                    className="value underline-hover"
+                                    className="value underline-hover w-fit"
                                     href={href}
                                 >
                                     {value}

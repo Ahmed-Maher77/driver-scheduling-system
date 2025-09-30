@@ -4,6 +4,8 @@ import ActivityFeedsLayout from "../../components/ActivityFeedsPage_Components/A
 import ActivityFeedsPageHeader from "../../components/ActivityFeedsPage_Components/ActivityFeedsPageHeader";
 import ActivityFeedsContainer from "../../components/ActivityFeedsPage_Components/ActivityFeedsContainer";
 import type { ActivityFeedFilters } from "../../common/Types/Interfaces";
+import AnimatedPage from "../../common/Animations/AnimatedPage/AnimatedPage";
+import AnimatedComponent from "../../common/Animations/AnimatedComponent/AnimatedComponent";
 
 const ActivityFeedsPage = () => {
     // Pagination Info
@@ -70,26 +72,35 @@ const ActivityFeedsPage = () => {
     }, [searchBy]);
 
     return (
-        <ActivityFeedsLayout>
-            <ActivityFeedsPageHeader />
-            <ActivityFeedsContainer
-                pageNumber={paginationInfo.pageNumber}
-                limit={10}
-                onPageChange={(page) =>
-                    setPaginationInfo((prev) => ({ ...prev, pageNumber: page }))
-                }
-                filters={searchBy}
-                onFilterChange={setSearchBy}
-                onClearFilters={() =>
-                    setSearchBy({
-                        status: "",
-                        driverName: "",
-                        dateFrom: "",
-                        dateTo: "",
-                    })
-                }
-            />
-        </ActivityFeedsLayout>
+        <AnimatedPage>
+            <ActivityFeedsLayout>
+                <AnimatedComponent delay={0.1} type="slide" direction="down">
+                    <ActivityFeedsPageHeader />
+                </AnimatedComponent>
+                <AnimatedComponent delay={0.2} type="fade">
+                    <ActivityFeedsContainer
+                        pageNumber={paginationInfo.pageNumber}
+                        limit={10}
+                        onPageChange={(page) =>
+                            setPaginationInfo((prev) => ({
+                                ...prev,
+                                pageNumber: page,
+                            }))
+                        }
+                        filters={searchBy}
+                        onFilterChange={setSearchBy}
+                        onClearFilters={() =>
+                            setSearchBy({
+                                status: "",
+                                driverName: "",
+                                dateFrom: "",
+                                dateTo: "",
+                            })
+                        }
+                    />
+                </AnimatedComponent>
+            </ActivityFeedsLayout>
+        </AnimatedPage>
     );
 };
 

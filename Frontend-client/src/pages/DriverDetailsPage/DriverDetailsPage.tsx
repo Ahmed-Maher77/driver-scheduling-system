@@ -18,6 +18,8 @@ import useGetDriverDetails from "../../utils/hooks/api/useGetDriverDetails";
 import ErrorPage from "../../components/ErrorDetailsPage/ErrorPage";
 import LoadingPageSpinner from "../../components/LoadingPageSpinner/LoadingPageSpinner";
 import useDeleteDriver from "../../utils/hooks/api/useDeleteDriver";
+import AnimatedPage from "../../common/Animations/AnimatedPage/AnimatedPage";
+import AnimatedComponent from "../../common/Animations/AnimatedComponent/AnimatedComponent";
 
 const DriverDetailsPage = () => {
     const navigate = useNavigate();
@@ -64,115 +66,144 @@ const DriverDetailsPage = () => {
     }
 
     return (
-        <div className="driver-details-page main-page py-6 pb-[60px] text-sm md:text-base lg:text-lg">
-            <div className="container">
-                {/* ======================== Header ======================== */}
-                <div className="header-container flex items-center gap-2 justify-between">
-                    <PageHeader
-                        title="Driver Details"
-                        subtitle="View and manage driver information, vehicle assignments, and activity history."
-                    />
-                    <BackButton />
+        <AnimatedPage>
+            <div className="driver-details-page main-page py-6 pb-[60px] text-sm md:text-base lg:text-lg">
+                <div className="container">
+                    {/* ======================== Header ======================== */}
+                    <AnimatedComponent
+                        delay={0.1}
+                        type="slide"
+                        direction="down"
+                    >
+                        <div className="header-container flex items-center gap-2 justify-between">
+                            <PageHeader
+                                title="Driver Details"
+                                subtitle="View and manage driver information, vehicle assignments, and activity history."
+                            />
+                            <BackButton />
+                        </div>
+                    </AnimatedComponent>
+
+                    {/* Main */}
+                    <main className="mt-8">
+                        {/* Header-like summary with actions */}
+                        <AnimatedComponent delay={0.2} type="scale">
+                            <HeaderSummary
+                                name={driverData?.name}
+                                id={driverData?.driver_id}
+                                status={driverData?.status}
+                                joinedAt={driverData?.joined_at}
+                                pictureUrl={
+                                    driverData?.picture ||
+                                    (driverData?.gender === "Male"
+                                        ? defaultManImage
+                                        : defaultWomanImage)
+                                }
+                                onEdit={handleEdit}
+                                onDelete={handleDelete}
+                            />
+                        </AnimatedComponent>
+
+                        {/* Info + Notes */}
+                        <AnimatedComponent delay={0.3} type="fade">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
+                                {/* Driver Info */}
+                                <section className="md:col-span-2">
+                                    <ContactInfoCard
+                                        phone={driverData?.phone}
+                                        email={
+                                            driverData?.contact_channels?.email
+                                        }
+                                        whatsapp={
+                                            driverData?.contact_channels
+                                                ?.whatsapp
+                                        }
+                                        linkedin={
+                                            driverData?.contact_channels
+                                                ?.linkedin
+                                        }
+                                        facebook={
+                                            driverData?.contact_channels
+                                                ?.facebook
+                                        }
+                                    />
+                                    <div className="h-5" />
+                                    <PersonalLocationCard
+                                        gender={driverData?.gender}
+                                        address={driverData?.address}
+                                        city={driverData?.city}
+                                        country={driverData?.country}
+                                    />
+                                </section>
+
+                                {/* Notes */}
+                                <NotesCard notes={driverData?.notes} />
+                            </div>
+                        </AnimatedComponent>
+
+                        {/* Documents */}
+                        <AnimatedComponent
+                            delay={0.4}
+                            type="slide"
+                            direction="up"
+                        >
+                            <DriverDocuments
+                                nationalId={driverData?.national_id}
+                                license={driverData?.driving_license?.image}
+                            />
+                        </AnimatedComponent>
+
+                        {/* Vehicle + Current Assignment */}
+                        <AnimatedComponent delay={0.5} type="fade">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
+                                {/* Vehicle */}
+                                <VehicleCard
+                                    type={driverData?.vehicle?.type}
+                                    make={driverData?.vehicle?.make}
+                                    model={driverData?.vehicle?.model}
+                                    year={driverData?.vehicle?.year}
+                                    color={driverData?.vehicle?.color}
+                                />
+
+                                {/* Assignment */}
+                                <AssignmentCard
+                                    assignedRoute={
+                                        driverData?.assignedRoute as any
+                                    }
+                                    driverId={driverData?.driver_id}
+                                />
+                            </div>
+                        </AnimatedComponent>
+
+                        {/* Past Routes (Timeline) */}
+                        <AnimatedComponent delay={0.6} type="scale">
+                            <PastRoutesTimeline
+                                items={driverData?.pastAssignedRoutes as any}
+                            />
+                        </AnimatedComponent>
+                    </main>
                 </div>
 
-                {/* Main */}
-                <main className="mt-8">
-                    {/* Header-like summary with actions */}
-                    <HeaderSummary
-                        name={driverData?.name}
-                        id={driverData?.driver_id}
-                        status={driverData?.status}
-                        joinedAt={driverData?.joined_at}
-                        pictureUrl={
-                            driverData?.picture ||
-                            (driverData?.gender === "Male"
-                                ? defaultManImage
-                                : defaultWomanImage)
-                        }
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                    />
+                {/* Edit Driver Modal */}
+                <EditDriverModal
+                    isOpen={isEditModalOpen}
+                    onClose={handleCloseEdit}
+                    driverId={driverData?.driver_id}
+                    drivers={[driverData as any]}
+                />
 
-                    {/* Info + Notes */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-                        {/* Driver Info */}
-                        <section className="md:col-span-2">
-                            <ContactInfoCard
-                                phone={driverData?.phone}
-                                email={driverData?.contact_channels?.email}
-                                whatsapp={
-                                    driverData?.contact_channels?.whatsapp
-                                }
-                                linkedin={
-                                    driverData?.contact_channels?.linkedin
-                                }
-                                facebook={
-                                    driverData?.contact_channels?.facebook
-                                }
-                            />
-                            <div className="h-5" />
-                            <PersonalLocationCard
-                                gender={driverData?.gender}
-                                address={driverData?.address}
-                                city={driverData?.city}
-                                country={driverData?.country}
-                            />
-                        </section>
-
-                        {/* Notes */}
-                        <NotesCard notes={driverData?.notes} />
-                    </div>
-
-                    {/* Documents */}
-                    <DriverDocuments
-                        nationalId={driverData?.national_id}
-                        license={driverData?.driving_license?.image}
-                    />
-
-                    {/* Vehicle + Current Assignment */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-5">
-                        {/* Vehicle */}
-                        <VehicleCard
-                            type={driverData?.vehicle?.type}
-                            make={driverData?.vehicle?.make}
-                            model={driverData?.vehicle?.model}
-                            year={driverData?.vehicle?.year}
-                            color={driverData?.vehicle?.color}
-                        />
-
-                        {/* Assignment */}
-                        <AssignmentCard
-                            assignedRoute={driverData?.assignedRoute as any}
-                            driverId={driverData?.driver_id}
-                        />
-                    </div>
-
-                    {/* Past Routes (Timeline) */}
-                    <PastRoutesTimeline
-                        items={driverData?.pastAssignedRoutes as any}
-                    />
-                </main>
+                {/* Delete Confirmation Modal */}
+                <DeleteConfirmationModal
+                    isOpen={showDeleteConfirm}
+                    onClose={() => setShowDeleteConfirm(false)}
+                    onConfirm={confirmDelete}
+                    isLoading={isDeleting}
+                    title="Confirm Delete"
+                    message={`Are you sure you want to delete driver ${driverData?.driver_id}? This action cannot be undone.`}
+                    confirmButtonText="Delete Driver"
+                />
             </div>
-
-            {/* Edit Driver Modal */}
-            <EditDriverModal
-                isOpen={isEditModalOpen}
-                onClose={handleCloseEdit}
-                driverId={driverData?.driver_id}
-                drivers={[driverData as any]}
-            />
-
-            {/* Delete Confirmation Modal */}
-            <DeleteConfirmationModal
-                isOpen={showDeleteConfirm}
-                onClose={() => setShowDeleteConfirm(false)}
-                onConfirm={confirmDelete}
-                isLoading={isDeleting}
-                title="Confirm Delete"
-                message={`Are you sure you want to delete driver ${driverData?.driver_id}? This action cannot be undone.`}
-                confirmButtonText="Delete Driver"
-            />
-        </div>
+        </AnimatedPage>
     );
 };
 

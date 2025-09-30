@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import PageHeader from "../../components/Headings/PageHeader/PageHeader";
-import type { AddRouteItemProps, SearchBy } from "../../common/Types/Interfaces";
+import type {
+    AddRouteItemProps,
+    SearchBy,
+} from "../../common/Types/Interfaces";
 import EditRouteModal from "../../components/RoutesPage_Components/EditRouteModal";
 import AddRouteModal from "../../components/RoutesPage_Components/AddRouteModal";
 import { exportCsv } from "../../components/RoutesPage_Components/exportCsv";
@@ -17,6 +20,8 @@ import { extractDate } from "../../utils/functions/formatDate";
 import useAddNewRoute from "../../utils/hooks/api/useAddNewRoute";
 import useDeleteRoute from "../../utils/hooks/api/useDeleteRoute";
 import useDeleteSelectedRoutes from "../../utils/hooks/api/useDeleteSelectedRoutes";
+import AnimatedPage from "../../common/Animations/AnimatedPage/AnimatedPage";
+import AnimatedComponent from "../../common/Animations/AnimatedComponent/AnimatedComponent";
 
 const RoutesPage = () => {
     // Pagination Info
@@ -278,103 +283,120 @@ const RoutesPage = () => {
     };
 
     return (
-        <div className="Routes-Page main-page py-6 pb-[60px] popup-scrollbar">
-            <div className="container">
-                <PageHeader title="Route Management" />
+        <AnimatedPage>
+            <div className="Routes-Page main-page py-6 pb-[60px] popup-scrollbar">
+                <div className="container">
+                    <AnimatedComponent
+                        delay={0.1}
+                        type="slide"
+                        direction="down"
+                    >
+                        <PageHeader title="Route Management" />
+                    </AnimatedComponent>
 
-                {/* ================== Routes Controls ================== */}
-                <RoutesControls
-                    onExportCsv={handleExportCsv}
-                    onAddRoute={openAddRoute}
-                    isExportingCsv={isExportingCsv}
+                    {/* ================== Routes Controls ================== */}
+                    <AnimatedComponent delay={0.2} type="fade">
+                        <RoutesControls
+                            onExportCsv={handleExportCsv}
+                            onAddRoute={openAddRoute}
+                            isExportingCsv={isExportingCsv}
+                        />
+                    </AnimatedComponent>
+
+                    {/* ================== Routes Filters Section ================== */}
+                    <AnimatedComponent delay={0.3} type="slide" direction="up">
+                        <FiltersSection
+                            showFilters={showFilters}
+                            onToggleFilters={() =>
+                                setShowFilters((prev) => !prev)
+                            }
+                            searchBy={searchBy}
+                            setSearchBy={setSearchBy}
+                            clearFilters={clearFilters}
+                        />
+                    </AnimatedComponent>
+
+                    <AnimatedComponent delay={0.4} type="scale">
+                        <main
+                            className={`white-bg p-4 rounded-lg ${
+                                showFilters ? "rounded-t-none" : ""
+                            } shadow-md transition-all duration-300 ease-in-out`}
+                        >
+                            {/* Bulk Actions Bar */}
+                            <BulkActionsBar
+                                selectedCount={selectedCount}
+                                onDeleteSelected={handleDeleteSelectedRoutes}
+                            />
+
+                            {/* Routes Table */}
+                            <RoutesTable
+                                routes={
+                                    fetchedRoutesData?.data?.map((r: any) => ({
+                                        ...r,
+                                        assigned_at:
+                                            extractDate(r.assigned_at) || null,
+                                    })) || []
+                                }
+                                selected={selected}
+                                selectedCount={selectedCount}
+                                allSelected={allSelected}
+                                onToggleAll={toggleAll}
+                                onToggleOne={toggleOne}
+                                onViewRoute={viewRoute}
+                                onEditRoute={editRoute}
+                                onDeleteRoute={handleDeleteRoute}
+                                isLoading={isLoading}
+                                error={error}
+                            />
+
+                            {/* Pagination */}
+                            <Pagination
+                                paginationInfo={paginationInfo}
+                                onPageChange={setPaginationInfo}
+                            />
+                        </main>
+                    </AnimatedComponent>
+                </div>
+
+                {/* ================== Edit Route Modal ================== */}
+                {editingRouteId && (
+                    <EditRouteModal
+                        isOpen={isEditModalOpen}
+                        onClose={handleCloseEditModal}
+                        routeId={editingRouteId}
+                    />
+                )}
+
+                {/* ================== Add Route Modal ================== */}
+                <AddRouteModal
+                    isOpen={isAddModalOpen}
+                    onClose={handleCloseAddModal}
+                    onAddRoute={handleAddRoute}
                 />
 
-                {/* ================== Routes Filters Section ================== */}
-                <FiltersSection
-                    showFilters={showFilters}
-                    onToggleFilters={() => setShowFilters((prev) => !prev)}
-                    searchBy={searchBy}
-                    setSearchBy={setSearchBy}
-                    clearFilters={clearFilters}
+                {/* ================== Delete Confirmation Modal ================== */}
+                <DeleteConfirmationModal
+                    isOpen={showDeleteConfirm}
+                    onClose={() => setShowDeleteConfirm(false)}
+                    onConfirm={confirmDeleteRoute}
+                    title="Confirm Delete"
+                    message={`Are you sure you want to delete route ${deletingRouteId}? This action cannot be undone.`}
+                    confirmButtonText="Delete Route"
+                    isLoading={isDeletingRoute}
                 />
 
-                <main
-                    className={`white-bg p-4 rounded-lg ${
-                        showFilters ? "rounded-t-none" : ""
-                    } shadow-md transition-all duration-300 ease-in-out`}
-                >
-                    {/* Bulk Actions Bar */}
-                    <BulkActionsBar
-                        selectedCount={selectedCount}
-                        onDeleteSelected={handleDeleteSelectedRoutes}
-                    />
-
-                    {/* Routes Table */}
-                    <RoutesTable
-                        routes={
-                            fetchedRoutesData?.data?.map((r: any) => ({
-                                ...r,
-                                assigned_at: extractDate(r.assigned_at) || null,
-                            })) || []
-                        }
-                        selected={selected}
-                        selectedCount={selectedCount}
-                        allSelected={allSelected}
-                        onToggleAll={toggleAll}
-                        onToggleOne={toggleOne}
-                        onViewRoute={viewRoute}
-                        onEditRoute={editRoute}
-                        onDeleteRoute={handleDeleteRoute}
-                        isLoading={isLoading}
-                        error={error}
-                    />
-
-                    {/* Pagination */}
-                    <Pagination
-                        paginationInfo={paginationInfo}
-                        onPageChange={setPaginationInfo}
-                    />
-                </main>
+                {/* ================== Bulk Delete Confirmation Modal ================== */}
+                <DeleteConfirmationModal
+                    isOpen={showBulkDeleteConfirm}
+                    onClose={() => setShowBulkDeleteConfirm(false)}
+                    onConfirm={confirmBulkDeleteRoutes}
+                    title="Confirm Bulk Delete"
+                    message={`Are you sure you want to delete ${selectedCount} selected routes? This action cannot be undone.`}
+                    confirmButtonText="Delete Selected"
+                    isLoading={isBulkDeleting}
+                />
             </div>
-
-            {/* ================== Edit Route Modal ================== */}
-            {editingRouteId && (
-                <EditRouteModal
-                    isOpen={isEditModalOpen}
-                    onClose={handleCloseEditModal}
-                    routeId={editingRouteId}
-                />
-            )}
-
-            {/* ================== Add Route Modal ================== */}
-            <AddRouteModal
-                isOpen={isAddModalOpen}
-                onClose={handleCloseAddModal}
-                onAddRoute={handleAddRoute}
-            />
-
-            {/* ================== Delete Confirmation Modal ================== */}
-            <DeleteConfirmationModal
-                isOpen={showDeleteConfirm}
-                onClose={() => setShowDeleteConfirm(false)}
-                onConfirm={confirmDeleteRoute}
-                title="Confirm Delete"
-                message={`Are you sure you want to delete route ${deletingRouteId}? This action cannot be undone.`}
-                confirmButtonText="Delete Route"
-                isLoading={isDeletingRoute}
-            />
-
-            {/* ================== Bulk Delete Confirmation Modal ================== */}
-            <DeleteConfirmationModal
-                isOpen={showBulkDeleteConfirm}
-                onClose={() => setShowBulkDeleteConfirm(false)}
-                onConfirm={confirmBulkDeleteRoutes}
-                title="Confirm Bulk Delete"
-                message={`Are you sure you want to delete ${selectedCount} selected routes? This action cannot be undone.`}
-                confirmButtonText="Delete Selected"
-                isLoading={isBulkDeleting}
-            />
-        </div>
+        </AnimatedPage>
     );
 };
 

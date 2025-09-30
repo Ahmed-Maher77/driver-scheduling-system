@@ -20,7 +20,7 @@ const DriverAssignment = ({
                     />
                 ) : (
                     <div className="no-driver-message p-4 rounded-lg border border-gray-200 bg-gray-50 flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
                             <i className="fa-solid fa-user-slash text-gray-400 text-lg"></i>
                         </div>
                         <div>
@@ -39,7 +39,7 @@ const DriverAssignment = ({
                     <DriverCard title="Previous Driver" driver={lastDriver} />
                 ) : (
                     <div className="no-driver-message p-4 rounded-lg border border-gray-200 bg-gray-50 flex items-center gap-3">
-                        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center shrink-0">
                             <i className="fa-solid fa-history text-gray-400 text-lg"></i>
                         </div>
                         <div>

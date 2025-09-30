@@ -1,6 +1,6 @@
 # Driver Scheduling System
 
-Full-stack Driver Scheduling System for managing drivers and delivery routes in a simple, visual way. Built with Node.js and React.js, it provides an intuitive dashboard to add drivers, create routes, and track assignments in real time. Developed for the DRB Internship Program 2025, showcasing clean architecture, responsive UI, and practical scheduling features.
+Full-stack Driver Scheduling System for managing drivers and delivery routes with modern animations and real-time connectivity monitoring. Built with Node.js and React.js, it provides an intuitive dashboard with smooth page transitions, animated components, and comprehensive driver/route management. Features include Framer Motion animations, internet connectivity monitoring, and responsive design. Developed for the DRB Internship Program 2025, showcasing clean architecture, modern UI/UX, and practical scheduling features.
 
 ---
 
@@ -12,8 +12,16 @@ The Driver Scheduling System is a logistics management platform that enables eff
 
 ## 🌐 Live Preview
 
--   **Frontend Application**: [https://driver-scheduling-system.vercel.app/](https://driver-scheduling-system.vercel.app/)
+-   **Watch Live Demo (Frontend Application)**: [https://driver-scheduling-system.vercel.app/](https://driver-scheduling-system.vercel.app/)
 -   **Backend API**: [https://driver-scheduling-system-5kmi.vercel.app/](https://driver-scheduling-system-5kmi.vercel.app/)
+
+---
+
+## 📸 Website Preview (UI Mockup)
+
+<a href="https://driver-scheduling-system.vercel.app/" target="_blank" rel="noopener noreferrer" title="demo">
+  <img src="uploaded-img-on-github-readme" alt="website preview - demo" width="400">
+</a>
 
 ---
 
@@ -32,6 +40,7 @@ The Driver Scheduling System is a logistics management platform that enables eff
 -   **React Toastify** - Notification system
 -   **FontAwesome** - Icon library
 -   **Google Fonts** - Typography and font styling
+-   **Framer Motion** - Advanced animations and transitions
 -   **Redux Toolkit** - State management (for future scalability)
 
 ### Backend
@@ -96,11 +105,14 @@ The Driver Scheduling System is a logistics management platform that enables eff
 ### 📱 User Interface
 
 -   **Responsive Design**: Mobile-first approach with cross-device compatibility
--   **Modern UI/UX**: Clean, intuitive interface design
--   **Modal-based Editing**: Streamlined editing experience
+-   **Modern UI/UX**: Clean, intuitive interface design with smooth animations
+-   **Page Transitions**: Smooth page-to-page navigation with Framer Motion
+-   **Component Animations**: Staggered animations for lists, tables, and cards
+-   **Modal-based Editing**: Streamlined editing experience with animated modals
 -   **Loading States**: Proper loading indicators and error handling
 -   **Toast Notifications**: User-friendly success and error messages
 -   **Accessibility**: Keyboard navigation and screen reader support
+-   **Internet Connectivity**: Real-time connection status monitoring with retry functionality
 
 ### 🔧 Advanced Features
 
@@ -110,6 +122,10 @@ The Driver Scheduling System is a logistics management platform that enables eff
 -   **URL State Management**: Filter states preserved in URL parameters
 -   **Unsaved Changes Protection**: Prevents accidental data loss
 -   **Bulk Actions**: Efficient management of multiple records
+-   **Internet Connectivity Monitoring**: Real-time connection status with floating notifications
+-   **Advanced Animations**: Framer Motion-powered smooth transitions and micro-interactions
+-   **Table Row Animations**: Bottom-to-top staggered animations for data tables
+-   **Hover Effects**: Enhanced button and card interactions with CSS transforms
 
 ---
 
@@ -206,7 +222,17 @@ driver-scheduling-system/
 │   │   │   └── hooks/            # Custom hooks
 │   │   │       ├── api/          # API hooks (React Query)
 │   │   │       └── activity-feeds/
-│   │   ├── common/               # Shared types and interfaces
+│   │   ├── common/               # Shared components and utilities
+│   │   │   ├── Animations/       # Framer Motion animation components
+│   │   │   │   ├── AnimatedPage/
+│   │   │   │   ├── AnimatedComponent/
+│   │   │   │   ├── AnimatedList/
+│   │   │   │   ├── AnimatedModal/
+│   │   │   │   ├── AnimatedTableRow/
+│   │   │   │   ├── AnimatedButton/
+│   │   │   │   └── AnimatedLoadingSpinner/
+│   │   │   ├── InternetChecker/  # Internet connectivity monitoring
+│   │   │   └── Types/            # Shared types and interfaces
 │   │   └── main.tsx              # Application entry point
 │   ├── public/                   # Static assets
 │   └── package.json
@@ -325,10 +351,10 @@ GET /get-all-drivers?page=1&limit=10&status=available&vehicleType=Car
 
 ### Additional Pages
 
--   **About Page**: Project information and team details
--   **Contact Page**: Contact information and support
--   **Calendar Page**: Route scheduling calendar view
--   **Admin Panel**: System administration (future feature)
+-   **About Page**: Project information, team details, and internet connectivity demo
+-   **Contact Page**: Contact information and support with responsive layout
+-   **Calendar Page**: Route scheduling calendar view with animated day grids
+-   **Admin Panel**: System administration with animated welcome screen
 
 ---
 
@@ -370,6 +396,10 @@ GET /get-all-drivers?page=1&limit=10&status=available&vehicleType=Car
 -   [ ] API rate limiting and security enhancements
 -   [ ] Push notifications for mobile devices
 -   [ ] Advanced scheduling algorithms with machine learning
+-   [ ] Progressive Web App (PWA) capabilities
+-   [ ] Dark mode theme support
+-   [ ] Advanced animation customization options
+-   [ ] Offline mode with data synchronization
 
 ---
 

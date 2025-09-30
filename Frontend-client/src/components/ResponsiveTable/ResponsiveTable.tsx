@@ -8,6 +8,7 @@ import AssignedDriverCell from "./AssignedDriverCell";
 import DetailsCell from "./DetailsCell";
 import DefaultCell from "./DefaultCell";
 import { useLocation } from "react-router-dom";
+import AnimatedTableRow from "../../common/Animations/AnimatedTableRow/AnimatedTableRow";
 
 function buildColumns<T extends Record<string, unknown>>({
     columns,
@@ -38,7 +39,8 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
     isLoading = false,
     error = null,
 }: ResponsiveTableProps<T>) => {
-    const isActivityFeedsPage = useLocation().pathname.includes("/activity-feeds");
+    const isActivityFeedsPage =
+        useLocation().pathname.includes("/activity-feeds");
     const effectiveColumns = buildColumns<T>({ columns, headers, rows });
     return (
         <div
@@ -90,7 +92,7 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
                         </tr>
                     ) : (
                         rows?.map((row, rowIdx) => (
-                            <tr key={rowIdx}>
+                            <AnimatedTableRow key={rowIdx} index={rowIdx}>
                                 {effectiveColumns.map((col, colIdx) => {
                                     // Assigned Driver Cell
                                     if (String(col.key) === "assignedDriver") {
@@ -131,7 +133,7 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
                                         />
                                     );
                                 })}
-                            </tr>
+                            </AnimatedTableRow>
                         ))
                     )}
                 </tbody>

@@ -15,6 +15,8 @@ import useGetAllDrivers from "../../utils/hooks/api/useGetAllDrivers.tsx";
 import Pagination from "../../components/Pagination/Pagination.tsx";
 import useDeleteDriver from "../../utils/hooks/api/useDeleteDriver.tsx";
 import useDeleteSelectedDrivers from "../../utils/hooks/api/useDeleteSelectedDrivers.tsx";
+import AnimatedPage from "../../common/Animations/AnimatedPage/AnimatedPage";
+import AnimatedComponent from "../../common/Animations/AnimatedComponent/AnimatedComponent";
 
 const DriversPage = () => {
     // Pagination Info
@@ -223,97 +225,117 @@ const DriversPage = () => {
     };
 
     return (
-        <div className="Drivers-Page main-page py-6 pb-[60px] popup-scrollbar">
-            <div className="container">
-                <PageHeader title="Drivers" />
+        <AnimatedPage>
+            <div className="Drivers-Page main-page py-6 pb-[60px] popup-scrollbar">
+                <div className="container">
+                    <AnimatedComponent
+                        delay={0.1}
+                        type="slide"
+                        direction="down"
+                    >
+                        <PageHeader title="Drivers" />
+                    </AnimatedComponent>
 
-                {/* ================== Drivers Controls ================== */}
-                <DriversControls
-                    onExportCsv={handleExportCsv}
-                    onAddDriver={openAddDriver}
-                    isExportingCsv={isExportingCsv}
+                    {/* ================== Drivers Controls ================== */}
+                    <AnimatedComponent delay={0.2} type="fade">
+                        <DriversControls
+                            onExportCsv={handleExportCsv}
+                            onAddDriver={openAddDriver}
+                            isExportingCsv={isExportingCsv}
+                        />
+                    </AnimatedComponent>
+
+                    {/* ================== Drivers Filters Section ================== */}
+                    <AnimatedComponent delay={0.3} type="slide" direction="up">
+                        <DriversFiltersSection
+                            showFilters={showFilters}
+                            onToggleFilters={() => setShowFilters((v) => !v)}
+                            searchBy={searchBy}
+                            setSearchBy={setSearchBy}
+                            clearFilters={clearFilters}
+                        />
+                    </AnimatedComponent>
+
+                    {/* ================== Drivers Table ================== */}
+                    <AnimatedComponent delay={0.4} type="scale">
+                        <main
+                            className={`white-bg p-4 rounded-lg ${
+                                showFilters ? "rounded-t-none" : ""
+                            } shadow-md transition-all duration-300 ease-in-out`}
+                        >
+                            {/* Bulk Actions Bar */}
+                            <BulkActionsBar
+                                selectedCount={selectedCount}
+                                onDeleteSelected={handleDeleteSelectedDrivers}
+                            />
+
+                            {/* Drivers Table */}
+                            <DriversTable
+                                drivers={drivers}
+                                selected={selected}
+                                selectedCount={selectedCount}
+                                allSelected={allSelected}
+                                onToggleAll={toggleAll}
+                                onToggleOne={toggleOne}
+                                onViewDriver={(id) =>
+                                    navigate(`/drivers/${id}`)
+                                }
+                                onEditDriver={(id) => openEditDriver(id)}
+                                onDeleteDriver={handleDeleteDriver}
+                                isLoading={isLoading}
+                                error={error}
+                            />
+
+                            {/* Pagination */}
+                            <Pagination
+                                paginationInfo={paginationInfo}
+                                onPageChange={setPaginationInfo}
+                            />
+                        </main>
+                    </AnimatedComponent>
+                </div>
+
+                {/* ================== Add Driver Modal ================== */}
+                {isAddModalOpen && (
+                    <AddDriverModal
+                        isOpen={isAddModalOpen}
+                        onClose={closeModals}
+                    />
+                )}
+
+                {/* ================== Edit Driver Modal ================== */}
+                {isEditModalOpen && (
+                    <EditDriverModal
+                        isOpen={isEditModalOpen}
+                        onClose={closeModals}
+                        driverId={editingDriverId}
+                        drivers={drivers as any}
+                    />
+                )}
+
+                {/* ================== Delete Confirmation Modal ================== */}
+                <DeleteConfirmationModal
+                    isOpen={showDeleteConfirm}
+                    onClose={() => setShowDeleteConfirm(false)}
+                    onConfirm={confirmDeleteDriver}
+                    title="Confirm Delete"
+                    message={`Are you sure you want to delete driver ${deletingDriverId}? This action cannot be undone.`}
+                    confirmButtonText="Delete Driver"
+                    isLoading={isDeletingDriver}
                 />
 
-                {/* ================== Drivers Filters Section ================== */}
-                <DriversFiltersSection
-                    showFilters={showFilters}
-                    onToggleFilters={() => setShowFilters((v) => !v)}
-                    searchBy={searchBy}
-                    setSearchBy={setSearchBy}
-                    clearFilters={clearFilters}
+                {/* ================== Bulk Delete Confirmation Modal ================== */}
+                <DeleteConfirmationModal
+                    isOpen={showBulkDeleteConfirm}
+                    onClose={() => setShowBulkDeleteConfirm(false)}
+                    onConfirm={confirmBulkDelete}
+                    title="Confirm Bulk Delete"
+                    message={`Are you sure you want to delete ${selectedCount} selected drivers? This action cannot be undone.`}
+                    confirmButtonText="Delete Selected"
+                    isLoading={isBulkDeleting}
                 />
-
-                {/* ================== Drivers Table ================== */}
-                <main
-                    className={`white-bg p-4 rounded-lg ${
-                        showFilters ? "rounded-t-none" : ""
-                    } shadow-md transition-all duration-300 ease-in-out`}
-                >
-                    {/* Bulk Actions Bar */}
-                    <BulkActionsBar
-                        selectedCount={selectedCount}
-                        onDeleteSelected={handleDeleteSelectedDrivers}
-                    />
-
-                    {/* Drivers Table */}
-                    <DriversTable
-                        drivers={drivers}
-                        selected={selected}
-                        selectedCount={selectedCount}
-                        allSelected={allSelected}
-                        onToggleAll={toggleAll}
-                        onToggleOne={toggleOne}
-                        onViewDriver={(id) => navigate(`/drivers/${id}`)}
-                        onEditDriver={(id) => openEditDriver(id)}
-                        onDeleteDriver={handleDeleteDriver}
-                        isLoading={isLoading}
-                        error={error}
-                    />
-
-                    {/* Pagination */}
-                    <Pagination
-                        paginationInfo={paginationInfo}
-                        onPageChange={setPaginationInfo}
-                    />
-                </main>
             </div>
-            {/* ================== Add Driver Modal ================== */}
-            {isAddModalOpen && (
-                <AddDriverModal isOpen={isAddModalOpen} onClose={closeModals} />
-            )}
-
-            {/* ================== Edit Driver Modal ================== */}
-            {isEditModalOpen && (
-                <EditDriverModal
-                    isOpen={isEditModalOpen}
-                    onClose={closeModals}
-                    driverId={editingDriverId}
-                    drivers={drivers as any}
-                />
-            )}
-
-            {/* ================== Delete Confirmation Modal ================== */}
-            <DeleteConfirmationModal
-                isOpen={showDeleteConfirm}
-                onClose={() => setShowDeleteConfirm(false)}
-                onConfirm={confirmDeleteDriver}
-                title="Confirm Delete"
-                message={`Are you sure you want to delete driver ${deletingDriverId}? This action cannot be undone.`}
-                confirmButtonText="Delete Driver"
-                isLoading={isDeletingDriver}
-            />
-
-            {/* ================== Bulk Delete Confirmation Modal ================== */}
-            <DeleteConfirmationModal
-                isOpen={showBulkDeleteConfirm}
-                onClose={() => setShowBulkDeleteConfirm(false)}
-                onConfirm={confirmBulkDelete}
-                title="Confirm Bulk Delete"
-                message={`Are you sure you want to delete ${selectedCount} selected drivers? This action cannot be undone.`}
-                confirmButtonText="Delete Selected"
-                isLoading={isBulkDeleting}
-            />
-        </div>
+        </AnimatedPage>
     );
 };
 

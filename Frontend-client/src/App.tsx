@@ -6,6 +6,9 @@ import { Suspense, lazy } from "react";
 import ToastWrapper from "./common/ToastWrapper/ToastWrapper";
 import "react-toastify/dist/ReactToastify.css";
 
+// Import Internet Checker
+import { InternetChecker } from "./common/InternetChecker";
+
 // Import Pages
 import NotFound from "./pages/NotFound/NotFound";
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -133,6 +136,7 @@ function App() {
         <Provider store={store}>
             <RouterProvider router={router} />
             <ToastWrapper />
+            <InternetChecker checkInterval={30000} />
         </Provider>
     );
 }

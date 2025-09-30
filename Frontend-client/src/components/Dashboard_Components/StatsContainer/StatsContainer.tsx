@@ -4,6 +4,7 @@ import ErrorMessage from "../../ErrorMessage/ErrorMessage";
 import LoadingSpinner from "../../LoadingSpinner/LoadingSpinner";
 import useGetDashboardStats from "../../../utils/hooks/api/useGetDashboardStats";
 import SectionHeader from "../../Headings/SectionHeader/SectionHeader";
+import AnimatedList from "../../../common/Animations/AnimatedList/AnimatedList";
 
 const StatsContainer = () => {
     const { data: fetchedStatsData, isLoading, error } = useGetDashboardStats();
@@ -53,7 +54,7 @@ const StatsContainer = () => {
             />
 
             {/* ================= Stats Cards ================= */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <AnimatedList className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {statsData.map((stat) => (
                     <StatsCard
                         key={stat.title}
@@ -62,7 +63,7 @@ const StatsContainer = () => {
                         iconClass={stat.iconClass}
                     />
                 ))}
-            </div>
+            </AnimatedList>
         </section>
     );
 };

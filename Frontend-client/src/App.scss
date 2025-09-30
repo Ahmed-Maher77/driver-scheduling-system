@@ -94,6 +94,89 @@ body {
     background-color: #ffffff;
     box-shadow: 0px 0px 2px 1px #b4b4b4 inset;
 }
+// Text Selection Styles
+::selection {
+    background-color: var(--black-c);
+    color: var(--white-c);
+    text-shadow: none;
+}
+::-moz-selection {
+    background-color: var(--black-c);
+    color: var(--white-c);
+    text-shadow: none;
+}
+
+/* ===================================== Animation Enhancements =====================================*/
+// Smooth transitions for all interactive elements
+button,
+.btn,
+.main-btn,
+input,
+select,
+textarea,
+.card,
+.driver-card,
+.route-card,
+.activity-feed {
+    transition: all 0.3s ease;
+}
+
+// Enhanced hover effects
+
+// Card hover effects
+.card:hover,
+.driver-card:hover,
+.route-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+// Loading animation
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+// Fade in animation
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+// Scale animation
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.scale-in {
+    animation: scaleIn 0.4s ease-out;
+}
 
 /* ========================= Placeholders ========================= */
 %shadow {

@@ -87,8 +87,8 @@ const ActivityFeedsContainer = ({
             onViewDriver={actions.handleViewDriver}
             onExport={actions.handleExport}
             onRefresh={actions.handleRefresh}
-            onFilterChange={onFilterChange || actions.handleFilterChange}
-            onClearFilters={onClearFilters || actions.handleClearFilters}
+            onFilterChange={onFilterChange || (() => {})}
+            onClearFilters={onClearFilters || (() => {})}
             onPageChange={onPageChange}
         />
     );

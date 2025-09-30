@@ -7,6 +7,8 @@ import DayGrid from "../../components/CalenderPage_Components/DayGrid";
 import DayRoutesModal from "../../components/CalenderPage_Components/DayRoutesModal";
 import getMonthMatrix from "../../utils/functions/getMonthMatrix";
 import useGetRoutesByMonth from "../../utils/hooks/api/useGetRoutesByMonth";
+import AnimatedPage from "../../common/Animations/AnimatedPage/AnimatedPage";
+import AnimatedComponent from "../../common/Animations/AnimatedComponent/AnimatedComponent";
 
 const CalendarPage = () => {
     const navigate = useNavigate();
@@ -155,43 +157,55 @@ const CalendarPage = () => {
     }, [fetchedRoutesByMonth]);
 
     return (
-        <div className="Calendar-Page main-page pt-6 pb-[60px]">
-            <div className="container">
-                {/* ================== Header ================== */}
-                <PageHeader
-                    title="Calendar"
-                    subtitle="View and manage calendar events."
-                />
+        <AnimatedPage>
+            <div className="Calendar-Page main-page pt-6 pb-[60px]">
+                <div className="container">
+                    {/* ================== Header ================== */}
+                    <AnimatedComponent
+                        delay={0.1}
+                        type="slide"
+                        direction="down"
+                    >
+                        <PageHeader
+                            title="Calendar"
+                            subtitle="View and manage calendar events."
+                        />
+                    </AnimatedComponent>
 
-                {/* ================== Controls ================== */}
-                <MonthControls
-                    monthLabel={monthLabel}
-                    isLoading={isLoadingRoutesByMonth}
-                    onPrev={goPrevMonth}
-                    onNext={goNextMonth}
-                />
+                    {/* ================== Controls ================== */}
+                    <AnimatedComponent delay={0.2} type="fade">
+                        <MonthControls
+                            monthLabel={monthLabel}
+                            isLoading={isLoadingRoutesByMonth}
+                            onPrev={goPrevMonth}
+                            onNext={goNextMonth}
+                        />
+                    </AnimatedComponent>
 
-                {/* ================== Calendar Grid ================== */}
-                <main className="calendar-grid">
-                    <DayGrid
-                        monthMatrix={monthMatrix}
-                        monthRoutesByDate={monthRoutesByDate}
-                        isLoading={isLoadingRoutesByMonth}
-                        errorMessage={errorRoutesByMonth}
-                        onOpenDay={openDayModal}
-                    />
-                </main>
+                    {/* ================== Calendar Grid ================== */}
+                    <AnimatedComponent delay={0.3} type="scale">
+                        <main className="calendar-grid">
+                            <DayGrid
+                                monthMatrix={monthMatrix}
+                                monthRoutesByDate={monthRoutesByDate}
+                                isLoading={isLoadingRoutesByMonth}
+                                errorMessage={errorRoutesByMonth}
+                                onOpenDay={openDayModal}
+                            />
+                        </main>
+                    </AnimatedComponent>
+                </div>
+
+                {/* ================== Day Routes Modal ================== */}
+                <DayRoutesModal
+                    isOpen={isDayModalOpen}
+                    dateLabel={modalDate}
+                    routes={modalRoutes}
+                    onClose={closeDayModal}
+                    onSeeDetails={goToRoute}
+                />
             </div>
-
-            {/* ================== Day Routes Modal ================== */}
-            <DayRoutesModal
-                isOpen={isDayModalOpen}
-                dateLabel={modalDate}
-                routes={modalRoutes}
-                onClose={closeDayModal}
-                onSeeDetails={goToRoute}
-            />
-        </div>
+        </AnimatedPage>
     );
 };
 
