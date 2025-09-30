@@ -6,6 +6,8 @@ import {
     EducationSection,
 } from "../../components/AboutPage_Components";
 import InternetCheckerDemo from "../../components/InternetCheckerDemo/InternetCheckerDemo";
+import PWADemo from "../../components/PWADemo/PWADemo";
+import PWADebug from "../../components/PWADebug/PWADebug";
 import "./AboutPage.scss";
 import AnimatedPage from "../../common/Animations/AnimatedPage/AnimatedPage";
 import AnimatedComponent from "../../common/Animations/AnimatedComponent/AnimatedComponent";
@@ -55,6 +57,16 @@ const AboutPage = () => {
                                     Internet Connection Status
                                 </h2>
                                 <InternetCheckerDemo />
+                            </div>
+                        </AnimatedComponent>
+                        <AnimatedComponent delay={0.7} type="fade">
+                            <div className="mt-8">
+                                <PWADemo />
+                            </div>
+                        </AnimatedComponent>
+                        <AnimatedComponent delay={0.8} type="scale">
+                            <div className="mt-8">
+                                <PWADebug />
                             </div>
                         </AnimatedComponent>
                     </div>

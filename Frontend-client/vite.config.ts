@@ -9,4 +9,12 @@ export default defineConfig({
         outDir: "dist",
         sourcemap: false,
     },
+    server: {
+        https: false,
+        host: true,
+    },
+    define: {
+        // Enable PWA features
+        __PWA_ENABLED__: true,
+    },
 });

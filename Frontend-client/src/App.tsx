@@ -9,6 +9,9 @@ import "react-toastify/dist/ReactToastify.css";
 // Import Internet Checker
 import { InternetChecker } from "./common/InternetChecker";
 
+// Import PWA Install Prompt
+import { PWAInstallPrompt } from "./common/PWAInstallPrompt";
+
 // Import Pages
 import NotFound from "./pages/NotFound/NotFound";
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -21,12 +24,20 @@ import store from "./utils/redux-toolkit/store";
 const AboutPage = lazy(() => import("./pages/AboutPage/AboutPage"));
 const DriversPage = lazy(() => import("./pages/DriversPage/DriversPage"));
 const RoutesPage = lazy(() => import("./pages/RoutesPage/RoutesPage"));
-const DriverDetailsPage = lazy(() => import("./pages/DriverDetailsPage/DriverDetailsPage"));
-const RouteDetailsPage = lazy(() => import("./pages/RouteDetailsPage/RouteDetailsPage"));
+const DriverDetailsPage = lazy(
+    () => import("./pages/DriverDetailsPage/DriverDetailsPage")
+);
+const RouteDetailsPage = lazy(
+    () => import("./pages/RouteDetailsPage/RouteDetailsPage")
+);
 const CalendarPage = lazy(() => import("./pages/CalendarPage/CalendarPage"));
-const AdminPanelPage = lazy(() => import("./pages/AdminPanelPage/AdminPanelPage"));
+const AdminPanelPage = lazy(
+    () => import("./pages/AdminPanelPage/AdminPanelPage")
+);
 const ContactPage = lazy(() => import("./pages/ContactPage/ContactPage"));
-const ActivityFeedsPage = lazy(() => import("./pages/ActivityFeedsPage/ActivityFeedsPage"));
+const ActivityFeedsPage = lazy(
+    () => import("./pages/ActivityFeedsPage/ActivityFeedsPage")
+);
 
 function App() {
     const router = createBrowserRouter([
@@ -137,6 +148,7 @@ function App() {
             <RouterProvider router={router} />
             <ToastWrapper />
             <InternetChecker checkInterval={30000} />
+            <PWAInstallPrompt />
         </Provider>
     );
 }
