@@ -26,7 +26,7 @@ const Logo = ({ disabled = false, compressSidebar }: LogoProps) => {
                     <h4 className="text-lg black-c font-semibold mb-0 ">
                         DRB <span className="green-c">Route</span>
                     </h4>
-                    <p className="text-sm gray-c font-normal mb-0 ">Driver Route Scheduler</p>
+                    <p className="text-sm gray-c font-normal mb-0 ">Driver-Route Scheduler</p>
                 </div>
             )}
         </div>

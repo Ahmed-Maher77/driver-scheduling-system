@@ -22,7 +22,9 @@ const SectionHeader = ({
 
     return (
         <div className="section-header flex justify-between items-center gap-2">
-            <h3 className="text-lg font-semibold mb-2">{title}</h3>
+            <h3 className={`text-lg font-semibold ${count ? "mb-0" : "mb-2"}`}>
+                {title}
+            </h3>
 
             <div className="flex items-center gap-3">
                 {count !== undefined && (

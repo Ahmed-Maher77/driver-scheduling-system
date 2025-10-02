@@ -9,9 +9,6 @@ import "react-toastify/dist/ReactToastify.css";
 // Import Internet Checker
 import { InternetChecker } from "./common/InternetChecker";
 
-// Import PWA Install Prompt
-import { PWAInstallPrompt } from "./common/PWAInstallPrompt";
-
 // Import Pages
 import NotFound from "./pages/NotFound/NotFound";
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -148,7 +145,6 @@ function App() {
             <RouterProvider router={router} />
             <ToastWrapper />
             <InternetChecker checkInterval={30000} />
-            <PWAInstallPrompt />
         </Provider>
     );
 }

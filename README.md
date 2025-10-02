@@ -396,7 +396,6 @@ GET /get-all-drivers?page=1&limit=10&status=available&vehicleType=Car
 -   [ ] API rate limiting and security enhancements
 -   [ ] Push notifications for mobile devices
 -   [ ] Advanced scheduling algorithms with machine learning
--   [ ] Progressive Web App (PWA) capabilities
 -   [ ] Dark mode theme support
 -   [ ] Advanced animation customization options
 -   [ ] Offline mode with data synchronization
