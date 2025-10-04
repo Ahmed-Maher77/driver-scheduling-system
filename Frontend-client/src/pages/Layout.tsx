@@ -1,30 +1,43 @@
 import { Outlet, useLocation } from "react-router-dom";
 import Footer from "./Footer/Footer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import PageLoader from "../components/Loader/PageLoader/PageLoader";
 import Sidebar from "../components/Sidebar/Sidebar";
 import { useAppDispatch, useAppSelector } from "../utils/redux-toolkit/reduxHooks";
 import Overlay from "../common/Overlay/Overlay";
 import Navbar from "../common/Navbar/Navbar";
 import { setIsXLargeScreen } from "../utils/redux-toolkit/windowStates";
+import useScrollToTop from "../utils/hooks/custom-hooks/useScrollToTop";
 
 const Layout = () => {
     const location = useLocation();
     const [showPageLoader, setShowPageLoader] = useState(true);
     const activeBar = useAppSelector((state) => state.sidebar.activeBar);
-    const compressSidebar = useAppSelector((state) => state.sidebar.compressSidebar);
+    const compressSidebar = useAppSelector(
+        (state) => state.sidebar.compressSidebar
+    );
     const mainContainerRef = useRef<HTMLDivElement>(null);
     const dispatch = useAppDispatch();
 
+    // Smooth scroll to top when route changes
+    useScrollToTop("smooth", 100, mainContainerRef as RefObject<HTMLElement>); // 100ms delay for smooth transition
+
     // Hide Common Components if current route isn't one of the defined routes
-    const definedRoutes = ["/", "/about", "/contact", "/drivers", "/routes", "/calendar", "/activity-feeds"];
+    const definedRoutes = [
+        "/",
+        "/about",
+        "/contact",
+        "/drivers",
+        "/routes",
+        "/calendar",
+        "/activity-feeds",
+    ];
     const showCommonComponents = definedRoutes.some((route) => {
         if (route === "/") {
             return location.pathname === "/";
         }
         return location.pathname.startsWith(route);
     });
-
 
     // Track the width of the main container using ResizeObserver
     useEffect(() => {
@@ -50,14 +63,12 @@ const Layout = () => {
         };
     }, [dispatch, compressSidebar]);
 
-
     // Show Page Loader for 2 seconds
     useEffect(() => {
         setTimeout(() => {
             setShowPageLoader(false);
         }, 2000);
     }, []);
-
 
     // Show Page Loader
     if (showPageLoader) {

@@ -9,7 +9,7 @@ const ActivityFeedItem = ({ routeId, status, driver, lastDriver, actionTime }: A
     const isXLargeScreen = useAppSelector((state) => state.windowStates.isXLargeScreen);
 
     return (
-        <li className="flex justify-between">
+        <li className="flex justify-between gap-2">
             {/* ================= Activity Body ================= */}
             <div className="activity-body flex gap-1">
                 {/* Activity Icon */}
@@ -18,7 +18,7 @@ const ActivityFeedItem = ({ routeId, status, driver, lastDriver, actionTime }: A
                 </span>
 
                 {/* Activity Details */}
-                <p className={`${isXLargeScreen ? "mt-2" : "mt-4"} gray-c-d`}>
+                <p className={`${isXLargeScreen ? "mt-2" : "sm:mt-4"} gray-c-d`}>
                     Route {routeId}{" "}
                     <span className={`${status === "assigned" ? "green-c-d" : "red-c"} font-medium`}>{status}</span> {""}
                     {status === "assigned" ? "to" : "from"} {""}

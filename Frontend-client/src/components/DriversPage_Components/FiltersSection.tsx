@@ -104,7 +104,7 @@ const DriversFiltersSection = ({
             >
                 <div
                     ref={contentRef}
-                    className="routes-filters-actions relative white-bg p-4 py-6 pb-2 rounded-lg rounded-b-none shadow-md flex flex-col gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
+                    className={`routes-filters-actions relative white-bg p-4 py-6 pb-2 ${hasActiveFilters? "max-sm:pt-15": ""} rounded-lg rounded-b-none shadow-md flex flex-col gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out`}
                     style={{
                         transform: showFilters
                             ? "translateY(0)"

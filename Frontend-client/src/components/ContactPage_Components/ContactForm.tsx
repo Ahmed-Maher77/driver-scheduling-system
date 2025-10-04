@@ -108,7 +108,7 @@ const ContactForm = ({ onSubmitSuccess }: ContactFormProps) => {
                                             name={key}
                                             type={type}
                                             placeholder={placeholder}
-                                            className="main-input"
+                                            className="main-input w-full"
                                             value={formValues[key]}
                                             onChange={handleChange}
                                         />

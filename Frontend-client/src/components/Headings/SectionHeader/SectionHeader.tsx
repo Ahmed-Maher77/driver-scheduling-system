@@ -29,7 +29,7 @@ const SectionHeader = ({
             <div className="flex items-center gap-3">
                 {count !== undefined && (
                     <span
-                        className={`px-3 py-1 rounded-full text-sm font-medium ${getCountBadgeClass(
+                        className={`px-3 py-1 rounded-full text-center text-sm font-medium ${getCountBadgeClass(
                             countColor
                         )}`}
                     >

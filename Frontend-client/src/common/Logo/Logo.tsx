@@ -1,11 +1,13 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "./Logo.scss";
 import type { LogoProps } from "../Types/Interfaces";
 
 // Logo component for brand logo and name display
 const Logo = ({ disabled = false, compressSidebar }: LogoProps) => {
+    const navigate = useNavigate();
+    
     return (
-        <div className="logo-wraper flex gap-3 items-center group cursor-pointer">
+        <div className="logo-wraper flex gap-3 items-center group cursor-pointer" onClick={() => navigate("/")}>
             {/* Logo icon as a Link */}
             <div className="logo group w-fit">
                 <NavLink

@@ -1,4 +1,4 @@
-import { useTypewriter } from "../../../utils/hooks/useTypewriter";
+import { useTypewriter } from "../../../utils/hooks/custom-hooks/useTypewriter";
 
 const TypewriterTitle = () => {
     const titles = [

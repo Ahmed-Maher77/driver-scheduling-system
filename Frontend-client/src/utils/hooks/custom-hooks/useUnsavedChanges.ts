@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
-import type { UseUnsavedChangesOptions } from "../../common/Types/Interfaces";
+import type { UseUnsavedChangesOptions } from "../../../common/Types/Interfaces";
 
 export const useUnsavedChanges = ({
     hasUnsavedChanges,

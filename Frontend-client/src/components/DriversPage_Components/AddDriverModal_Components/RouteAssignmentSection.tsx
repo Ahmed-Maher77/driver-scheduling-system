@@ -20,9 +20,9 @@ const RouteAssignmentSection = ({
             {/* ================== Route ID ================== */}
             <div className="main-input-container">
                 <label className="block gray-c-d text-sm mb-2">Route ID</label>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-col sm:flex-row">
                     <input
-                        className="main-input flex-1"
+                        className="main-input flex-1 w-full"
                         type="text"
                         placeholder="Enter Route ID"
                         value={form.assignedRoute_id || ""}

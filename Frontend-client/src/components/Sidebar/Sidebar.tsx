@@ -3,15 +3,55 @@ import "./Sidebar.scss";
 // import { DarkModeContext } from "../../contexts/DarkModeContext.jsx";
 // import { SidebarContext } from "../../contexts/SidebarContext.jsx";
 import SidebarLink from "./SidebarLink";
-import {
-    useAppDispatch,
-    useAppSelector,
-} from "../../utils/redux-toolkit/reduxHooks";
-import {
-    setActiveBar as setActiveBarAction,
-    setCompressSidebar as setCompressSidebarAction,
-} from "../../utils/redux-toolkit/sidebarSlice";
+import { useAppDispatch, useAppSelector } from "../../utils/redux-toolkit/reduxHooks";
+import { setActiveBar as setActiveBarAction, setCompressSidebar as setCompressSidebarAction } from "../../utils/redux-toolkit/sidebarSlice";
 import Logo from "../../common/Logo/Logo";
+
+
+const sidebarLinks = [
+    {
+        to: "/",
+        title: "go to the Dashboard page",
+        iconClass: "fa-solid fa-house",
+        label: "Dashboard"
+    },
+    {
+        to: "/drivers",
+        title: "go to the Drivers page",
+        iconClass: "fa-solid fa-users",
+        label: "Drivers"
+    },
+    {
+        to: "/routes",
+        title: "go to the Routes page",
+        iconClass: "fa-regular fa-map",
+        label: "Routes"
+    },
+    {
+        to: "/activity-feeds",
+        title: "go to the Activity Feeds page",
+        iconClass: "fa-regular fa-bell",
+        label: "Activity Feeds"
+    },
+    {
+        to: "/calendar",
+        title: "go to the Calendar page",
+        iconClass: "fa-regular fa-calendar-days",
+        label: "Calendar"
+    },
+    {
+        to: "/about",
+        title: "go to the About page",
+        iconClass: "fa-solid fa-code",
+        label: "About Us"
+    },
+    {
+        to: "/contact",
+        title: "go to the Contact page",
+        iconClass: "fa-solid fa-message",
+        label: "Contact Us"
+    }
+]
 
 const Sidebar = () => {
     const activeBar = useAppSelector((state) => state.sidebar.activeBar);
@@ -101,54 +141,17 @@ const Sidebar = () => {
                     </li>
 
                     {/* =============== Body =============== */}
-                    <SidebarLink
-                        to="/"
-                        title="go to the dashboard page"
-                        iconClass="fa-solid fa-house"
-                        compressSidebar={compressSidebar}
-                        onClick={() => setActiveBar(false)}
-                        label="Dashboard"
-                    />
-                    <SidebarLink
-                        to="/drivers"
-                        title="go to the Drivers page"
-                        iconClass="fa-solid fa-users"
-                        compressSidebar={compressSidebar}
-                        onClick={() => setActiveBar(false)}
-                        label="Drivers"
-                    />
-                    <SidebarLink
-                        to="/routes"
-                        title="go to the Routes page"
-                        iconClass="fa-regular fa-map"
-                        compressSidebar={compressSidebar}
-                        onClick={() => setActiveBar(false)}
-                        label="Routes"
-                    />
-                    <SidebarLink
-                        to="/calendar"
-                        title="go to the Calendar page"
-                        iconClass="fa-regular fa-calendar-days"
-                        compressSidebar={compressSidebar}
-                        onClick={() => setActiveBar(false)}
-                        label="Calendar"
-                    />
-                    <SidebarLink
-                        to="/about"
-                        title="go to the About page"
-                        iconClass="fa-solid fa-code"
-                        compressSidebar={compressSidebar}
-                        onClick={() => setActiveBar(false)}
-                        label="About Us"
-                    />
-                    <SidebarLink
-                        to="/contact"
-                        title="go to the Contact page"
-                        iconClass="fa-solid fa-message"
-                        compressSidebar={compressSidebar}
-                        onClick={() => setActiveBar(false)}
-                        label="Contact Us"
-                    />
+                    { sidebarLinks.map((link) => (
+                        <SidebarLink
+                            key={link.to}
+                            to={link.to}
+                            title={link.title}
+                            iconClass={link.iconClass}
+                            compressSidebar={compressSidebar}
+                            onClick={() => setActiveBar(false)}
+                            label={link.label}
+                        />
+                    ))}  
 
                     {/* =============== Footer =============== */}
                 </div>

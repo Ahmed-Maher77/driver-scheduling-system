@@ -24,7 +24,7 @@ import { checkDriverAvailability } from "../../utils/functions/checkDriverAvaila
 import useUpdateRoute from "../../utils/hooks/api/useUpdateRoute";
 import useGetRouteDetails from "../../utils/hooks/api/useGetRouteDetails";
 import LoadingSpinner from "../LoadingSpinner/LoadingSpinner";
-import useUnsavedChanges from "../../utils/hooks/useUnsavedChanges";
+import useUnsavedChanges from "../../utils/hooks/custom-hooks/useUnsavedChanges";
 import { UnsavedChangesDialog } from "../UnsavedChangesDialog";
 
 const EditRouteModal = ({

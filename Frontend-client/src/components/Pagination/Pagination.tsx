@@ -41,7 +41,7 @@ const Pagination: React.FC<PaginationProps> = ({ paginationInfo, onPageChange })
     };
 
     return (
-        <div className="flex items-center justify-between pt-4 mt-6 border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row items-center justify-between pt-4 mt-6 border-t border-gray-200 gap-4">
             {/* Page Info */}
             <PaginationInfo pageNumber={pageNumber} totalPages={totalPages} />
 

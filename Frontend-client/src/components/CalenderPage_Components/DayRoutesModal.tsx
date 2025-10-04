@@ -36,7 +36,7 @@ const DayRoutesModal = ({
                         {routes.map((r) => (
                             <div
                                 key={r.route_id}
-                                className="rounded border border-[#e9edf2] p-4 flex items-start justify-between gap-4 hover:shadow-sm transition"
+                                className="rounded border border-[#e9edf2] p-4 flex flex-col md:flex-row items-start justify-between gap-4 hover:shadow-sm transition"
                             >
                                 <div className="flex-1 min-w-0">
                                     {/* Route ID + Assigned At */}

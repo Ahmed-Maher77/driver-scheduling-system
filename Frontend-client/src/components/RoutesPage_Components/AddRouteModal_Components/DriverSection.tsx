@@ -22,7 +22,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                     </label>
 
                     {/* Driver ID */}
-                    <div className="flex gap-4 w-full flex-wrap">
+                    <div className="flex gap-4 w-full flex-wrap flex-col sm:flex-row">
                         {/* Driver ID */}
                         <input
                             type="text"
@@ -34,7 +34,7 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                                     name: "", // No name field in AddRouteModal
                                 })
                             }
-                            className="main-input flex-1"
+                            className="main-input flex-1 w-full"
                         />
                         {/* Check Availability Button */}
                         <button

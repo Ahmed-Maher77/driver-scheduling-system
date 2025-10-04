@@ -31,6 +31,12 @@ const CalendarPage = () => {
     // State for current month's routes
     const [monthRoutes, setMonthRoutes] = useState<MonthRoute[]>([]);
 
+    useEffect(() => {
+        if (fetchedRoutesByMonth) {
+            setMonthRoutes(fetchedRoutesByMonth);
+        }
+    }, [fetchedRoutesByMonth]);
+
     // Month Matrix
     const monthMatrix = useMemo(
         () => getMonthMatrix(currentYear, currentMonth),

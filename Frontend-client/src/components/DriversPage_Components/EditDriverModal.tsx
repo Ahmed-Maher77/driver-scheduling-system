@@ -27,7 +27,7 @@ import useGetDriverDetails from "../../utils/hooks/api/useGetDriverDetails";
 import LoadingPageSpinner from "../LoadingPageSpinner/LoadingPageSpinner";
 import useUpdateDriver from "../../utils/hooks/api/useUpdateDriver";
 import { uploadFile } from "../../utils/functions/uploadFile";
-import useUnsavedChanges from "../../utils/hooks/useUnsavedChanges";
+import useUnsavedChanges from "../../utils/hooks/custom-hooks/useUnsavedChanges";
 import { UnsavedChangesDialog } from "../UnsavedChangesDialog";
 
 const toForm = (d: any): DriverForm => ({
@@ -228,7 +228,11 @@ const EditDriverModal = ({
         const cleaned = { ...data };
 
         // Remove localhost URLs from picture
-        if (cleaned.picture && typeof cleaned.picture === "string" && cleaned.picture.includes("localhost")) {
+        if (
+            cleaned.picture &&
+            typeof cleaned.picture === "string" &&
+            cleaned.picture.includes("localhost")
+        ) {
             delete cleaned.picture;
         }
 

@@ -11,6 +11,7 @@ function useGetRoutesByMonth({ month, year }: UseGetRoutesByMonthProps) {
             );
             return res.data;
         } catch (error: any) {
+            console.log(error)
             throw new Error(
                 "An Error occured while fetching routes by month data: " + error.message
             );

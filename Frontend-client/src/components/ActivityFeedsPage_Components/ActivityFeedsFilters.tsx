@@ -81,7 +81,7 @@ const ActivityFeedsFilters = ({
         >
             <div
                 ref={contentRef}
-                className="activity-feeds-filters relative white-bg px-1 pt-3 rounded-lg rounded-b-none shadow-md flex flex-col gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out"
+                className={`activity-feeds-filters relative white-bg px-1 pt-3 ${hasActiveFilters? "max-sm:pt-8": ""} rounded-lg rounded-b-none shadow-md flex flex-col gap-4 xl:items-center w-full transform transition-transform duration-300 ease-out`}
                 style={{
                     transform: showFilters
                         ? "translateY(0)"
