@@ -20,7 +20,7 @@ The Driver Scheduling System is a logistics management platform that enables eff
 ## 📸 Website Preview (UI Mockup)
 
 <a href="https://driver-scheduling-system.vercel.app/" target="_blank" rel="noopener noreferrer" title="demo">
-  <img src="uploaded-img-on-github-readme" alt="website preview - demo" width="400">
+  <img src="https://github.com/user-attachments/assets/452dc4a6-857a-4117-91b1-6e16caa77cd7" alt="website preview - demo - UI Mockup" width="400">
 </a>
 
 ---
