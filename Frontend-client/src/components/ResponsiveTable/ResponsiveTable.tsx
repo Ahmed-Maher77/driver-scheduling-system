@@ -91,50 +91,66 @@ const ResponsiveTable = <T extends Record<string, unknown>>({
                             </td>
                         </tr>
                     ) : (
-                        rows?.map((row, rowIdx) => (
-                            <AnimatedTableRow key={rowIdx} index={rowIdx}>
-                                {effectiveColumns.map((col, colIdx) => {
-                                    // Assigned Driver Cell
-                                    if (String(col.key) === "assignedDriver") {
-                                        const cell = (
-                                            <AssignedDriverCell
-                                                key={String(col.key)}
-                                                cellKey={String(col.key)}
-                                                driver={
-                                                    (row as any).assignedDriver
-                                                }
-                                            />
-                                        );
-                                        if (cell) return cell;
-                                    }
+                        rows?.map((row, rowIdx) => {
+                            // Use a unique identifier for the row key - prefer id or route_id, fallback to rowIdx
+                            const rowKey =
+                                (row as any).id ||
+                                (row as any).route_id ||
+                                `row-${rowIdx}`;
 
-                                    // Details Cell
-                                    if (
-                                        colIdx ===
-                                            effectiveColumns.length - 1 &&
-                                        seeDetails
-                                    ) {
+                            return (
+                                <AnimatedTableRow key={rowKey} index={rowIdx}>
+                                    {effectiveColumns.map((col, colIdx) => {
+                                        // Create unique cell key by combining row identifier and column key
+                                        const cellKey = `${rowKey}-${String(
+                                            col.key
+                                        )}-${colIdx}`;
+
+                                        // Assigned Driver Cell
+                                        if (
+                                            String(col.key) === "assignedDriver"
+                                        ) {
+                                            const cell = (
+                                                <AssignedDriverCell
+                                                    key={cellKey}
+                                                    cellKey={String(col.key)}
+                                                    driver={
+                                                        (row as any)
+                                                            .assignedDriver
+                                                    }
+                                                />
+                                            );
+                                            if (cell) return cell;
+                                        }
+
+                                        // Details Cell
+                                        if (
+                                            colIdx ===
+                                                effectiveColumns.length - 1 &&
+                                            seeDetails
+                                        ) {
+                                            return (
+                                                <DetailsCell
+                                                    key={`${cellKey}-details`}
+                                                    id={String(
+                                                        (row as any).route_id
+                                                    )}
+                                                />
+                                            );
+                                        }
+
+                                        // Default Cell
                                         return (
-                                            <DetailsCell
-                                                key={`details-${String(
-                                                    (row as any).id
-                                                )}`}
-                                                id={String((row as any).id)}
+                                            <DefaultCell<T>
+                                                key={cellKey}
+                                                row={row}
+                                                col={col}
                                             />
                                         );
-                                    }
-
-                                    // Default Cell
-                                    return (
-                                        <DefaultCell<T>
-                                            key={String(col.key)}
-                                            row={row}
-                                            col={col}
-                                        />
-                                    );
-                                })}
-                            </AnimatedTableRow>
-                        ))
+                                    })}
+                                </AnimatedTableRow>
+                            );
+                        })
                     )}
                 </tbody>
             </table>

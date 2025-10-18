@@ -4,13 +4,9 @@ import type { RouteItem } from "../../../common/Types/Interfaces";
 import useGetRoutesSummary from "../../../utils/hooks/api/useGetRoutesSummary";
 import SectionHeader from "../../Headings/SectionHeader/SectionHeader";
 
-
 const RoutesContainer = () => {
-    const {
-        data: fetchedRoutesSummaryData,
-        isLoading,
-        error,
-    } = useGetRoutesSummary();
+    const { data: fetchedRoutesSummaryData, isLoading, error } =
+        useGetRoutesSummary();
 
     const columns = [
         { key: "route_id", label: "Route Id" },
@@ -65,7 +61,7 @@ const RoutesContainer = () => {
 
             <ResponsiveTable<RouteItem>
                 columns={columns}
-                rows={fetchedRoutesSummaryData?.data}
+                rows={fetchedRoutesSummaryData?.data || []}
                 stickyHeader
                 className="mt-4"
                 tableClassName="w-full"

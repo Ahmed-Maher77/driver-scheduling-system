@@ -77,7 +77,7 @@ const PastRoutesTimeline = ({ items }: PastRoutesTimelineProps) => {
                 {/* Past Routes */}
                 {sortedItems.map((route, index) => (
                     <div
-                        key={route.route_id}
+                        key={`${route.route_id}-${index}-${route.assigned_at}`}
                         className="relative mb-6 last:mb-0"
                     >
                         {/* Dot */}
