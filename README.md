@@ -154,7 +154,7 @@ The Driver Scheduling System is a logistics management platform that enables eff
     npm install
     # Configure your MongoDB connection string in .env
     PORT=3001    # Port number
-    DATABASE_URL="mongodb+srv://USERNAME_db_user:QAMJQP18r1GN4PxR@cluster0.ldoyyda.mongodb.net/DB_NAME?retryWrites=true&w=majority&appName=Cluster0"    # MongoDB connection string
+    DATABASE_URL="mongodb+srv://ahmedmaheraljwhry057_db_user:<db_password>@cluster0.ldoyyda.mongodb.net/?appName=Cluster0"    # MongoDB connection string
     # Start the server
     npm start
     ```
