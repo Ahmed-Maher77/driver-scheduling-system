@@ -9,7 +9,7 @@ const DriverCard = ({ driver, title }: DriverCardProps) => {
     
     return (
         <div
-            className="driver-card p-4 rounded-lg border border-gray-200 bg-gray-50 flex items-center gap-3"
+            className="driver-card p-4 rounded-xl bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.03)] hover:shadow-[0_4px_20px_rgb(0,0,0,0.08)] hover:bg-white/50 transition-all flex items-center gap-4 cursor-pointer"
             onClick={() => driver && navigate(`/drivers/${driver?.id}`)}
         >
             <img

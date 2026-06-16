@@ -3,7 +3,7 @@ import StatusBadge from "./StatusBadge";
 
 const RouteHeader = ({ id, status, onEdit, onDelete }: RouteHeaderProps) => {
     return (
-        <header className="route-header white-bg rounded-lg shadow-md p-5 mb-5">
+        <header className="route-header mb-5 border-b border-gray-200/60 pb-5">
             <div className="flex gap-7 flex-col">
                 {/* Route ID + Status Badge */}
                 <div className="flex items-center gap-3 justify-between">

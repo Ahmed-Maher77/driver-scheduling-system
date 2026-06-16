@@ -135,7 +135,7 @@ const Sidebar = () => {
                     : "w-[255px] lg:max-w-[255px] lg:min-w-[255px]"
             }`}
         >
-            <div className="wrapper h-full w-full p-[12px] flex flex-col justify-between overflow-y-auto overflow-x-hidden">
+            <div className="wrapper h-full w-full p-[12px] flex flex-col justify-between">
                 <div className="w-full  flex flex-col gap-2  nav-bg">
                     {/* =============== Header =============== */}
                     <li className="mb-12 flex justify-between">

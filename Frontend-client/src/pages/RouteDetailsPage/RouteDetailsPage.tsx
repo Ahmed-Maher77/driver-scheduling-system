@@ -94,7 +94,7 @@ const RouteDetailsPage = () => {
                     </AnimatedComponent>
 
                     {/* ======================== Main ======================== */}
-                    <main className="route-details-container mt-8">
+                    <main className="route-details-container mt-8 flex flex-col gap-8">
                         {/* Route Header */}
                         <AnimatedComponent delay={0.2} type="scale">
                             <RouteHeader
@@ -107,7 +107,7 @@ const RouteDetailsPage = () => {
 
                         {/* Route Info + Route Notes */}
                         <AnimatedComponent delay={0.3} type="fade">
-                            <div className="flex flex-col md:flex-row gap-5">
+                            <div className="flex flex-col md:flex-row gap-8">
                                 <RouteInfo
                                     startLocation={routeData.start_location}
                                     endLocation={routeData.end_location}
@@ -132,7 +132,7 @@ const RouteDetailsPage = () => {
                             type="slide"
                             direction="up"
                         >
-                            <div className="flex flex-col md:flex-row gap-5">
+                            <div className="flex flex-col md:flex-row gap-8">
                                 <DriverAssignment
                                     assignedDriver={
                                         routeData.assignedDriver
