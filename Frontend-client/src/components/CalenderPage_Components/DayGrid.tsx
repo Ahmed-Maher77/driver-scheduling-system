@@ -49,20 +49,20 @@ const DayGrid = ({
                 return (
                     <div
                         key={idx}
-                        className={`white-bg p-3 rounded-lg shadow-sm min-h-[110px] flex flex-col ${
-                            isToday ? "ring-2 ring-blue-500" : ""
-                        }`}
+                        className={`white-bg p-3 rounded-lg shadow-sm min-h-[110px] flex flex-col transition-all duration-200 ${
+                            isToday ? "ring-2 ring-green-500 bg-green-50/20" : ""
+                        } hover:bg-gray-50 hover:-translate-y-0.5 hover:shadow-md`}
                     >
                         <div className="flex flex-col items-center justify-between h-full w-full">
                             {/* Weekday + Day Number Row */}
                             <span className="text-[10px] md:text-xs gray-c-d w-full flex items-center justify-between">
-                                <span className="uppercase tracking-wide">
+                                <span className="uppercase tracking-wide font-semibold text-gray-500">
                                     {weekday}
                                 </span>
                                 {/* View Routes Button */}
                                 {routes.length > 0 && (
                                     <button
-                                        className="text-xs blue-c hover-blue-c  flex items-center gap-1 cursor-pointer tooltip-container"
+                                        className="text-xs text-green-600 hover:text-green-800 flex items-center gap-1 cursor-pointer tooltip-container"
                                         onClick={() => onOpenDay(key, routes)}
                                         title="View routes for this day"
                                     >
@@ -76,14 +76,14 @@ const DayGrid = ({
                             </span>
 
                             {/* Day Number centered */}
-                            <span className="text-xs md:text-sm gray-c-d w-full mt-1">
+                            <span className={`text-sm md:text-base w-full mt-1 ${isToday ? 'font-bold text-green-600' : 'gray-c-d'}`}>
                                 {date.getDate()}
                             </span>
 
                             {/* Routes Count */}
                             {routes.length > 0 && (
-                                <span className="text-xs blue-c text-center">
-                                    {routes.length} assigned routes
+                                <span className="text-xs font-semibold text-green-600 text-center bg-green-50 px-2 py-1 rounded-md border border-green-100 mt-2 w-full truncate">
+                                    {routes.length} assigned {routes.length === 1 ? 'route' : 'routes'}
                                 </span>
                             )}
                         </div>
