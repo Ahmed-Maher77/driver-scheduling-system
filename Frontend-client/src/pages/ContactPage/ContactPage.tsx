@@ -10,7 +10,7 @@ const ContactPage = () => {
     return (
         <AnimatedPage>
             <div className="Contact-Page main-page py-5 pb-[60px]">
-                <div className="container">
+                <div className="container relative z-10">
                     <AnimatedComponent
                         delay={0.1}
                         type="slide"
@@ -37,7 +37,7 @@ const ContactPage = () => {
                         </AnimatedComponent>
                     </div>
                     <AnimatedComponent delay={0.4} type="scale">
-                        <ContactMap className="h-[420px] white-bg rounded-lg shadow-md p-5 mt-8" />
+                        <ContactMap className="contact-map-wrapper h-[450px] mt-12 rounded-[24px] overflow-hidden relative" />
                     </AnimatedComponent>
                 </div>
             </div>
