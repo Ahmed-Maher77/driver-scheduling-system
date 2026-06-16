@@ -4,7 +4,7 @@ const PastRoutesTimeline = ({ items }: PastRoutesTimelineProps) => {
     // If no items, return a message
     if (!items?.length) {
         return (
-            <section className="white-bg p-4 rounded-lg shadow-md mt-5">
+        <section className="p-5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.03)] mt-5">
                 <h4 className="font-semibold mb-3 text-xs md:text-base lg:text-lg">
                     Past Assigned Routes
                 </h4>
@@ -66,7 +66,7 @@ const PastRoutesTimeline = ({ items }: PastRoutesTimelineProps) => {
     };
 
     return (
-        <section className="white-bg p-4 rounded-lg shadow-md mt-5">
+        <section className="p-5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.03)] mt-5">
             <h4 className="font-semibold mb-3 text-xs md:text-base lg:text-lg">
                 Past Assigned Routes ({items.length})
             </h4>

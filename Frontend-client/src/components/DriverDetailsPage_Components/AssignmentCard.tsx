@@ -43,7 +43,7 @@ const AssignmentCard = ({ assignedRoute, driverId }: AssignmentCardProps) => {
     };
 
     return (
-        <section className="white-bg p-4 rounded-lg shadow-md">
+        <section className="p-5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
             <h4 className="font-semibold mb-3">Assigned Route</h4>
             {assignedRoute?.route_id ? (
                 <div>

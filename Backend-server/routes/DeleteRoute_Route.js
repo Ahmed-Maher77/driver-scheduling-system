@@ -33,7 +33,7 @@ router.delete("/:id", async (req, res) => {
                 {
                     $set: {
                         assignedRoute_id: null,
-                        status: "available",
+                        status: "active",
                         updated_at: new Date(),
                     },
                 }

@@ -60,7 +60,7 @@ const ContactInfoCard = ({
     }
 
     return (
-        <div className="white-bg p-4 rounded-lg shadow-md">
+        <div className="p-5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
             {/* ================== Title ================== */}
             <h5 className="font-semibold mb-2 text-xs md:text-base lg:text-lg">
                 Contact Information

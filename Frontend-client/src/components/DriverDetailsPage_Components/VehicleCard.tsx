@@ -3,7 +3,7 @@ import InfoRow from "./InfoRow";
 
 const VehicleCard = ({ type, make, model, year, color }: VehicleCardProps) => {
     return (
-        <section className="white-bg p-4 rounded-lg shadow-md">
+        <section className="p-5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.03)]">
             {/* ================== Title ================== */}
             <h4 className="font-semibold mb-3">Vehicle</h4>
 

@@ -44,7 +44,7 @@ const initialForm: DriverForm = {
     },
     country: "",
     city: "",
-    status: "available",
+    status: "active",
     national_id: null,
     gender: "Male",
     date_of_birth: "",
@@ -58,7 +58,7 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
     const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
     const navigate = useNavigate();
     const [form, setForm] = useState<DriverForm>(initialForm);
-    const isUnavailable = form.status === "unavailable";
+    const isUnavailable = form.status !== "active";
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [routeAvailabilityStatus, setRouteAvailabilityStatus] = useState<
         "unknown" | "assigned" | "unassigned" | "in progress"
@@ -229,17 +229,20 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
         try {
             const routeStatus = await checkRouteAvailability(routeId);
             setRouteAvailabilityStatus(routeStatus as RouteAvailability);
-            if (routeStatus === "assigned") {
+            if (routeStatus === "unassigned") {
+                notify("success", "Route is available for assignment");
+                return true;
+            } else if (routeStatus === "assigned") {
                 notify("error", "Route is already assigned to another driver");
                 return false;
             } else if (routeStatus === "in progress") {
                 notify("error", "Route is currently in progress");
                 return false;
-            } else if (routeStatus === "unassigned") {
-                notify("success", "Route is available for assignment");
-                return true;
+            } else if (routeStatus === "unknown") {
+                notify("error", "Route not found or unavailable");
+                return false;
             } else {
-                notify("error", "Route is unavailable");
+                notify("error", `Route is currently ${routeStatus} and cannot be assigned`);
                 return false;
             }
         } catch {

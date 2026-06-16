@@ -105,7 +105,7 @@ router.put("/:id", async (req, res) => {
                 }
 
                 // Check if driver is available
-                if (driver.status !== "available") {
+                if (driver.status !== "active") {
                     return res.status(400).json({
                         message: `Driver is ${driver.status}`,
                         error: "DRIVER_NOT_AVAILABLE",
@@ -159,7 +159,7 @@ router.put("/:id", async (req, res) => {
                 // Update the driver
                 if (currentDriver) {
                     currentDriver.assignedRoute_id = null;
-                    currentDriver.status = "available";
+                    currentDriver.status = "active";
                     currentDriver.updated_at = new Date();
                     await currentDriver.save();
                 }
@@ -260,7 +260,7 @@ router.put("/:id", async (req, res) => {
 
             // Only update driver if they're not already assigned to this route
             if (driver.assignedRoute_id !== id) {
-                if (driver.status === "available") {
+                if (driver.status === "active") {
                     // Move current assignment to past if exists
                     if (driver.assignedRoute_id) {
                         // Get the current route details before unassigning
@@ -303,7 +303,7 @@ router.put("/:id", async (req, res) => {
                         message: "Driver is already on a route",
                         error: "DRIVER_BUSY",
                     });
-                } else if (driver.status === "unavailable") {
+                } else if (driver.status === "inactive") {
                     return res.status(400).json({
                         message:
                             "Driver is unavailable for assignment at the moment",
@@ -321,7 +321,7 @@ router.put("/:id", async (req, res) => {
                 {
                     $set: {
                         assignedRoute_id: null,
-                        status: "available",
+                        status: "active",
                         updated_at: new Date(),
                     },
                 }

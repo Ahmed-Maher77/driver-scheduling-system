@@ -1,6 +1,6 @@
 import axiosInstance from "../hooks/api/axios-utils";
 
-export type DriverAvailability = "available" | "unavailable" | "on_route";
+export type DriverAvailability = "available" | "unavailable" | "on_route" | "on leave" | string;
 
 interface DriverAvailabilityResponse {
     driverStatus: DriverAvailability;

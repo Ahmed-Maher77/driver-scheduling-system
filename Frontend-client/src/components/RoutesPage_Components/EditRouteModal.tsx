@@ -219,16 +219,8 @@ const EditRouteModal = ({
                         setIsCheckingAvailability(false);
                         return;
                     }
-                } else if (status === "unavailable") {
-                    notify("error", "This driver is unavailable");
-                    setIsSubmitting(false);
-                    setIsCheckingAvailability(false);
-                    return;
-                } else if (status === "on_route") {
-                    notify(
-                        "error",
-                        "This driver currently has another route assigned"
-                    );
+                } else {
+                    notify("error", `This driver is currently ${status.replace('_', ' ')}`);
                     setIsSubmitting(false);
                     setIsCheckingAvailability(false);
                     return;
@@ -398,20 +390,15 @@ const EditRouteModal = ({
                                             formData.id
                                         );
                                     setAvailabilityStatus(status);
-                                    if (status === "unavailable") {
+                                    if (status === "active") {
                                         notify(
-                                            "error",
-                                            "Driver is unavailable"
-                                        );
-                                    } else if (status === "on_route") {
-                                        notify(
-                                            "error",
-                                            "Driver is currently on a route"
+                                            "success",
+                                            "Driver is active"
                                         );
                                     } else {
                                         notify(
-                                            "success",
-                                            "Driver is available"
+                                            "error",
+                                            `Driver is currently ${status.replace('_', ' ')}`
                                         );
                                     }
                                 } finally {

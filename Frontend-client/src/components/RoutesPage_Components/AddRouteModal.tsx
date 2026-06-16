@@ -144,7 +144,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                     formData.assignedDriver.id
                 );
                 setAvailabilityStatus(status);
-                if (status === "available") {
+                if (status === "active") {
                     const submittedData = {
                         start_location: formData.start_location,
                         end_location: formData.end_location,
@@ -198,15 +198,8 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                         setIsCheckingAvailability(false);
                         return;
                     }
-                } else if (status === "unavailable") {
-                    setSubmitError("This driver is unavailable");
-                    setIsSubmitting(false);
-                    setIsCheckingAvailability(false);
-                    return;
-                } else if (status === "on_route") {
-                    setSubmitError(
-                        "This driver currently has another route assigned"
-                    );
+                } else {
+                    setSubmitError(`This driver is currently ${status.replace('_', ' ')}`);
                     setIsSubmitting(false);
                     setIsCheckingAvailability(false);
                     return;
@@ -409,20 +402,15 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
                                     const status =
                                         await checkDriverAvailability(driverId);
                                     setAvailabilityStatus(status);
-                                    if (
-                                        status === "unavailable" ||
-                                        status === "on_route"
-                                    ) {
+                                    if (status === "active") {
                                         notify(
-                                            "error",
-                                            status === "unavailable"
-                                                ? "Driver is unavailable"
-                                                : "Driver is currently on a route"
+                                            "success",
+                                            "Driver is active and available"
                                         );
                                     } else {
                                         notify(
-                                            "success",
-                                            "Driver is available"
+                                            "error",
+                                            `Driver is currently ${status.replace('_', ' ')}`
                                         );
                                     }
                                 } finally {

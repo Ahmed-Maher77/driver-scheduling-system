@@ -27,9 +27,11 @@ const DriversFiltersSection = ({
     const statusOptions = useMemo(
         () => [
             { label: "All", value: "" },
-            { label: "Available", value: "available" },
-            { label: "Unavailable", value: "unavailable" },
             { label: "On Route", value: "on_route" },
+            { label: "Active", value: "active" },
+            { label: "Inactive", value: "inactive" },
+            { label: "On Leave", value: "on leave" },
+            { label: "Terminated", value: "terminated" },
         ],
         []
     );

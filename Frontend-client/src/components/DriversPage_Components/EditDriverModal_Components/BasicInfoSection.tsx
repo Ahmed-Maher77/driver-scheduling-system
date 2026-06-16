@@ -56,8 +56,10 @@ const BasicInfoSection = ({ driver, form, update }: BasicInfoSectionProps) => {
                             value={form.status}
                             onChange={(e) => update("status", e.target.value)}
                         >
-                            <option value="available">Available</option>
-                            <option value="unavailable">Unavailable</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="on leave">On Leave</option>
+                            <option value="terminated">Terminated</option>
                         </select>
                         <i className="fa-solid fa-chevron-down absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                     </div>

@@ -62,8 +62,10 @@ const BasicInfoSection = ({ form, errors, update }: BasicInfoSectionProps) => {
                             value={form.status}
                             onChange={(e) => update("status", e.target.value)}
                         >
-                            <option value="available">Available</option>
-                            <option value="unavailable">Unavailable</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="on leave">On Leave</option>
+                            <option value="terminated">Terminated</option>
                         </select>
                         <svg
                             className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-6 w-6 text-gray-400"

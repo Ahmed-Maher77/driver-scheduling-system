@@ -88,7 +88,7 @@ router.put("/:id", async (req, res) => {
         });
 
         // Handle status change to unavailable - unassign from current route
-        if (data.status === "unavailable" && driver.assignedRoute_id) {
+        if (data.status === "inactive" && driver.assignedRoute_id) {
             // Get the current route before unassigning
             const currentRoute = await Routes.findOne({
                 route_id: driver.assignedRoute_id,
@@ -267,7 +267,7 @@ router.put("/:id", async (req, res) => {
                 }
 
                 driver.assignedRoute_id = null;
-                driver.status = "available";
+                driver.status = "active";
                 driver.assigned_at = null;
 
                 updatedFields.assignedRoute_id = driver.assignedRoute_id;

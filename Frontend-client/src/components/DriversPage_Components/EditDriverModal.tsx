@@ -148,7 +148,7 @@ const EditDriverModal = ({
         return <LoadingPageSpinner message="Loading driver details..." />;
     }
 
-    const isUnavailable = form?.status === "unavailable";
+    const isUnavailable = form?.status !== "active";
 
     // ================== Check Route Availability ==================
     const handleCheckRouteAvailability = async () => {
@@ -176,9 +176,12 @@ const EditDriverModal = ({
             } else if (status === "in progress") {
                 setAvailabilityStatus("in progress");
                 notify("error", "This route is currently in progress");
+            } else if (status === "unknown") {
+                setAvailabilityStatus("unknown");
+                notify("error", "Route not found or unavailable");
             } else {
                 setAvailabilityStatus("unknown");
-                notify("error", "Route is unavailable");
+                notify("error", `Route is currently ${status} and cannot be assigned`);
             }
         } catch {
             notify("error", "Failed to check route availability");
@@ -354,8 +357,8 @@ const EditDriverModal = ({
                 date_of_birth: updatedForm.date_of_birth,
                 driving_license: { ...updatedForm.driving_license },
                 vehicle: { ...updatedForm.vehicle },
-                // Only send assignedRoute_id if driver is not unavailable
-                ...(updatedForm.status !== "unavailable" && {
+                // Only send assignedRoute_id if driver is not inactive
+                ...(updatedForm.status !== "inactive" && {
                     assignedRoute_id: updatedForm.assignedRoute_id,
                 }),
                 notes: updatedForm.notes,

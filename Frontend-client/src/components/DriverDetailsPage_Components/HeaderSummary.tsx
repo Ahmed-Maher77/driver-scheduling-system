@@ -18,7 +18,7 @@ const HeaderSummary = ({
     onDelete,
 }: HeaderSummaryProps) => {
     return (
-        <section className="white-bg p-4 rounded-lg shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <section className="p-5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.03)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             {/* ================== Picture + Name + Status + Joined At ================== */}
             <div className="flex items-center gap-4">
                 {/* Picture */}

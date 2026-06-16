@@ -97,9 +97,9 @@ const DriversTable = ({
             label: "Status",
             render: (row) => {
                 const cls =
-                    row.status === "available"
+                    row.status === "active"
                         ? "status-assigned"
-                        : row.status === "unavailable"
+                        : row.status === "inactive"
                         ? "status-unassigned"
                         : "status-inProgress";
                 const label =

@@ -18,7 +18,7 @@ const DriverDocuments = ({ nationalId, license }: DriverDocumentsProps) => {
     };
 
     return (
-        <section className="white-bg p-4 rounded-lg shadow-md mt-5">
+        <section className="p-5 rounded-2xl bg-white/40 backdrop-blur-md border border-white/60 shadow-[0_4px_20px_rgb(0,0,0,0.03)] mt-5">
             {/* ================== Title ================== */}
             <h4 className="font-semibold mb-3 text-xs md:text-base lg:text-lg">
                 Documents

@@ -35,7 +35,7 @@ router.get("/:id", async (req, res) => {
             return res.status(200).json({
                 message: "Driver found",
                 driverId: id,
-                driverStatus: "available",
+                driverStatus: "active",
                 reason: "Driver is already assigned to this route",
             });
         }

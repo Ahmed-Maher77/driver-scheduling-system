@@ -8,7 +8,7 @@ const Routes = require("../models/RoutesModel");
 router.get("/", async (req, res) => {
     try {
         const totalDrivers = await Drivers.countDocuments();
-        const availableDrivers = await Drivers.countDocuments({ status: "available" });
+        const availableDrivers = await Drivers.countDocuments({ status: "active" });
         const totalRoutes = await Routes.countDocuments();
         const unassignedRoutes = await Routes.countDocuments({ status: "unassigned" });
 

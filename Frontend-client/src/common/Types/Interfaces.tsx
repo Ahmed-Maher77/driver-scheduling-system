@@ -288,7 +288,7 @@ export interface RoutesTableProps {
 }
 
 // ============================== Drivers Types ==============================
-export type DriverStatus = "available" | "unavailable" | "on_route";
+export type DriverStatus = "available" | "unavailable" | "on_route" | "active" | "inactive" | "on_leave" | "on leave" | "terminated";
 
 export type DriverRow = {
     driver_id: string;
@@ -352,7 +352,7 @@ export type DriverForm = {
     };
     country?: string;
     city?: string;
-    status: Exclude<DriverStatus, "on_route">; // available | unavailable
+    status: Exclude<DriverStatus, "on_route">; // available | unavailable | active | inactive | on_leave | on leave | terminated
     assignedRoute_id?: string;
     assignedRoute?: string;
     notes?: string;
