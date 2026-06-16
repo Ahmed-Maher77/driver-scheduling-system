@@ -1,7 +1,18 @@
 {
-  "name": "driver-scheduling-system",
+  "name": "driver-scheduling-system-client",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Frontend client for the Full-stack Driver Scheduling System. Built with React.js, Tailwind CSS, and Redux Toolkit, providing an intuitive dashboard to manage drivers and track delivery routes.",
+  "author": "Ahmed Maher",
+  "license": "ISC",
+  "keywords": [
+    "react",
+    "vite",
+    "tailwindcss",
+    "driver-scheduling",
+    "logistics",
+    "frontend"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -21,6 +32,7 @@
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.1",
     "react-toastify": "^11.0.5",
+    "recharts": "^3.8.1",
     "sass": "^1.93.0",
     "tailwindcss": "^4.1.13"
   },

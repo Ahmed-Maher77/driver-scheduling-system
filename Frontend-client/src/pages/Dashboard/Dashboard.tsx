@@ -1,6 +1,7 @@
 import ActivityFeedsContainer from "../../components/Dashboard_Components/ActivityFeedsContainer/ActivityFeedsContainer";
 import RoutesContainer from "../../components/Dashboard_Components/RoutesContainer/RoutesContainer";
 import StatsContainer from "../../components/Dashboard_Components/StatsContainer/StatsContainer";
+import DashboardChart from "../../components/Dashboard_Components/DashboardChart/DashboardChart";
 import PageHeader from "../../components/Headings/PageHeader/PageHeader";
 import { useAppSelector } from "../../utils/redux-toolkit/reduxHooks";
 import AnimatedPage from "../../common/Animations/AnimatedPage/AnimatedPage";
@@ -27,6 +28,11 @@ const Dashboard = () => {
                     {/* =============== Stats Container =============== */}
                     <AnimatedComponent delay={0.2} type="scale">
                         <StatsContainer />
+                    </AnimatedComponent>
+
+                    {/* =============== Analytics Chart =============== */}
+                    <AnimatedComponent delay={0.25} type="fade">
+                        <DashboardChart />
                     </AnimatedComponent>
 
                     {/* =============== Routes & Activity Feeds =============== */}
