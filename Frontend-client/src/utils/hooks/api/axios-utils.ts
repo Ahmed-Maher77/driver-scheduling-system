@@ -12,10 +12,10 @@ const axiosInstance = axios.create({
 // Request interceptor
 axiosInstance.interceptors.request.use(
     (config) => {
-        // Add any request modifications here
-        // console.log(`🚀 Making request to: ${config.baseURL}${config.url}`);
-        // console.log(`📤 Request method: ${config.method?.toUpperCase()}`);
-        // console.log(`📤 Request data:`, config.data);
+        const token = localStorage.getItem("admin_token");
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
         return config;
     },
     (error) => {

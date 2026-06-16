@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import type { RootState } from "../../utils/redux-toolkit/store";
 import ModalWrapper from "../RoutesPage_Components/SharedModalComponents/ModalWrapper";
 import FormSection from "../RoutesPage_Components/SharedModalComponents/FormSection";
 import ModalHeader from "../RoutesPage_Components/AddRouteModal_Components/ModalHeader";
@@ -52,6 +55,8 @@ const initialForm: DriverForm = {
 };
 
 const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+    const navigate = useNavigate();
     const [form, setForm] = useState<DriverForm>(initialForm);
     const isUnavailable = form.status === "unavailable";
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -327,6 +332,11 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
     // ================== Submit (Add Driver) ==================
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!isAuthenticated) {
+            notify("error", "Please login as admin first to perform this action");
+            navigate("/admin-panel");
+            return;
+        }
         if (isSubmitting) return;
         setSubmitError(null); // Clear any previous errors
 

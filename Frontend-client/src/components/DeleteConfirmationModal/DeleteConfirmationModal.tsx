@@ -1,4 +1,8 @@
 import React from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import type { RootState } from "../../utils/redux-toolkit/store";
+import { notify } from "../../utils/functions/notify";
 import type { DeleteConfirmationModalProps } from "../../common/Types/Interfaces";
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
@@ -11,7 +15,20 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
     cancelButtonText = "Cancel",
     isLoading = false,
 }) => {
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+    const navigate = useNavigate();
+
     if (!isOpen) return null;
+
+    const handleConfirm = () => {
+        if (!isAuthenticated) {
+            notify("error", "Please login as admin first to perform this action");
+            navigate("/admin-panel");
+            onClose();
+            return;
+        }
+        onConfirm();
+    };
 
     return (
         <div className="fixed inset-0 bg-[#00000070] backdrop-blur-[1px] flex items-center justify-center z-[999]">
@@ -33,7 +50,7 @@ const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
                     </button>
                     {/* Confirm Button */}
                     <button
-                        onClick={onConfirm}
+                        onClick={handleConfirm}
                         disabled={isLoading}
                         className={`main-btn red-bg px-4 py-2 ${
                             isLoading ? "opacity-50 cursor-not-allowed" : ""

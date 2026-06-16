@@ -6,6 +6,9 @@ import SidebarLink from "./SidebarLink";
 import { useAppDispatch, useAppSelector } from "../../utils/redux-toolkit/reduxHooks";
 import { setActiveBar as setActiveBarAction, setCompressSidebar as setCompressSidebarAction } from "../../utils/redux-toolkit/sidebarSlice";
 import Logo from "../../common/Logo/Logo";
+import { useNavigate } from "react-router-dom";
+import { logout } from "../../utils/redux-toolkit/authSlice";
+import { notify } from "../../utils/functions/notify";
 
 
 const sidebarLinks = [
@@ -58,7 +61,9 @@ const Sidebar = () => {
     const compressSidebar = useAppSelector(
         (state) => state.sidebar.compressSidebar
     );
+    const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
     const sidebarRef = useRef<HTMLUListElement | null>(null);
     // const { isDarkMode, setIsDarkMode } = useContext(DarkModeContext);
 
@@ -75,6 +80,13 @@ const Sidebar = () => {
         },
         [dispatch]
     );
+
+    const handleLogout = () => {
+        dispatch(logout());
+        setActiveBar(false);
+        notify("success", "Logged out successfully");
+        navigate("/admin-panel");
+    };
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -160,14 +172,28 @@ const Sidebar = () => {
                         compressSidebar && "compressed"
                     }`}
                 >
-                    <SidebarLink
-                        to="/admin-panel"
-                        title="go to the Admin Panel"
-                        iconClass="fa-solid fa-lock-open"
-                        compressSidebar={compressSidebar}
-                        onClick={() => setActiveBar(false)}
-                        label="Admin Panel"
-                    />
+                    {isAuthenticated ? (
+                        <div
+                            onClick={handleLogout}
+                            className={`main-bg ${
+                                compressSidebar ? "px-[5px]" : "px-[12px]"
+                            } py-[10px] flex items-center rounded-[8px] gap-3 mt-1 cursor-pointer text-red-500 hover:bg-red-50`}
+                            role="button"
+                            title="Log out from Admin session"
+                        >
+                            <i className="fa-solid fa-right-from-bracket text-[1.2rem] text-red-500"></i>
+                            {!compressSidebar && <span>Logout</span>}
+                        </div>
+                    ) : (
+                        <SidebarLink
+                            to="/admin-panel"
+                            title="go to the Admin Panel"
+                            iconClass="fa-solid fa-lock-open"
+                            compressSidebar={compressSidebar}
+                            onClick={() => setActiveBar(false)}
+                            label="Admin Panel"
+                        />
+                    )}
 
                     {/* Dark Mode */}
                     {/* <li

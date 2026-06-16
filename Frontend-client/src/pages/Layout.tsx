@@ -88,10 +88,9 @@ const Layout = () => {
             {/* Navbar [in small screens] */}
             {showCommonComponents && <Navbar />}
 
-            {/* Main Container */}
             <div
                 ref={mainContainerRef}
-                className={`main-content flex-1 overflow-y-auto overflow-x-hidden pt-[75px] lg:pt-0`}
+                className={`main-content flex-1 overflow-y-auto overflow-x-hidden ${!showCommonComponents ? "" : "pt-[75px]"} lg:pt-0`}
             >
                 {/* Outlet [the page content] */}
                 <Outlet />

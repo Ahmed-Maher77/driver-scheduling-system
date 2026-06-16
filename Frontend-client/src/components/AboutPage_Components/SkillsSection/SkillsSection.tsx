@@ -18,7 +18,8 @@ const SkillsSection = () => {
                 "Express",
                 "MongoDB",
                 "MySQL",
-                "REST APIs"
+                "REST APIs",
+                "GraphQL",
             ]
         },
         {

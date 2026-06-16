@@ -15,91 +15,131 @@ const InternetCheckerDemo = () => {
 
     return (
         <motion.div
-            className="p-6 bg-white rounded-lg shadow-lg max-w-2xl mx-auto"
+            className="w-full max-w-3xl mx-auto mt-8 relative"
             variants={demoVariants}
             initial="hidden"
             animate="visible"
             transition={{ duration: 0.5 }}
         >
-            {/* Status Card */}
+            {/* Status Panel */}
             <div
-                className={`p-4 rounded-lg border-2 mb-6 ${
+                className={`p-6 sm:p-8 rounded-2xl transition-all duration-500 ease-in-out ${
                     isOnline
-                        ? "bg-green-50 border-green-200"
-                        : "bg-red-50 border-red-200"
+                        ? "bg-[rgba(16,185,129,0.04)] border border-[rgba(16,185,129,0.1)]"
+                        : "bg-[rgba(239,68,68,0.04)] border border-[rgba(239,68,68,0.1)]"
                 }`}
             >
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div
-                            className={`w-4 h-4 rounded-full ${
-                                isOnline ? "bg-green-500" : "bg-red-500"
-                            }`}
-                        ></div>
-                        <span
-                            className={`font-semibold ${
-                                isOnline ? "text-green-800" : "text-red-800"
-                            }`}
-                        >
-                            {isOnline ? "Online" : "Offline"}
-                        </span>
-                        {isChecking && (
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{
-                                    duration: 1,
-                                    repeat: Infinity,
-                                    ease: "linear",
-                                }}
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+                    {/* Status Indicator */}
+                    <div className="flex items-center gap-4">
+                        <div className="relative flex items-center justify-center">
+                            {/* Outer pulsing ring */}
+                            <div
+                                className={`absolute inset-0 rounded-full animate-ping opacity-20 ${
+                                    isOnline ? "bg-[#10b981]" : "bg-[#ef4444]"
+                                }`}
+                            ></div>
+                            {/* Inner dot */}
+                            <div
+                                className={`relative w-4 h-4 rounded-full shadow-[0_0_15px_rgba(0,0,0,0.1)] ${
+                                    isOnline ? "bg-[#10b981]" : "bg-[#ef4444]"
+                                }`}
+                            ></div>
+                        </div>
+                        <div className="flex flex-col">
+                            <span
+                                className={`text-2xl font-bold tracking-tight ${
+                                    isOnline ? "text-[#059669]" : "text-[#b91c1c]"
+                                }`}
                             >
-                                <i className="fa-solid fa-spinner text-blue-500"></i>
-                            </motion.div>
-                        )}
+                                {isOnline ? "System Online" : "System Offline"}
+                            </span>
+                            <div className="flex items-center gap-2 mt-1">
+                                {isChecking ? (
+                                    <motion.div
+                                        animate={{ rotate: 360 }}
+                                        transition={{
+                                            duration: 1.5,
+                                            repeat: Infinity,
+                                            ease: "linear",
+                                        }}
+                                        className="text-[#10b981]"
+                                    >
+                                        <i className="fa-solid fa-spinner text-sm"></i>
+                                    </motion.div>
+                                ) : (
+                                    <i className="fa-solid fa-clock text-xs text-gray-400"></i>
+                                )}
+                                <span className="text-sm font-medium text-gray-500">
+                                    {lastChecked
+                                        ? `Last synced: ${lastChecked.toLocaleTimeString()}`
+                                        : "Awaiting sync..."}
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
+                    {/* Action Button */}
                     <button
                         onClick={checkConnection}
                         disabled={isChecking}
-                        className="demo-button px-5 py-3 cursor-pointer bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg text-sm transition-colors"
+                        className={`group flex items-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                            isChecking
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                                : isOnline
+                                ? "bg-[#10b981] text-white hover:bg-[#059669] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(16,185,129,0.25)] border border-transparent"
+                                : "bg-[#ef4444] text-white hover:bg-[#dc2626] hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(239,68,68,0.25)] border border-transparent"
+                        }`}
                     >
-                        {isChecking ? "Checking..." : "Check Now"}
+                        <i
+                            className={`fa-solid ${
+                                isChecking ? "fa-arrows-rotate" : "fa-bolt"
+                            } ${!isChecking && "group-hover:animate-pulse"}`}
+                        ></i>
+                        {isChecking ? "Verifying..." : "Test Connection"}
                     </button>
                 </div>
 
-                {lastChecked && (
-                    <p className="text-sm text-gray-600 mt-2">
-                        Last checked: {lastChecked.toLocaleTimeString()}
-                    </p>
-                )}
-
                 {error && (
-                    <p className="text-sm text-red-600 mt-2">Error: {error}</p>
+                    <div className="mt-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium flex items-center gap-2">
+                        <i className="fa-solid fa-triangle-exclamation"></i>
+                        {error}
+                    </div>
                 )}
             </div>
 
-            {/* Demo Controls */}
-            <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-700">
-                    Demo Controls
-                </h3>
-
-                <div className="bg-gray-100 p-4 rounded-lg">
-                    <h4 className="font-medium text-gray-700 mb-2">
-                        How to test:
+            {/* Instruction Guide */}
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="bg-transparent border-l-2 border-[rgba(16,185,129,0.3)] pl-6 py-2">
+                    <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i className="fa-solid fa-vial text-[#10b981]"></i>
+                        Testing Guide
                     </h4>
-                    <ul className="text-sm text-gray-600 space-y-1">
-                        <li>
-                            • Disconnect your internet to see offline
-                            notification with retry button
+                    <ul className="space-y-2.5">
+                        <li className="flex items-start gap-2 text-[0.95rem] text-gray-600">
+                            <i className="fa-solid fa-wifi mt-1 text-gray-400 text-xs"></i>
+                            Disable Wi-Fi to see offline mode and retry prompts.
                         </li>
-                        <li>• Reconnect to see the restoration message</li>
-                        <li>• The app checks connectivity every 10 seconds</li>
-                        <li>
-                            • Try the "Check Now" button for immediate check
+                        <li className="flex items-start gap-2 text-[0.95rem] text-gray-600">
+                            <i className="fa-solid fa-rotate mt-1 text-gray-400 text-xs"></i>
+                            Auto-polling verifies connection every 10 seconds.
                         </li>
-                        <li>
-                            • Only floating notifications appear (no full-width
-                            banner)
+                    </ul>
+                </div>
+                
+                <div className="bg-transparent border-l-2 border-[rgba(16,185,129,0.3)] pl-6 py-2">
+                    <h4 className="text-sm font-bold text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i className="fa-solid fa-circle-info text-[#10b981]"></i>
+                        Features
+                    </h4>
+                    <ul className="space-y-2.5">
+                        <li className="flex items-start gap-2 text-[0.95rem] text-gray-600">
+                            <i className="fa-solid fa-bolt mt-1 text-gray-400 text-xs"></i>
+                            Use the "Test Connection" button for an instant check.
+                        </li>
+                        <li className="flex items-start gap-2 text-[0.95rem] text-gray-600">
+                            <i className="fa-solid fa-bell mt-1 text-gray-400 text-xs"></i>
+                            Unintrusive floating toasts appear on state change.
                         </li>
                     </ul>
                 </div>

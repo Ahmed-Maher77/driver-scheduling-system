@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import type { RootState } from "../../utils/redux-toolkit/store";
 import type {
     AddRouteModalProps,
     ValidationErrors,
@@ -23,6 +26,8 @@ import useUnsavedChanges from "../../utils/hooks/custom-hooks/useUnsavedChanges"
 import { UnsavedChangesDialog } from "../UnsavedChangesDialog";
 
 const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         start_location: "",
         end_location: "",
@@ -112,6 +117,11 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
     // Handle Submit (Add Route)
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
+        if (!isAuthenticated) {
+            notify("error", "Please login as admin first to perform this action");
+            navigate("/admin-panel");
+            return;
+        }
         if (isSubmitting) return;
         setIsSubmitting(true);
         setSubmitError(null); // Clear any previous errors

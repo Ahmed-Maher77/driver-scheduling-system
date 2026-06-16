@@ -27,6 +27,10 @@ const EditDriver = require("./routes/EditDriver_Route");
 const DeleteBulkRoutes = require("./routes/DeleteBulkRoutes_Route");
 const DeleteBulkDrivers = require("./routes/DeleteBulkDrivers_Route");
 const UploadImageOnServer = require("./routes/UploadImageOnServer_Route");
+const AdminLogin = require("./routes/AdminLogin_Route");
+
+// Middleware
+const authMiddleware = require("./utils/authMiddleware");
 
 // utilities
 const startServerWithDB = require("./utils/serverManager");
@@ -63,12 +67,15 @@ app.get("/", (req, res) => {
     res.sendFile(`${__dirname}/views/homePage.html`);
 });
 
+// ========== Authentication ==========
+app.use("/admin-login", AdminLogin);
+
 // ========== Routes ==========
 // Add New Route
-app.use("/add-new-route", AddNewRoute);
+app.use("/add-new-route", authMiddleware, AddNewRoute);
 
 // Add New Driver
-app.use("/add-new-driver", AddNewDriver);
+app.use("/add-new-driver", authMiddleware, AddNewDriver);
 
 // Get All Routes
 app.use("/get-all-routes", GetAllRoutes);
@@ -77,13 +84,13 @@ app.use("/get-all-routes", GetAllRoutes);
 app.use("/get-route-details", GetRouteDetails);
 
 // Edit Route
-app.use("/edit-route", EditRoute);
+app.use("/edit-route", authMiddleware, EditRoute);
 
 // Delete Route
-app.use("/delete-route", DeleteRoute);
+app.use("/delete-route", authMiddleware, DeleteRoute);
 
 // Delete Bulk Routes
-app.use("/delete-bulk-routes", DeleteBulkRoutes);
+app.use("/delete-bulk-routes", authMiddleware, DeleteBulkRoutes);
 
 // Check Route Availability
 app.use("/check-route-availability", CheckRouteAvailability);
@@ -99,19 +106,19 @@ app.use("/get-all-drivers", GetAllDrivers);
 app.use("/get-driver-details", GetDriverDetails);
 
 // Edit Driver
-app.use("/edit-driver", EditDriver);
+app.use("/edit-driver", authMiddleware, EditDriver);
 
 // Delete Driver
-app.use("/delete-driver", DeleteDriver);
+app.use("/delete-driver", authMiddleware, DeleteDriver);
 
 // Delete Bulk Drivers
-app.use("/delete-bulk-drivers", DeleteBulkDrivers);
+app.use("/delete-bulk-drivers", authMiddleware, DeleteBulkDrivers);
 
 // Check Driver Availability
 app.use("/check-driver-availability", CheckDriverAvailability);
 
 // Upload Image on Server
-app.use("/upload-image-on-server", UploadImageOnServer);
+app.use("/upload-image-on-server", authMiddleware, UploadImageOnServer);
 
 // ========== Activity Feeds ==========
 // Get Activity Feeds

@@ -1,4 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import type { RootState } from "../../utils/redux-toolkit/store";
 import type {
     EditRouteModalProps,
     RouteRow,
@@ -33,6 +36,8 @@ const EditRouteModal = ({
     routeId,
     onRouteUpdated,
 }: EditRouteModalProps) => {
+    const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState<RouteRow>({
         id: "",
         start_location: "",
@@ -147,6 +152,11 @@ const EditRouteModal = ({
     // Handle Submit (Edit Route)
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
+        if (!isAuthenticated) {
+            notify("error", "Please login as admin first to perform this action");
+            navigate("/admin-panel");
+            return;
+        }
         if (isSubmitting) return;
         setIsSubmitting(true);
         // Validate form data
