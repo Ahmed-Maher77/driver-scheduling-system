@@ -12,8 +12,7 @@ The Driver Scheduling System is a logistics management platform that enables eff
 
 ## 🌐 Live Preview
 
--   **Watch Live Demo (Frontend Application)**: [https://driver-scheduling-system.vercel.app/](https://driver-scheduling-system.vercel.app/)
--   **Backend API**: [https://driver-scheduling-system-5kmi.vercel.app/](https://driver-scheduling-system-5kmi.vercel.app/)
+-   **Watch Live Demo**: [https://driver-scheduling-system.vercel.app/](https://driver-scheduling-system.vercel.app/)
 
 ---
 
@@ -244,12 +243,6 @@ driver-scheduling-system/
 
 ## 📚 API Documentation
 
-### Base URL
-
-```
-https://driver-scheduling-system-5kmi.vercel.app
-```
-
 ### Core Endpoints
 
 #### Drivers
@@ -396,18 +389,11 @@ For detailed guides on how the system is designed, structured, and operated, che
 ## 🔮 Future Enhancements
 
 -   [ ] Real-time notifications using WebSockets
--   [ ] Advanced analytics and reporting dashboard
 -   [ ] Mobile application (React Native)
 -   [ ] Driver GPS tracking integration
 -   [ ] Automated route optimization algorithms
 -   [ ] Multi-tenant support for multiple companies
--   [ ] Advanced user authentication and authorization
--   [ ] API rate limiting and security enhancements
--   [ ] Push notifications for mobile devices
--   [ ] Advanced scheduling algorithms with machine learning
 -   [ ] Dark mode theme support
--   [ ] Advanced animation customization options
--   [ ] Offline mode with data synchronization
 
 ---
 

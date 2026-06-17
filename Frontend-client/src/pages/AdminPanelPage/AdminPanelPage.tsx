@@ -162,6 +162,15 @@ const AdminPanelPage = () => {
                                 <i className="fa-solid fa-lock"></i> Secure 256-bit Encryption
                             </div>
                         </AnimatedComponent>
+
+                        <AnimatedComponent delay={0.55} type="fade">
+                            <button
+                                onClick={() => navigate("/")}
+                                className="back-dashboard-btn"
+                            >
+                                <i className="fa-solid fa-arrow-left"></i> Back to Dashboard
+                            </button>
+                        </AnimatedComponent>
                     </div>
                 </div>
             </div>
