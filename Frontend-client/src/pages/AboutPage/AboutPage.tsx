@@ -21,7 +21,7 @@ const AboutPage = () => {
                         type="slide"
                         direction="down"
                     >
-                        <PageHeader title="About Me" />
+                        <PageHeader title="About Me" subtitle="Learn more about me" />
                     </AnimatedComponent>
 
                     {/* =============== About Content =============== */}

@@ -16,7 +16,7 @@ const ContactPage = () => {
                         type="slide"
                         direction="down"
                     >
-                        <PageHeader title="Contact Us" />
+                        <PageHeader title="Contact Us" subtitle="Get in touch with us" />
                     </AnimatedComponent>
 
                     <div className="contact-content">
