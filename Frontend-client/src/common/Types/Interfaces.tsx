@@ -713,6 +713,7 @@ export interface AssignmentCardProps {
 // Past Routes Timeline Props
 export interface PastRoutesTimelineProps {
     items: PastRouteItem[];
+    currentRoute?: PastRouteItem;
 }
 // Past Route Item
 export interface PastRouteItem {

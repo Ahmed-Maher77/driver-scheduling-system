@@ -22,7 +22,6 @@ const InternetChecker = ({
             const endpoints = [
                 "https://www.google.com/favicon.ico",
                 "https://www.cloudflare.com/favicon.ico",
-                "https://httpbin.org/status/200",
             ];
 
             const promises = endpoints.map((url) =>

@@ -379,12 +379,21 @@ const AddDriverModal = ({ isOpen, onClose }: AddDriverModalProps) => {
             setErrors({});
             notify("success", "Driver added successfully");
         } catch (error: any) {
-            // Handle error and show it in the modal
-            const errorMessage = error?.response?.data?.details?.duplicate_field
-                ? `${error?.response?.data?.message} - A driver with the same ${error?.response?.data?.details?.duplicate_field} already exists`
-                : error?.response?.data?.message ||
-                  error?.message ||
-                  "Failed to add driver";
+            const errData = error?.response?.data;
+            const status = error?.response?.status;
+
+            let errorMessage: string;
+            if (errData?.details?.duplicate_field) {
+                errorMessage = `${errData.message} - A driver with the same ${errData.details.duplicate_field.replace(/_/g, " ")} already exists`;
+            } else if (errData?.message) {
+                errorMessage = errData.message;
+            } else if (status) {
+                errorMessage = `Server error (${status})`;
+            } else if (error?.message === "Network Error") {
+                errorMessage = "Unable to connect to server. Please check your internet connection.";
+            } else {
+                errorMessage = error?.message || "Failed to add driver";
+            }
             setSubmitError(errorMessage);
             return;
         }

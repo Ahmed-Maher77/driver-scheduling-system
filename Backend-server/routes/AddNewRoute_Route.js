@@ -56,6 +56,11 @@ router.post("/", async (req, res) => {
         if (existingRoute) {
             return res.status(409).json({
                 message: `Route from "${data.start_location}" to "${data.end_location}" already exists`,
+                error: "DUPLICATE_ROUTE",
+                details: {
+                    duplicate_field: "start_location,end_location",
+                    suggestion: "A route with the same start and end location already exists.",
+                },
             });
         }
 
@@ -87,6 +92,7 @@ router.post("/", async (req, res) => {
                     await Routes.findByIdAndDelete(savedRoute._id);
                     return res.status(404).json({
                         message: `Driver with ID "${data.assignedDriver_id}" not found`,
+                        error: "DRIVER_NOT_FOUND",
                     });
                 }
 
@@ -137,6 +143,7 @@ router.post("/", async (req, res) => {
                 await Routes.findByIdAndDelete(savedRoute._id);
                 return res.status(500).json({
                     message: "Failed to assign driver to route",
+                    error: driverError.message,
                 });
             }
         }
@@ -198,6 +205,12 @@ router.post("/", async (req, res) => {
 
             return res.status(409).json({
                 message: "Duplicate entry detected",
+                error: "DUPLICATE_ENTRY",
+                details: {
+                    duplicate_fields: error.keyPattern ? Object.keys(error.keyPattern) : ["unknown"],
+                    duplicate_values: error.keyValue || {},
+                    suggestion: "Please check your data and try again.",
+                },
             });
         }
 
@@ -211,12 +224,15 @@ router.post("/", async (req, res) => {
 
             return res.status(400).json({
                 message: "Validation failed",
+                error: "VALIDATION_ERROR",
+                details: validationErrors,
             });
         }
 
         // Handle other errors
         res.status(500).json({
             message: "Internal server error",
+            error: error.message,
         });
     }
 });

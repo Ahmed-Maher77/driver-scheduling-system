@@ -179,6 +179,13 @@ const DriverDetailsPage = () => {
                         <AnimatedComponent delay={0.6} type="scale">
                             <PastRoutesTimeline
                                 items={driverData?.pastAssignedRoutes as any}
+                                currentRoute={driverData?.assignedRoute ? {
+                                    route_id: driverData.assignedRoute.route_id,
+                                    startLocation: driverData.assignedRoute.start_location || driverData.assignedRoute.startLocation,
+                                    endLocation: driverData.assignedRoute.end_location || driverData.assignedRoute.endLocation,
+                                    assigned_at: driverData.assignedRoute.assigned_at || driverData.assignedRoute.assignedAt,
+                                    unassigned_at: "",
+                                } : undefined}
                             />
                         </AnimatedComponent>
                     </main>
