@@ -52,7 +52,7 @@ const AddRouteModal = ({ isOpen, onClose, onAddRoute }: AddRouteModalProps) => {
     );
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [availabilityStatus, setAvailabilityStatus] = useState<
-        "unknown" | "available" | "unavailable" | "on_route"
+        "unknown" | "available" | "unavailable" | "on_route" | "on leave" | "active" | "inactive" | string
     >("unknown");
     const [isCheckingAvailability, setIsCheckingAvailability] = useState(false);
     const [submitError, setSubmitError] = useState<string | null>(null);

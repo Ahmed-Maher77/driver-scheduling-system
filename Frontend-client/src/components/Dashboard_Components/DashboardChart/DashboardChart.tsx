@@ -1,52 +1,249 @@
+import ReactECharts from "echarts-for-react";
 import "./DashboardChart.scss";
-import { 
-    PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend, ResponsiveContainer,
-    BarChart, Bar, XAxis, YAxis, CartesianGrid
-} from 'recharts';
-import useGetRoutesSummary from "../../../utils/hooks/api/useGetRoutesSummary";
+import useGetDashboardStats from "../../../utils/hooks/api/useGetDashboardStats";
 import SectionHeader from "../../Headings/SectionHeader/SectionHeader";
 
+const COLORS: Record<string, string> = {
+    'Assigned': '#3b82f6',     // Blue
+    'Unassigned': '#f59e0b',   // Amber
+    'In progress': '#10b981',  // Emerald
+    'Completed': '#8b5cf6',   // Violet
+    'Cancelled': '#ef4444'    // Red
+};
+
 const DashboardChart = () => {
-    const { data: fetchedRoutesSummaryData, isLoading, error } = useGetRoutesSummary();
+    const { data: fetchedStatsData, isLoading, error } = useGetDashboardStats();
 
     if (isLoading) {
         return (
-            <div className="dashboard-chart flex items-center justify-center min-h-[200px]">
-                <div className="flex items-center gap-2 text-gray-500">
-                    <i className="fa-solid fa-spinner fa-spin text-xl text-[#10b981]" />
-                    <span className="font-semibold">Loading charts...</span>
+            <div className="dashboard-chart flex items-center justify-center min-h-[320px]">
+                <div className="flex items-center gap-3 text-gray-500">
+                    <i className="fa-solid fa-spinner fa-spin text-2xl text-[#10b981]" />
+                    <span className="font-semibold text-sm">Loading visual analytics...</span>
                 </div>
             </div>
         );
     }
 
-    if (error || !fetchedRoutesSummaryData?.data) {
+    if (error || !fetchedStatsData) {
         return (
-            <div className="dashboard-chart flex items-center justify-center min-h-[200px] text-red-500">
-                <i className="fa-solid fa-triangle-exclamation mr-2" />
-                Error loading chart data
+            <div className="dashboard-chart flex items-center justify-center min-h-[320px] text-red-500 border border-red-200 rounded-lg bg-red-50/20">
+                <div className="flex items-center gap-2">
+                    <i className="fa-solid fa-triangle-exclamation text-lg" />
+                    <span className="font-medium text-sm">Error loading charts data</span>
+                </div>
             </div>
         );
     }
 
-    const routes = fetchedRoutesSummaryData.data;
+    const routeStatusCounts = fetchedStatsData.routeStatusCounts || {
+        assigned: 0,
+        unassigned: 0,
+        "in progress": 0,
+        completed: 0,
+        cancelled: 0
+    };
 
-    const statusCounts = routes.reduce((acc: any, route: any) => {
-        acc[route.status] = (acc[route.status] || 0) + 1;
-        return acc;
-    }, {});
+    const pieData = [
+        { name: 'Assigned', value: routeStatusCounts.assigned || 0 },
+        { name: 'Unassigned', value: routeStatusCounts.unassigned || 0 },
+        { name: 'In progress', value: routeStatusCounts['in progress'] || 0 },
+        { name: 'Completed', value: routeStatusCounts.completed || 0 },
+        { name: 'Cancelled', value: routeStatusCounts.cancelled || 0 }
+    ].filter(item => item.value > 0);
 
-    const pieData = Object.keys(statusCounts).map(status => ({
-        name: status.charAt(0).toUpperCase() + status.slice(1),
-        value: statusCounts[status]
-    }));
+    const totalRoutes = fetchedStatsData.totalRoutes || 0;
 
-    const COLORS: Record<string, string> = {
-        'Assigned': '#3b82f6',
-        'Unassigned': '#f59e0b',
-        'In progress': '#10b981',
-        'Completed': '#8b5cf6',
-        'Cancelled': '#ef4444'
+    if (totalRoutes === 0 || pieData.length === 0) {
+        return (
+            <div className="dashboard-chart mt-6">
+                <SectionHeader
+                    title="Routes Overview"
+                    label="Analytics"
+                    count={0}
+                    countColor="blue"
+                />
+                <div className="flex flex-col items-center justify-center min-h-[250px] border border-dashed border-gray-200 dark:border-zinc-800 rounded-lg bg-gray-50/50 dark:bg-zinc-950/20 p-6 text-center mt-6">
+                    <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center text-gray-400 mb-3">
+                        <i className="fa-solid fa-chart-pie text-xl" />
+                    </div>
+                    <h4 className="text-sm font-semibold text-gray-700 dark:text-zinc-300">No Route Data Available</h4>
+                    <p className="text-xs text-gray-400 dark:text-zinc-500 max-w-xs mt-1">
+                        Add and assign routes to drivers to see scheduling distribution and status metrics.
+                    </p>
+                </div>
+            </div>
+        );
+    }
+
+    // 1. Donut Chart Configuration
+    const pieOption = {
+        title: {
+            text: totalRoutes.toString(),
+            subtext: totalRoutes > 1 ? 'Routes' : 'Route',
+            left: '34%',
+            top: '40%',
+            textAlign: 'center',
+            textStyle: {
+                fontSize: 26,
+                fontWeight: '700',
+                color: '#1f2937',
+                fontFamily: 'Inter, sans-serif'
+            },
+            subtextStyle: {
+                fontSize: 11,
+                color: '#9ca3af',
+                fontWeight: 500,
+                fontFamily: 'Inter, sans-serif'
+            }
+        },
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: '#ffffff',
+            borderWidth: 0,
+            padding: [8, 12],
+            textStyle: {
+                color: '#374151',
+                fontSize: 12,
+                fontFamily: 'Inter, sans-serif'
+            },
+            extraCssText: 'box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border-radius: 8px;'
+        },
+        legend: {
+            orient: 'vertical',
+            right: '5%',
+            top: 'center',
+            icon: 'circle',
+            itemGap: 12,
+            itemWidth: 10,
+            itemHeight: 10,
+            textStyle: {
+                color: '#4b5563',
+                fontSize: 12,
+                fontWeight: 500,
+                fontFamily: 'Inter, sans-serif'
+            }
+        },
+        series: [
+            {
+                name: 'Route Status',
+                type: 'pie',
+                radius: ['58%', '78%'],
+                center: ['35%', '50%'],
+                avoidLabelOverlap: false,
+                itemStyle: {
+                    borderRadius: 4,
+                    borderColor: '#ffffff',
+                    borderWidth: 2
+                },
+                label: {
+                    show: false
+                },
+                emphasis: {
+                    scale: true,
+                    scaleSize: 6,
+                    itemStyle: {
+                        shadowBlur: 10,
+                        shadowOffsetX: 0,
+                        shadowColor: 'rgba(0, 0, 0, 0.08)'
+                    }
+                },
+                labelLine: {
+                    show: false
+                },
+                data: pieData.map(item => ({
+                    value: item.value,
+                    name: item.name,
+                    itemStyle: {
+                        color: COLORS[item.name]
+                    }
+                }))
+            }
+        ]
+    };
+
+    // 2. Bar Chart Configuration
+    const barOption = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: {
+                type: 'shadow'
+            },
+            backgroundColor: '#ffffff',
+            borderWidth: 0,
+            padding: [8, 12],
+            textStyle: {
+                color: '#374151',
+                fontSize: 12,
+                fontFamily: 'Inter, sans-serif'
+            },
+            extraCssText: 'box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border-radius: 8px;'
+        },
+        grid: {
+            top: '12%',
+            left: '3%',
+            right: '3%',
+            bottom: '8%',
+            containLabel: true
+        },
+        xAxis: [
+            {
+                type: 'category',
+                data: pieData.map(item => item.name),
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    show: false
+                },
+                axisLabel: {
+                    color: '#6b7280',
+                    fontSize: 11,
+                    fontWeight: 500,
+                    fontFamily: 'Inter, sans-serif',
+                    margin: 12
+                }
+            }
+        ],
+        yAxis: [
+            {
+                type: 'value',
+                minInterval: 1,
+                axisTick: {
+                    show: false
+                },
+                axisLine: {
+                    show: false
+                },
+                axisLabel: {
+                    color: '#9ca3af',
+                    fontSize: 11,
+                    fontFamily: 'Inter, sans-serif'
+                },
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed',
+                        color: '#f3f4f6'
+                    }
+                }
+            }
+        ],
+        series: [
+            {
+                name: 'Routes',
+                type: 'bar',
+                barWidth: '32%',
+                itemStyle: {
+                    borderRadius: [4, 4, 0, 0]
+                },
+                data: pieData.map(item => ({
+                    value: item.value,
+                    itemStyle: {
+                        color: COLORS[item.name]
+                    }
+                }))
+            }
+        ]
     };
 
     return (
@@ -54,60 +251,32 @@ const DashboardChart = () => {
             <SectionHeader
                 title="Routes Overview"
                 label="Analytics"
-                count={routes.length}
+                count={totalRoutes}
                 countColor="blue"
             />
 
             <div className="chart-grid">
-                <div className="chart-card">
-                    <h3 className="chart-title">Route Status Distribution</h3>
-                    <div className="chart-body">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={pieData}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={65}
-                                    outerRadius={105}
-                                    paddingAngle={4}
-                                    dataKey="value"
-                                >
-                                    {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[entry.name] || '#9ca3af'} />
-                                    ))}
-                                </Pie>
-                                <RechartsTooltip 
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Legend verticalAlign="bottom" height={36}/>
-                            </PieChart>
-                        </ResponsiveContainer>
+                {/* 1. DONUT CHART CARD */}
+                <div className="chart-card white-bg p-5 rounded-lg shadow-md flex flex-col justify-between">
+                    <h3 className="chart-title mb-3">Route Status Distribution</h3>
+                    <div className="flex-1 min-h-[240px] relative">
+                        <ReactECharts 
+                            option={pieOption}
+                            style={{ height: '240px', width: '100%' }}
+                            opts={{ renderer: 'svg' }}
+                        />
                     </div>
                 </div>
 
-                <div className="chart-card">
-                    <h3 className="chart-title">Routes Count per Status</h3>
-                    <div className="chart-body">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                                data={pieData}
-                                margin={{ top: 20, right: 20, left: 0, bottom: 5 }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
-                                <YAxis axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} allowDecimals={false} />
-                                <RechartsTooltip 
-                                    cursor={{fill: 'rgba(0,0,0,0.02)'}}
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                                />
-                                <Bar dataKey="value" radius={[4, 4, 0, 0]}>
-                                    {pieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[entry.name] || '#9ca3af'} />
-                                    ))}
-                                </Bar>
-                            </BarChart>
-                        </ResponsiveContainer>
+                {/* 2. BAR CHART CARD */}
+                <div className="chart-card white-bg p-5 rounded-lg shadow-md flex flex-col justify-between">
+                    <h3 className="chart-title mb-3">Routes Count per Status</h3>
+                    <div className="flex-1 min-h-[240px] relative">
+                        <ReactECharts 
+                            option={barOption}
+                            style={{ height: '240px', width: '100%' }}
+                            opts={{ renderer: 'svg' }}
+                        />
                     </div>
                 </div>
             </div>

@@ -18,18 +18,19 @@
         display: flex;
         flex-direction: column;
         min-width: 0;
-        padding: 0;
+        padding: 1.25rem;
     }
 
     .chart-title {
         font-size: 0.85rem;
         font-weight: 600;
         color: var(--gray-c);
-        margin-bottom: 0.5rem;
         letter-spacing: 0.02em;
     }
 
     .chart-body {
+        position: relative;
+        width: 100%;
         height: 280px;
         background: transparent;
     }
@@ -45,5 +46,6 @@
 
     .recharts-tooltip-wrapper {
         outline: none;
+        z-index: 1000 !important;
     }
 }

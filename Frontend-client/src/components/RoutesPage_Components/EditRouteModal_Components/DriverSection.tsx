@@ -91,16 +91,18 @@ const DriverSection: React.FC<DriverSectionProps> = ({
                     {availabilityStatus !== "unknown" && (
                         <p
                             className={`text-xs mt-1 ${
-                                availabilityStatus === "available"
+                                availabilityStatus === "active" || availabilityStatus === "available"
                                     ? "green-c"
                                     : "red-c"
                             }`}
                         >
-                            {availabilityStatus === "available"
+                            {availabilityStatus === "active" || availabilityStatus === "available"
                                 ? "Driver is available"
                                 : availabilityStatus === "on_route"
                                 ? "Driver is currently on a route"
-                                : "Driver is unavailable"}
+                                : availabilityStatus === "on leave"
+                                ? "Driver is currently on leave"
+                                : `Driver is unavailable (${availabilityStatus})`}
                         </p>
                     )}
                     {/* Assigned Driver Error */}

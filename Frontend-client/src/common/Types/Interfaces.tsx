@@ -394,7 +394,7 @@ export interface DriverSectionProps {
     lastDriverError?: string;
     status?: string;
     onCheckAvailability?: (driverId?: string) => void;
-    availabilityStatus?: "unknown" | "available" | "unavailable" | "on_route";
+    availabilityStatus?: "unknown" | "available" | "unavailable" | "on_route" | "on leave" | "active" | "inactive" | string;
     isCheckingAvailability?: boolean;
 }
 
