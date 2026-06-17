@@ -78,86 +78,130 @@ const DashboardChart = () => {
 
     // 1. Donut Chart Configuration
     const pieOption = {
-        title: {
-            text: totalRoutes.toString(),
-            subtext: totalRoutes > 1 ? 'Routes' : 'Route',
-            left: '34%',
-            top: '40%',
-            textAlign: 'center',
-            textStyle: {
-                fontSize: 26,
-                fontWeight: '700',
-                color: '#1f2937',
-                fontFamily: 'Inter, sans-serif'
+        baseOption: {
+            tooltip: {
+                trigger: 'item',
+                backgroundColor: '#ffffff',
+                borderWidth: 0,
+                padding: [8, 12],
+                textStyle: {
+                    color: '#374151',
+                    fontSize: 12,
+                    fontFamily: 'Inter, sans-serif'
+                },
+                extraCssText: 'box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border-radius: 8px;'
             },
-            subtextStyle: {
-                fontSize: 11,
-                color: '#9ca3af',
-                fontWeight: 500,
-                fontFamily: 'Inter, sans-serif'
-            }
-        },
-        tooltip: {
-            trigger: 'item',
-            backgroundColor: '#ffffff',
-            borderWidth: 0,
-            padding: [8, 12],
-            textStyle: {
-                color: '#374151',
-                fontSize: 12,
-                fontFamily: 'Inter, sans-serif'
+            legend: {
+                orient: 'vertical',
+                right: '5%',
+                top: 'center',
+                icon: 'circle',
+                itemGap: 12,
+                itemWidth: 10,
+                itemHeight: 10,
+                textStyle: {
+                    color: '#4b5563',
+                    fontSize: 12,
+                    fontWeight: 500,
+                    fontFamily: 'Inter, sans-serif'
+                }
             },
-            extraCssText: 'box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); border-radius: 8px;'
+            series: [
+                {
+                    name: 'Route Status',
+                    type: 'pie',
+                    radius: ['58%', '78%'],
+                    center: ['35%', '50%'],
+                    avoidLabelOverlap: false,
+                    itemStyle: {
+                        borderRadius: 4,
+                        borderColor: '#ffffff',
+                        borderWidth: 2
+                    },
+                    label: {
+                        show: true,
+                        position: 'center',
+                        formatter: '{value|' + totalRoutes + '}\n{label|' + (totalRoutes > 1 ? 'Routes' : 'Route') + '}',
+                        rich: {
+                            value: {
+                                fontSize: 26,
+                                fontWeight: '700',
+                                color: '#1f2937',
+                                fontFamily: 'Inter, sans-serif',
+                                lineHeight: 34
+                            },
+                            label: {
+                                fontSize: 11,
+                                color: '#9ca3af',
+                                fontWeight: 500,
+                                fontFamily: 'Inter, sans-serif',
+                                lineHeight: 16
+                            }
+                        }
+                    },
+                    emphasis: {
+                        scale: true,
+                        scaleSize: 6,
+                        label: {
+                            show: true,
+                            formatter: '{value|' + totalRoutes + '}\n{label|' + (totalRoutes > 1 ? 'Routes' : 'Route') + '}',
+                            rich: {
+                                value: {
+                                    fontSize: 26,
+                                    fontWeight: '700',
+                                    color: '#1f2937',
+                                    fontFamily: 'Inter, sans-serif',
+                                    lineHeight: 34
+                                },
+                                label: {
+                                    fontSize: 11,
+                                    color: '#9ca3af',
+                                    fontWeight: 500,
+                                    fontFamily: 'Inter, sans-serif',
+                                    lineHeight: 16
+                                }
+                            }
+                        },
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.08)'
+                        }
+                    },
+                    labelLine: {
+                        show: false
+                    },
+                    data: pieData.map(item => ({
+                        value: item.value,
+                        name: item.name,
+                        itemStyle: {
+                            color: COLORS[item.name]
+                        }
+                    }))
+                }
+            ]
         },
-        legend: {
-            orient: 'vertical',
-            right: '5%',
-            top: 'center',
-            icon: 'circle',
-            itemGap: 12,
-            itemWidth: 10,
-            itemHeight: 10,
-            textStyle: {
-                color: '#4b5563',
-                fontSize: 12,
-                fontWeight: 500,
-                fontFamily: 'Inter, sans-serif'
-            }
-        },
-        series: [
+        media: [
             {
-                name: 'Route Status',
-                type: 'pie',
-                radius: ['58%', '78%'],
-                center: ['35%', '50%'],
-                avoidLabelOverlap: false,
-                itemStyle: {
-                    borderRadius: 4,
-                    borderColor: '#ffffff',
-                    borderWidth: 2
+                query: {
+                    maxWidth: 500
                 },
-                label: {
-                    show: false
-                },
-                emphasis: {
-                    scale: true,
-                    scaleSize: 6,
-                    itemStyle: {
-                        shadowBlur: 10,
-                        shadowOffsetX: 0,
-                        shadowColor: 'rgba(0, 0, 0, 0.08)'
-                    }
-                },
-                labelLine: {
-                    show: false
-                },
-                data: pieData.map(item => ({
-                    value: item.value,
-                    name: item.name,
-                    itemStyle: {
-                        color: COLORS[item.name]
-                    }
-                }))
+                option: {
+                    legend: {
+                        orient: 'horizontal',
+                        left: 'center',
+                        bottom: '0',
+                        top: 'auto',
+                        right: 'auto',
+                        itemGap: 10
+                    },
+                    series: [
+                        {
+                            center: ['50%', '42%'],
+                            radius: ['50%', '70%']
+                        }
+                    ]
+                }
             }
         ]
     };

@@ -176,7 +176,7 @@ const Sidebar = () => {
                         <div
                             onClick={handleLogout}
                             className={`main-bg ${
-                                compressSidebar ? "px-[5px]" : "px-[12px]"
+                                compressSidebar ? "px-[5px]" : "px-[12px] justify-center"
                             } py-[10px] flex items-center rounded-[8px] gap-3 mt-1 cursor-pointer text-red-500 hover:bg-red-50`}
                             role="button"
                             title="Log out from Admin session"

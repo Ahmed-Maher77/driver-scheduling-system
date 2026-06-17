@@ -37,6 +37,7 @@ The Driver Scheduling System is a logistics management platform that enables eff
 -   **Axios** - HTTP client for API communication
 -   **Tailwind CSS v4** - Utility-first CSS framework
 -   **SASS** - CSS preprocessor
+-   **Apache ECharts** - Interactive and highly customizable charting library
 -   **React Toastify** - Notification system
 -   **FontAwesome** - Icon library
 -   **Google Fonts** - Typography and font styling
@@ -154,7 +155,7 @@ The Driver Scheduling System is a logistics management platform that enables eff
     npm install
     # Configure your MongoDB connection string in .env
     PORT=3001    # Port number
-    DATABASE_URL="mongodb+srv://ahmedmaheraljwhry057_db_user:<db_password>@cluster0.ldoyyda.mongodb.net/?appName=Cluster0"    # MongoDB connection string
+    DATABASE_URL="mongodb+srv://<db_username>:<db_password>@cluster0.ldoyyda.mongodb.net/?appName=Cluster0"    # MongoDB connection string
     # Start the server
     npm start
     ```
@@ -381,6 +382,14 @@ GET /get-all-drivers?page=1&limit=10&status=available&vehicleType=Car
 -   Serverless function deployment
 -   MongoDB Atlas integration
 -   Environment variable management
+
+---
+
+## 📖 System Documentation
+
+For detailed guides on how the system is designed, structured, and operated, check out the following documentations:
+*   [Database Design & API Documentation (UML, Mongoose Schemas, Postman Collection)](file:///e:/OneDrive%20-%20Mansoura%20University%20-%20Main/Projects/Full%20Stack/MERN/DRB%20%E2%80%93%20Driver%20Scheduling%20System%20%28Internship%29/DATABASE_DESIGN_AND_API_DOCUMENTATION.md)
+*   [System Operations & User Flows (Mermaid Diagrams, Sequences, State Machines)](file:///e:/OneDrive%20-%20Mansoura%20University%20-%20Main/Projects/Full%20Stack/MERN/DRB%20%E2%80%93%20Driver%20Scheduling%20System%20%28Internship%29/SYSTEM_OPERATIONS_AND_USER_FLOWS.md)
 
 ---
 

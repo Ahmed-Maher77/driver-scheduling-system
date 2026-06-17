@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin-panel
+Disallow: /drivers/*
+Disallow: /routes/*
+
+Sitemap: https://driver-scheduling-system.vercel.app/sitemap.xml
